@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { Button } from "@/components/ui/button"
 
-export const Route = createFileRoute("/")({ component: App })
+import { Button } from "@/components/ui/button"
 
 function App() {
   return (
@@ -17,3 +16,5 @@ function App() {
     </div>
   )
 }
+
+export const Route = createFileRoute("/")({ component: App })
