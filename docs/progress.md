@@ -18,7 +18,7 @@ Full task details in `docs/build-plan.md`. Spec in `docs/mvp-smaller.md`.
 - [x] **1a** — Customer list (API + `/customers` page)
 - [x] **1b** — Add/Edit customer (form + `POST`/`PATCH` + geolocation button)
 - [x] **1c** — Customer profile page (`/customers/$id`)
-- [ ] **1d** — Map view (`/map`, Leaflet client-only)
+- [x] **1d** — Map view (`/map`, Leaflet client-only)
 
 ## Phase 2 — Receivables
 
@@ -49,3 +49,4 @@ Full task details in `docs/build-plan.md`. Spec in `docs/mvp-smaller.md`.
 - 2026-05-16 — 0d — `api` workspace name collision with npm "api" override; used tsconfig paths alias (`"api": ["../api/src/index"]`) for type-only import instead of workspace:\* dep. `bun add --filter web` triggers DependencyLoop; added packages directly to package.json. beforeLoad SSR skip: typeof window guard + useEffect fallback in AuthedLayout for initial hydration check.
 - 2026-05-16 — 1a — Hono RPC client with `basePath("/api")` nests routes under `api.api.*` (e.g. `api.api.customers.$get()`). Customer name rendered as plain text in list; will become Link in 1c when `$id` route is created.
 - 2026-05-16 — 1c — routeTree.gen.ts must be manually updated when adding new routes (vite plugin regenerates on dev server start). Button component uses @base-ui/react/button (no asChild); use Link + buttonVariants className instead. router.tsx `declare module "@tanstack/react-router"` block removed — routeTree.gen.ts already registers router via @tanstack/react-start; keeping both caused TS2300 duplicate identifier. Receivables links (/receivables/$id, /receivables/new) use plain <a href> since routes don't exist until 2a/2b.
+- 2026-05-16 — 1d — react-leaflet dynamically imported inside useEffect (mounted-state guard) to avoid SSR. Leaflet CSS imported statically in route file. routeTree.gen.ts patched manually with /\_authed/map entry. bun add triggers DependencyLoop; packages added directly to package.json. (vite plugin regenerates on dev server start). Button component uses @base-ui/react/button (no asChild); use Link + buttonVariants className instead. router.tsx `declare module "@tanstack/react-router"` block removed — routeTree.gen.ts already registers router via @tanstack/react-start; keeping both caused TS2300 duplicate identifier. Receivables links (/receivables/$id, /receivables/new) use plain <a href> since routes don't exist until 2a/2b.
