@@ -2,6 +2,13 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { api } from "@/lib/api";
 
+export const customerKeys = {
+  all: ["customers"] as const,
+  detail: (id: number) => [...customerKeys.details(), id] as const,
+  details: () => [...customerKeys.all, "detail"] as const,
+  lists: () => [...customerKeys.all, "list"] as const,
+};
+
 export function useCustomersQuery() {
   return useQuery({
     queryFn: async () => {
@@ -11,7 +18,7 @@ export function useCustomersQuery() {
       }
       return res.json();
     },
-    queryKey: ["customers"],
+    queryKey: customerKeys.lists(),
   });
 }
 
@@ -26,7 +33,7 @@ export function useCustomerQuery(id: number) {
       }
       return res.json();
     },
-    queryKey: ["customers", id],
+    queryKey: customerKeys.detail(id),
   });
 }
 
@@ -55,7 +62,7 @@ export function useCreateCustomerMutation() {
       return res.json();
     },
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["customers"] });
+      void queryClient.invalidateQueries({ queryKey: customerKeys.lists() });
     },
   });
 }
@@ -83,8 +90,8 @@ export function useUpdateCustomerMutation() {
       return res.json();
     },
     onSuccess: (_data, { id }) => {
-      void queryClient.invalidateQueries({ queryKey: ["customers"] });
-      void queryClient.invalidateQueries({ queryKey: ["customers", id] });
+      void queryClient.invalidateQueries({ queryKey: customerKeys.lists() });
+      void queryClient.invalidateQueries({ queryKey: customerKeys.detail(id) });
     },
   });
 }
