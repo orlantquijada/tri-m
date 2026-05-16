@@ -1,0 +1,21 @@
+{
+  "name": "hono",
+  "type": "module",
+  "scripts": {
+    "check": "ultracite check",
+    "fix": "ultracite fix",
+    "dev": "bun run --hot src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "hono": "^4.12.18",
+    "schema": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "oxfmt": "catalog:",
+    "oxlint": "catalog:",
+    "typescript": "catalog:",
+    "ultracite": "catalog:"
+  }
+}
