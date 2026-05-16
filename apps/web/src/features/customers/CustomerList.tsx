@@ -27,13 +27,13 @@ export function CustomerList() {
   const { data, error, isLoading } = useCustomersQuery();
 
   if (isLoading) {
-    return <p className="text-muted-foreground p-4">Loading...</p>;
+    return <p className="p-4 text-muted-foreground">Loading...</p>;
   }
   if (error) {
-    return <p className="text-destructive p-4">Failed to load customers.</p>;
+    return <p className="p-4 text-destructive">Failed to load customers.</p>;
   }
   if (!data?.length) {
-    return <p className="text-muted-foreground p-4">No customers found.</p>;
+    return <p className="p-4 text-muted-foreground">No customers found.</p>;
   }
 
   return (
