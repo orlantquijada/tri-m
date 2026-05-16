@@ -30,7 +30,8 @@
     "allowJs": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "api": ["../api/src/index"]
     }
   }
 }

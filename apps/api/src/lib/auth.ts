@@ -13,6 +13,7 @@ export const auth = betterAuth({
     enabled: true,
   },
   secret: env.BETTER_AUTH_SECRET,
+  trustedOrigins: [env.WEB_URL],
   user: {
     additionalFields: {
       distributorId: {
