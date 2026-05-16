@@ -1,7 +1,7 @@
 import { useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import type { RiskStatus } from "schema";
+import type { CustomerSelect } from "schema";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -12,14 +12,8 @@ import { parsePeso } from "@/lib/format";
 
 import { useCreateReceivableMutation } from "./queries";
 
-type CustomerInfo = {
-  fullName: string;
-  id: number;
-  riskStatus: RiskStatus;
-};
-
 type ReceivableFormProps = {
-  customer: CustomerInfo;
+  customer: Pick<CustomerSelect, "fullName" | "id" | "riskStatus">;
 };
 
 function fieldError(errors: (string | undefined)[]) {

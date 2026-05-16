@@ -17,7 +17,7 @@
   "dependencies": {
     "@t3-oss/env-core": "catalog:",
     "@tursodatabase/database": "latest",
-    "better-auth": "^1.6.11",
+    "better-auth": "catalog:",
     "drizzle-orm": "beta",
     "zod": "catalog:"
   },

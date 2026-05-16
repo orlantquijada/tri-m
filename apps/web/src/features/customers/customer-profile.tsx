@@ -1,7 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import type { RiskStatus } from "schema";
 
-import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import {
   Table,
@@ -14,38 +12,15 @@ import {
 import { formatPeso } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
+import { ReceivableStatusBadge } from "../receivables/receivable-status-badge";
+import type { CustomerWithReceivables } from "./queries";
 import { RiskBadge } from "./risk-badge";
 
-const statusVariant = {
-  current: "outline",
-  fully_paid: "secondary",
-  overdue: "destructive",
-} as const;
-
-type Receivable = {
-  currentBalanceCents: number;
-  firstDueDate: string;
-  id: number;
-  originalBalanceCents: number;
-  productDescription: string;
-  saleDate: string;
-  status: "current" | "fully_paid" | "overdue";
-};
-
-type Customer = {
-  address: string;
-  distributorId: number;
-  fullName: string;
-  id: number;
-  latitude: number | null;
-  longitude: number | null;
-  notes: string | null;
-  phone: string;
-  receivables: Receivable[];
-  riskStatus: RiskStatus;
-};
-
-export function CustomerProfile({ customer }: { customer: Customer }) {
+export function CustomerProfile({
+  customer,
+}: {
+  customer: CustomerWithReceivables;
+}) {
   const mapsUrl =
     customer.latitude !== null && customer.longitude !== null
       ? `https://www.google.com/maps?q=${customer.latitude},${customer.longitude}`
@@ -142,7 +117,7 @@ export function CustomerProfile({ customer }: { customer: Customer }) {
                     {formatPeso(r.currentBalanceCents)}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={statusVariant[r.status]}>{r.status}</Badge>
+                    <ReceivableStatusBadge status={r.status} />
                   </TableCell>
                 </TableRow>
               ))}

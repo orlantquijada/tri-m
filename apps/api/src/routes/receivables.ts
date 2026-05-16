@@ -48,13 +48,17 @@ export const receivables = new Hono<{ Variables: AuthVariables }>()
       .from(customersTable)
       .where(eq(customersTable.id, receivable.customerId));
 
+    if (!customer) {
+      return c.json({ error: "Customer not found" }, 404);
+    }
+
     const payments = await db
       .select()
       .from(paymentsTable)
       .where(eq(paymentsTable.receivableId, id))
       .orderBy(desc(paymentsTable.paymentDate));
 
-    return c.json({ ...receivable, customer: customer!, payments });
+    return c.json({ ...receivable, customer, payments });
   })
   .post("/", requireSession, zValidator("json", postBodySchema), async (c) => {
     const user = c.get("user");

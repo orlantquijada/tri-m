@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { InferRequestType, InferResponseType } from "hono/client";
 
-import { api } from "@/lib/api";
+import { api, parseApiError } from "@/lib/api";
 
 export const customerKeys = {
   all: ["customers"] as const,
@@ -9,14 +10,32 @@ export const customerKeys = {
   lists: () => [...customerKeys.all, "list"] as const,
 };
 
+export type CustomerListItem = InferResponseType<
+  typeof api.api.customers.$get,
+  200
+>[number];
+
+export type CustomerWithReceivables = InferResponseType<
+  (typeof api.api.customers)[":id"]["$get"],
+  200
+>;
+
+type CreateCustomerBody = InferRequestType<
+  typeof api.api.customers.$post
+>["json"];
+
+type UpdateCustomerBody = InferRequestType<
+  (typeof api.api.customers)[":id"]["$patch"]
+>["json"];
+
 export function useCustomersQuery() {
   return useQuery({
-    queryFn: async () => {
+    queryFn: async (): Promise<CustomerListItem[]> => {
       const res = await api.api.customers.$get();
       if (!res.ok) {
         throw new Error("Failed to fetch customers");
       }
-      return res.json();
+      return (await res.json()) as CustomerListItem[];
     },
     queryKey: customerKeys.lists(),
   });
@@ -24,40 +43,26 @@ export function useCustomersQuery() {
 
 export function useCustomerQuery(id: number) {
   return useQuery({
-    queryFn: async () => {
+    queryFn: async (): Promise<CustomerWithReceivables> => {
       const res = await api.api.customers[":id"].$get({
         param: { id: String(id) },
       });
       if (!res.ok) {
         throw new Error("Failed to fetch customer");
       }
-      return res.json();
+      return (await res.json()) as CustomerWithReceivables;
     },
     queryKey: customerKeys.detail(id),
   });
 }
 
-type CustomerPayload = {
-  address: string;
-  distributorId?: number;
-  fullName: string;
-  latitude?: number | null;
-  longitude?: number | null;
-  notes?: string | null;
-  phone: string;
-  riskStatus: "good" | "watchlist" | "blacklisted";
-};
-
 export function useCreateCustomerMutation() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (data: CustomerPayload) => {
+    mutationFn: async (data: CreateCustomerBody) => {
       const res = await api.api.customers.$post({ json: data });
       if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(
-          (body as { error?: string }).error ?? "Failed to create customer"
-        );
+        throw await parseApiError(res, "Failed to create customer");
       }
       return res.json();
     },
@@ -74,7 +79,7 @@ export function useUpdateCustomerMutation() {
       data,
       id,
     }: {
-      data: Partial<CustomerPayload>;
+      data: UpdateCustomerBody;
       id: number;
     }) => {
       const res = await api.api.customers[":id"].$patch({
@@ -82,10 +87,7 @@ export function useUpdateCustomerMutation() {
         param: { id: String(id) },
       });
       if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(
-          (body as { error?: string }).error ?? "Failed to update customer"
-        );
+        throw await parseApiError(res, "Failed to update customer");
       }
       return res.json();
     },

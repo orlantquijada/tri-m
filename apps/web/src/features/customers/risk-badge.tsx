@@ -1,10 +1,11 @@
 import type { RiskStatus } from "schema";
 
 import { Badge } from "@/components/ui/badge";
+import type { BadgeVariants } from "@/components/ui/badge";
 
 export const riskVariant: Record<
   RiskStatus,
-  "destructive" | "outline" | "secondary"
+  NonNullable<BadgeVariants["variant"]>
 > = {
   blacklisted: "destructive",
   good: "outline",

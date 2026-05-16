@@ -1,7 +1,7 @@
 import type { Map as LeafletMap, Marker } from "leaflet";
 import { useEffect, useRef } from "react";
-import type { CustomerListItem } from "schema";
 
+import type { CustomerListItem } from "@/features/customers/queries";
 import { formatPeso } from "@/lib/format";
 
 type Customer = Pick<

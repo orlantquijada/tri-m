@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { InferRequestType, InferResponseType } from "hono/client";
+import type { PaymentInsert, CustomerSelect } from "schema";
 
-import { api } from "@/lib/api";
+import { api, parseApiError } from "@/lib/api";
 
 import { customerKeys } from "../customers/queries";
 
@@ -10,43 +12,61 @@ export const receivableKeys = {
   details: () => [...receivableKeys.all, "detail"] as const,
 };
 
+export function useCreatePaymentMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (
+      data: PaymentInsert & { customerId: CustomerSelect["id"] }
+    ) => {
+      const { customerId: _cid, ...body } = data;
+      const res = await api.api.payments.$post({ json: body });
+      if (!res.ok) {
+        throw await parseApiError(res, "Failed to record payment");
+      }
+      return res.json();
+    },
+    onSuccess: (_result, { customerId, receivableId }) => {
+      void queryClient.invalidateQueries({
+        queryKey: receivableKeys.detail(receivableId),
+      });
+      void queryClient.invalidateQueries({
+        queryKey: customerKeys.detail(customerId),
+      });
+    },
+  });
+}
+
+export type ReceivableWithDetail = InferResponseType<
+  (typeof api.api.receivables)[":id"]["$get"],
+  200
+>;
+
 export function useReceivableQuery(id: number) {
   return useQuery({
-    queryFn: async () => {
+    queryFn: async (): Promise<ReceivableWithDetail> => {
       const res = await api.api.receivables[":id"].$get({
         param: { id: String(id) },
       });
       if (!res.ok) {
         throw new Error("Failed to fetch receivable");
       }
-      return res.json();
+      return (await res.json()) as ReceivableWithDetail;
     },
     queryKey: receivableKeys.detail(id),
   });
 }
 
-type ReceivablePayload = {
-  adminOverride?: boolean;
-  customerId: number;
-  downPaymentCents: number;
-  firstDueDate: string;
-  monthlyDueAmountCents?: number;
-  paymentTermMonths?: number;
-  productDescription: string;
-  saleDate: string;
-  totalAmountCents: number;
-};
+type CreateReceivableBody = InferRequestType<
+  typeof api.api.receivables.$post
+>["json"];
 
 export function useCreateReceivableMutation() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (data: ReceivablePayload) => {
+    mutationFn: async (data: CreateReceivableBody) => {
       const res = await api.api.receivables.$post({ json: data });
       if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(
-          (body as { error?: string }).error ?? "Failed to create receivable"
-        );
+        throw await parseApiError(res, "Failed to create receivable");
       }
       return res.json();
     },

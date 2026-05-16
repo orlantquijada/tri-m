@@ -1,7 +1,5 @@
 import { Link } from "@tanstack/react-router";
 
-import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -11,50 +9,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatPeso } from "@/lib/format";
-import { cn } from "@/lib/utils";
 
-const statusVariant = {
-  current: "outline",
-  fully_paid: "secondary",
-  overdue: "destructive",
-} as const;
+import { PaymentForm } from "../payments/payment-form";
+import type { ReceivableWithDetail } from "./queries";
+import { ReceivableStatusBadge } from "./receivable-status-badge";
 
-type Payment = {
-  amountCents: number;
-  id: number;
-  notes: string | null;
-  paymentDate: string;
-  paymentMethod: string;
-  referenceNumber: string | null;
-};
-
-type Customer = {
-  address: string;
-  fullName: string;
-  id: number;
-  phone: string;
-  riskStatus: string;
-};
-
-type Receivable = {
-  currentBalanceCents: number;
-  customer: Customer;
-  customerId: number;
-  distributorId: number;
-  downPaymentCents: number;
-  firstDueDate: string;
-  id: number;
-  monthlyDueAmountCents: number | null;
-  originalBalanceCents: number;
-  payments: Payment[];
-  paymentTermMonths: number | null;
-  productDescription: string;
-  saleDate: string;
-  status: "current" | "fully_paid" | "overdue";
-  totalAmountCents: number;
-};
-
-export function ReceivableDetail({ receivable }: { receivable: Receivable }) {
+export function ReceivableDetail({
+  receivable,
+}: {
+  receivable: ReceivableWithDetail;
+}) {
   return (
     <div className="container mx-auto space-y-8 p-6">
       <div className="flex items-start justify-between gap-4">
@@ -69,16 +33,13 @@ export function ReceivableDetail({ receivable }: { receivable: Receivable }) {
           <h1 className="text-2xl font-bold">
             {receivable.productDescription}
           </h1>
-          <Badge variant={statusVariant[receivable.status]}>
-            {receivable.status.replace("_", " ")}
-          </Badge>
+          <ReceivableStatusBadge status={receivable.status} />
         </div>
-        <a
-          className={cn(buttonVariants())}
-          href={`/receivables/${receivable.id}/payment`}
-        >
-          Record Payment
-        </a>
+        <PaymentForm
+          currentBalanceCents={receivable.currentBalanceCents}
+          customerId={receivable.customerId}
+          receivableId={receivable.id}
+        />
       </div>
 
       <div className="grid grid-cols-1 gap-4 rounded-lg border p-4 sm:grid-cols-2 lg:grid-cols-3">

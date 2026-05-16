@@ -28,7 +28,7 @@ Full task details in `docs/build-plan.md`. Spec in `docs/mvp-smaller.md`.
 
 ## Phase 3 — Payments + Overdue
 
-- [ ] **3a** — Record payment (form + API + transactional balance update)
+- [x] **3a** — Record payment (form + API + transactional balance update)
 - [ ] **3b** — Payment history on receivable detail
 - [ ] **3c** — Overdue accounts page (`/overdue`)
 
@@ -51,3 +51,4 @@ Full task details in `docs/build-plan.md`. Spec in `docs/mvp-smaller.md`.
 - 2026-05-16 — 1c — routeTree.gen.ts must be manually updated when adding new routes (vite plugin regenerates on dev server start). Button component uses @base-ui/react/button (no asChild); use Link + buttonVariants className instead. router.tsx `declare module "@tanstack/react-router"` block removed — routeTree.gen.ts already registers router via @tanstack/react-start; keeping both caused TS2300 duplicate identifier. Receivables links (/receivables/$id, /receivables/new) use plain <a href> since routes don't exist until 2a/2b.
 - 2026-05-16 — 1d — react-leaflet dynamically imported inside useEffect (mounted-state guard) to avoid SSR. Leaflet CSS imported statically in route file. routeTree.gen.ts patched manually with /\_authed/map entry. bun add triggers DependencyLoop; packages added directly to package.json. (vite plugin regenerates on dev server start). Button component uses @base-ui/react/button (no asChild); use Link + buttonVariants className instead. router.tsx `declare module "@tanstack/react-router"` block removed — routeTree.gen.ts already registers router via @tanstack/react-start; keeping both caused TS2300 duplicate identifier. Receivables links (/receivables/$id, /receivables/new) use plain <a href> since routes don't exist until 2a/2b.
 - 2026-05-16 — 2c — Converted plain <a href> receivable list links in customer-profile.tsx to TanStack Router <Link to="/receivables/$id"> now that route exists (2b complete).
+- 2026-05-16 — 3a — Payment POST uses db.transaction; receivableId sent in body (not URL param). customerId stripped from RPC body in mutation (used only for query invalidation). Sonner Toaster added to \_\_root.tsx. DialogTrigger render={<Button>} pattern validated against existing dialog.tsx usage.
