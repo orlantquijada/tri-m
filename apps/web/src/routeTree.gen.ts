@@ -14,6 +14,8 @@ import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthedDashboardRouteImport } from './routes/_authed/dashboard'
 import { Route as AuthedCustomersIndexRouteImport } from './routes/_authed/customers/index'
+import { Route as AuthedCustomersNewRouteImport } from './routes/_authed/customers/new'
+import { Route as AuthedCustomersIdEditRouteImport } from './routes/_authed/customers/$id.edit'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -39,18 +41,32 @@ const AuthedCustomersIndexRoute = AuthedCustomersIndexRouteImport.update({
   path: '/customers/',
   getParentRoute: () => AuthedRoute,
 } as any)
+const AuthedCustomersNewRoute = AuthedCustomersNewRouteImport.update({
+  id: '/customers/new',
+  path: '/customers/new',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedCustomersIdEditRoute = AuthedCustomersIdEditRouteImport.update({
+  id: '/customers/$id/edit',
+  path: '/customers/$id/edit',
+  getParentRoute: () => AuthedRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/dashboard': typeof AuthedDashboardRoute
+  '/customers/new': typeof AuthedCustomersNewRoute
   '/customers/': typeof AuthedCustomersIndexRoute
+  '/customers/$id/edit': typeof AuthedCustomersIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/dashboard': typeof AuthedDashboardRoute
+  '/customers/new': typeof AuthedCustomersNewRoute
   '/customers': typeof AuthedCustomersIndexRoute
+  '/customers/$id/edit': typeof AuthedCustomersIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -58,20 +74,36 @@ export interface FileRoutesById {
   '/_authed': typeof AuthedRouteWithChildren
   '/login': typeof LoginRoute
   '/_authed/dashboard': typeof AuthedDashboardRoute
+  '/_authed/customers/new': typeof AuthedCustomersNewRoute
   '/_authed/customers/': typeof AuthedCustomersIndexRoute
+  '/_authed/customers/$id/edit': typeof AuthedCustomersIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/dashboard' | '/customers/'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/dashboard'
+    | '/customers/new'
+    | '/customers/'
+    | '/customers/$id/edit'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/dashboard' | '/customers'
+  to:
+    | '/'
+    | '/login'
+    | '/dashboard'
+    | '/customers/new'
+    | '/customers'
+    | '/customers/$id/edit'
   id:
     | '__root__'
     | '/'
     | '/_authed'
     | '/login'
     | '/_authed/dashboard'
+    | '/_authed/customers/new'
     | '/_authed/customers/'
+    | '/_authed/customers/$id/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -117,17 +149,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedCustomersIndexRouteImport
       parentRoute: typeof AuthedRoute
     }
+    '/_authed/customers/new': {
+      id: '/_authed/customers/new'
+      path: '/customers/new'
+      fullPath: '/customers/new'
+      preLoaderRoute: typeof AuthedCustomersNewRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/customers/$id/edit': {
+      id: '/_authed/customers/$id/edit'
+      path: '/customers/$id/edit'
+      fullPath: '/customers/$id/edit'
+      preLoaderRoute: typeof AuthedCustomersIdEditRouteImport
+      parentRoute: typeof AuthedRoute
+    }
   }
 }
 
 interface AuthedRouteChildren {
   AuthedDashboardRoute: typeof AuthedDashboardRoute
+  AuthedCustomersNewRoute: typeof AuthedCustomersNewRoute
   AuthedCustomersIndexRoute: typeof AuthedCustomersIndexRoute
+  AuthedCustomersIdEditRoute: typeof AuthedCustomersIdEditRoute
 }
 
 const AuthedRouteChildren: AuthedRouteChildren = {
   AuthedDashboardRoute: AuthedDashboardRoute,
+  AuthedCustomersNewRoute: AuthedCustomersNewRoute,
   AuthedCustomersIndexRoute: AuthedCustomersIndexRoute,
+  AuthedCustomersIdEditRoute: AuthedCustomersIdEditRoute,
 }
 
 const AuthedRouteWithChildren =

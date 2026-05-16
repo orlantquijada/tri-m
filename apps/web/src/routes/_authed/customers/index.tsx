@@ -1,11 +1,17 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 
-import { CustomerList } from "@/features/customers/CustomerList";
+import { buttonVariants } from "@/components/ui/button";
+import { CustomerList } from "@/features/customers/customer-list";
 
 function CustomersPage() {
   return (
     <main className="container mx-auto p-6">
-      <h1 className="mb-6 text-2xl font-bold">Customers</h1>
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Customers</h1>
+        <Link to="/customers/new" className={buttonVariants()}>
+          Add Customer
+        </Link>
+      </div>
       <CustomerList />
     </main>
   );

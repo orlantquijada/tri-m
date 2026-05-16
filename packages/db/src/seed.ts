@@ -77,43 +77,43 @@ await db.insert(customers).values([
   },
 ]);
 
-// Amounts in integer cents (PHP * 100)
+// All monetary values stored as integer cents (PHP * 100)
 await db.insert(receivables).values([
   {
-    currentBalanceCents: 1_500_000, // 15,000 PHP (after one payment)
+    currentBalanceCents: 1_500_000,
     customerId: 1,
     distributorId: 1,
-    downPaymentCents: 500_000, // 5,000 PHP
+    downPaymentCents: 500_000,
     firstDueDate: "2026-02-15",
     id: 1,
-    monthlyDueAmountCents: 166_700, // ~1,667 PHP
-    originalBalanceCents: 2_000_000, // 20,000 PHP
+    monthlyDueAmountCents: 166_700,
+    originalBalanceCents: 2_000_000,
     paymentTermMonths: 12,
     productDescription: "Living Room Set - 3-Seater Sofa + 2 Armchairs",
     saleDate: "2026-01-15",
     status: "current",
-    totalAmountCents: 2_500_000, // 25,000 PHP
+    totalAmountCents: 2_500_000,
   },
   {
     currentBalanceCents: 1_500_000,
     customerId: 2,
     distributorId: 1,
     downPaymentCents: 0,
-    firstDueDate: "2025-07-01", // past → overdue
+    firstDueDate: "2025-07-01",
     id: 2,
-    monthlyDueAmountCents: 250_000, // 2,500 PHP
+    monthlyDueAmountCents: 250_000,
     originalBalanceCents: 1_500_000,
     paymentTermMonths: 6,
     productDescription: "Queen Bed Frame + Mattress",
     saleDate: "2025-06-01",
     status: "overdue",
-    totalAmountCents: 1_500_000, // 15,000 PHP
+    totalAmountCents: 1_500_000,
   },
 ]);
 
 await db.insert(payments).values([
   {
-    amountCents: 500_000, // 5,000 PHP
+    amountCents: 500_000,
     customerId: 1,
     id: 1,
     notes: "First monthly payment",

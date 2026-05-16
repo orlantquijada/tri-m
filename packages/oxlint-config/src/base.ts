@@ -5,5 +5,6 @@ export const base = defineConfig({
   extends: [core],
   rules: {
     "func-style": ["error", "declaration", { allowArrowFunctions: true }],
+    "typescript/consistent-type-definitions": ["error", "type"],
   },
 });

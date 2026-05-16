@@ -1,18 +1,18 @@
+import { zValidator } from "@hono/zod-validator";
 import { customers as customersTable, db, receivables } from "db";
 import { eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
+import { customerInsertSchema, customerUpdateSchema } from "schema";
 
 import { requireSession } from "../middleware/auth";
 import type { AuthVariables } from "../middleware/auth";
 
-export const customers = new Hono<{ Variables: AuthVariables }>().get(
-  "/",
-  requireSession,
-  async (c) => {
+export const customers = new Hono<{ Variables: AuthVariables }>()
+  .get("/", requireSession, async (c) => {
     const user = c.get("user");
 
     const scopeFilter =
-      user.role === "distributor" && user.distributorId != null
+      user.role === "distributor" && typeof user.distributorId === "number"
         ? eq(customersTable.distributorId, user.distributorId)
         : undefined;
 
@@ -35,5 +35,101 @@ export const customers = new Hono<{ Variables: AuthVariables }>().get(
       .groupBy(customersTable.id);
 
     return c.json(rows);
-  }
-);
+  })
+  .get("/:id", requireSession, async (c) => {
+    const user = c.get("user");
+    const id = Number.parseInt(c.req.param("id"), 10);
+
+    const [customer] = await db
+      .select()
+      .from(customersTable)
+      .where(eq(customersTable.id, id));
+
+    if (!customer) {
+      return c.json({ error: "Not found" }, 404);
+    }
+    if (
+      user.role === "distributor" &&
+      customer.distributorId !== user.distributorId
+    ) {
+      return c.json({ error: "Forbidden" }, 403);
+    }
+
+    return c.json(customer);
+  })
+  .post(
+    "/",
+    requireSession,
+    zValidator("json", customerInsertSchema),
+    async (c) => {
+      const user = c.get("user");
+      const data = c.req.valid("json");
+
+      let distributorId: number;
+      if (user.role === "distributor") {
+        if (!user.distributorId) {
+          return c.json({ error: "No distributor assigned" }, 403);
+        }
+        ({ distributorId } = user);
+      } else {
+        if (!data.distributorId) {
+          return c.json({ error: "distributorId is required" }, 400);
+        }
+        ({ distributorId } = data);
+      }
+
+      const [customer] = await db
+        .insert(customersTable)
+        .values({
+          address: data.address,
+          distributorId,
+          fullName: data.fullName,
+          latitude: data.latitude ?? null,
+          longitude: data.longitude ?? null,
+          notes: data.notes ?? null,
+          phone: data.phone,
+          riskStatus: data.riskStatus ?? "good",
+        })
+        .returning();
+
+      return c.json(customer, 201);
+    }
+  )
+  .patch(
+    "/:id",
+    requireSession,
+    zValidator("json", customerUpdateSchema),
+    async (c) => {
+      const user = c.get("user");
+      const id = Number.parseInt(c.req.param("id"), 10);
+      const data = c.req.valid("json");
+
+      const [existing] = await db
+        .select()
+        .from(customersTable)
+        .where(eq(customersTable.id, id));
+
+      if (!existing) {
+        return c.json({ error: "Not found" }, 404);
+      }
+      if (
+        user.role === "distributor" &&
+        existing.distributorId !== user.distributorId
+      ) {
+        return c.json({ error: "Forbidden" }, 403);
+      }
+
+      const [updated] = await db
+        .update(customersTable)
+        .set({
+          ...data,
+          latitude: data.latitude ?? existing.latitude,
+          longitude: data.longitude ?? existing.longitude,
+          notes: data.notes ?? existing.notes,
+        })
+        .where(eq(customersTable.id, id))
+        .returning();
+
+      return c.json(updated);
+    }
+  );

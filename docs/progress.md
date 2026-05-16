@@ -16,7 +16,7 @@ Full task details in `docs/build-plan.md`. Spec in `docs/mvp-smaller.md`.
 ## Phase 1 — Customers + Map
 
 - [x] **1a** — Customer list (API + `/customers` page)
-- [ ] **1b** — Add/Edit customer (form + `POST`/`PATCH` + geolocation button)
+- [x] **1b** — Add/Edit customer (form + `POST`/`PATCH` + geolocation button)
 - [ ] **1c** — Customer profile page (`/customers/$id`)
 - [ ] **1d** — Map view (`/map`, Leaflet client-only)
 

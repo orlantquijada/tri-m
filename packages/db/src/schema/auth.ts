@@ -16,7 +16,7 @@ export const user = sqliteTable("user", {
   role: text("role").default("admin").notNull(),
   updatedAt: integer("updated_at", { mode: "timestamp_ms" })
     .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
-    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .$onUpdate(() => new Date())
     .notNull(),
 });
 
@@ -31,7 +31,7 @@ export const session = sqliteTable(
     ipAddress: text("ip_address"),
     token: text("token").notNull().unique(),
     updatedAt: integer("updated_at", { mode: "timestamp_ms" })
-      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .$onUpdate(() => new Date())
       .notNull(),
     userAgent: text("user_agent"),
     userId: text("user_id")
@@ -62,7 +62,7 @@ export const account = sqliteTable(
     }),
     scope: text("scope"),
     updatedAt: integer("updated_at", { mode: "timestamp_ms" })
-      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .$onUpdate(() => new Date())
       .notNull(),
     userId: text("user_id")
       .notNull()
@@ -82,7 +82,7 @@ export const verification = sqliteTable(
     identifier: text("identifier").notNull(),
     updatedAt: integer("updated_at", { mode: "timestamp_ms" })
       .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
-      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .$onUpdate(() => new Date())
       .notNull(),
     value: text("value").notNull(),
   },

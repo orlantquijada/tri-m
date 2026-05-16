@@ -22,9 +22,19 @@ Two source-of-truth files drive MVP execution:
 ### Finishing
 
 1. Run the task's **Acceptance** checks.
-2. Run `bun run --filter '*' typecheck` from repo root. Must be green.
+2. **Run `bun run --filter '*' typecheck` from repo root. Must be green. Fix any TS errors before moving on.**
 3. If schema changed: `bun run --filter db db:push` then `bun run --filter db db:seed`.
 4. Flip the task to `[x]` in `progress.md`.
+
+### Quality checks after code work
+
+After any code changes (prompts, edits, new files):
+
+1. Run `bun run --filter '*' typecheck` — fix all TS errors immediately.
+2. Run linting if configured (check `package.json` scripts). Fix lint errors.
+3. Verify no regressions by running the affected apps locally (`bun run --filter api dev`, `bun run --filter web dev`).
+
+If errors surface, fix them inline before reporting the work done.
 
 ### Scope guardrails
 

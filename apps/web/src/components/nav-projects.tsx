@@ -40,6 +40,7 @@ export function NavProjects({
       <SidebarMenu>
         {projects.map((item) => (
           <SidebarMenuItem key={item.name}>
+            {/* oxlint-disable-next-line jsx-a11y/anchor-has-content jsx-a11y/control-has-associated-label */}
             <SidebarMenuButton render={<a href={item.url} />}>
               {item.icon}
               <span>{item.name}</span>

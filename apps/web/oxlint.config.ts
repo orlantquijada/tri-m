@@ -3,6 +3,7 @@ import { react } from "oxlint-config";
 
 export default defineConfig({
   extends: [react],
+  ignorePatterns: ["src/routeTree.gen.ts"],
   overrides: [
     {
       files: ["src/components/ui/**"],

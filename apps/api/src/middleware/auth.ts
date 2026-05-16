@@ -2,10 +2,10 @@ import { createMiddleware } from "hono/factory";
 
 import { auth } from "../lib/auth";
 
-export interface AuthVariables {
+export type AuthVariables = {
   session: (typeof auth.$Infer.Session)["session"];
   user: (typeof auth.$Infer.Session)["user"];
-}
+};
 
 export const requireSession = createMiddleware<{ Variables: AuthVariables }>(
   async (c, next) => {

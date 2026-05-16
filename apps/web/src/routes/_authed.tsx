@@ -15,28 +15,17 @@ import {
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
 
-export const Route = createFileRoute("/_authed")({
-  beforeLoad: async () => {
-    if (typeof window === "undefined") {
-      return;
-    }
-    const { data } = await authClient.getSession();
-    if (!data?.session) {
-      throw redirect({ to: "/login" });
-    }
-  },
-  component: AuthedLayout,
-});
-
-function AuthedLayout() {
+const AuthedLayout = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    void authClient.getSession().then(({ data }) => {
+    const check = async () => {
+      const { data } = await authClient.getSession();
       if (!data?.session) {
         void navigate({ to: "/login" });
       }
-    });
+    };
+    void check();
   }, [navigate]);
 
   return (
@@ -53,4 +42,17 @@ function AuthedLayout() {
       </SidebarInset>
     </SidebarProvider>
   );
-}
+};
+
+export const Route = createFileRoute("/_authed")({
+  beforeLoad: async () => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    const { data } = await authClient.getSession();
+    if (!data?.session) {
+      throw redirect({ to: "/login" });
+    }
+  },
+  component: AuthedLayout,
+});

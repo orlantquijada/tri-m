@@ -26,9 +26,8 @@ export function NavMain({
       <SidebarMenu>
         {items.map((item) => (
           <SidebarMenuItem key={item.title}>
-            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
             <SidebarMenuButton
-              render={<Link to={item.url as any} />}
+              render={<Link to={item.url} />}
               tooltip={item.title}
               isActive={
                 pathname === item.url || pathname.startsWith(`${item.url}/`)
