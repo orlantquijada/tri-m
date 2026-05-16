@@ -8,7 +8,7 @@ Full task details in `docs/build-plan.md`. Spec in `docs/mvp-smaller.md`.
 
 ## Phase 0 — Foundations
 
-- [ ] **0a** — Schema + seed (`packages/db/src/schema/domain.ts`, `seed.ts`)
+- [x] **0a** — Schema + seed (`packages/db/src/schema/domain.ts`, `seed.ts`)
 - [ ] **0b** — Hono restructure + RPC export (`apps/api/src/routes/*`, `index.ts`)
 - [ ] **0c** — better-auth wiring (`apps/api/src/lib/auth.ts`, `routes/auth.ts`, generated `schema/auth.ts`)
 - [ ] **0d** — Web shell: RPC client, react-query, auth context, login, `_authed` guard
@@ -44,3 +44,4 @@ Full task details in `docs/build-plan.md`. Spec in `docs/mvp-smaller.md`.
 (Add entries here when blocking or deviating from the plan. Format: `YYYY-MM-DD — task — note`.)
 
 - 2026-05-16 — plan created. 16 tasks, 4 phases. Stack locked: better-auth + Hono RPC + TanStack Query + Leaflet. Money as INTEGER cents.
+- 2026-05-16 — 0a — drizzle-kit push requires TTY even with --force in beta; workaround: delete local.db and push fresh. Also stripped skeleton /users routes from apps/api/src/index.ts (would block 0b anyway). Fixed 2 pre-existing Shadcn type errors (calendar.tsx table→month_grid, scroll-area.tsx unused React import).
