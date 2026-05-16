@@ -9,7 +9,7 @@ Full task details in `docs/build-plan.md`. Spec in `docs/mvp-smaller.md`.
 ## Phase 0 — Foundations
 
 - [x] **0a** — Schema + seed (`packages/db/src/schema/domain.ts`, `seed.ts`)
-- [ ] **0b** — Hono restructure + RPC export (`apps/api/src/routes/*`, `index.ts`)
+- [x] **0b** — Hono restructure + RPC export (`apps/api/src/routes/*`, `index.ts`)
 - [ ] **0c** — better-auth wiring (`apps/api/src/lib/auth.ts`, `routes/auth.ts`, generated `schema/auth.ts`)
 - [ ] **0d** — Web shell: RPC client, react-query, auth context, login, `_authed` guard
 
