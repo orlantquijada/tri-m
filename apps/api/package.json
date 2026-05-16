@@ -9,6 +9,8 @@
   },
   "dependencies": {
     "@t3-oss/env-core": "catalog:",
+    "db": "workspace:*",
+    "drizzle-orm": "beta",
     "hono": "^4.12.18",
     "schema": "workspace:*",
     "zod": "catalog:"
