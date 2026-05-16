@@ -1,5 +1,5 @@
 {
-  "name": "hono",
+  "name": "api",
   "type": "module",
   "scripts": {
     "check": "ultracite check",
@@ -8,13 +8,16 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@t3-oss/env-core": "catalog:",
     "hono": "^4.12.18",
-    "schema": "workspace:*"
+    "schema": "workspace:*",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@types/node": "catalog:",
     "oxfmt": "catalog:",
     "oxlint": "catalog:",
+    "oxlint-config": "workspace:*",
     "typescript": "catalog:",
     "ultracite": "catalog:"
   }

@@ -1,6 +1,6 @@
 import { defineConfig } from "oxlint";
-import core from "ultracite/oxlint/core";
+import { base } from "oxlint-config";
 
 export default defineConfig({
-  extends: [core],
+  extends: [base],
 });

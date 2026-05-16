@@ -109,21 +109,21 @@ Distributor cannot:
 
 ## Permissions
 
-| Feature | Admin | Distributor |
-|---|---:|---:|
-| Login/logout | Yes | Yes |
-| View dashboard | All data | Own data only |
-| Manage distributors | Yes | No |
-| Add customers | Yes | Yes |
-| Edit customers | Yes | Own only |
-| View customers | All | Own only |
-| Add receivables | Yes | Own customers only |
-| Record payments | Yes | Own customers only |
-| View receivables | All | Own only |
-| View overdue accounts | All | Own only |
-| Mark customer as watchlist | Yes | Own customers only |
-| Mark customer as blacklisted | Yes | No |
-| Delete financial records | No | No |
+| Feature                      |    Admin |        Distributor |
+| ---------------------------- | -------: | -----------------: |
+| Login/logout                 |      Yes |                Yes |
+| View dashboard               | All data |      Own data only |
+| Manage distributors          |      Yes |                 No |
+| Add customers                |      Yes |                Yes |
+| Edit customers               |      Yes |           Own only |
+| View customers               |      All |           Own only |
+| Add receivables              |      Yes | Own customers only |
+| Record payments              |      Yes | Own customers only |
+| View receivables             |      All |           Own only |
+| View overdue accounts        |      All |           Own only |
+| Mark customer as watchlist   |      Yes | Own customers only |
+| Mark customer as blacklisted |      Yes |                 No |
+| Delete financial records     |       No |                 No |
 
 ---
 

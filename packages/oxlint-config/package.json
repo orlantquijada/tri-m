@@ -1,0 +1,12 @@
+{
+  "name": "oxlint-config",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "devDependencies": {
+    "oxlint": "catalog:",
+    "typescript": "catalog:",
+    "ultracite": "catalog:"
+  }
+}

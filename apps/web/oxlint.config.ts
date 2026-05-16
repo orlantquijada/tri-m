@@ -1,18 +1,6 @@
 import { defineConfig } from "oxlint";
-import core from "ultracite/oxlint/core";
-import react from "ultracite/oxlint/react";
-import remix from "ultracite/oxlint/remix";
-import vitest from "ultracite/oxlint/vitest";
+import { react } from "oxlint-config";
 
 export default defineConfig({
-  extends: [core, react, remix, vitest],
-  rules: {
-    "func-style": [
-      "error",
-      "declaration",
-      {
-        allowArrowFunctions: true,
-      },
-    ],
-  },
+  extends: [react],
 });
