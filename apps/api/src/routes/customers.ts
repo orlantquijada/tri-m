@@ -55,7 +55,20 @@ export const customers = new Hono<{ Variables: AuthVariables }>()
       return c.json({ error: "Forbidden" }, 403);
     }
 
-    return c.json(customer);
+    const customerReceivables = await db
+      .select({
+        currentBalanceCents: receivables.currentBalanceCents,
+        firstDueDate: receivables.firstDueDate,
+        id: receivables.id,
+        originalBalanceCents: receivables.originalBalanceCents,
+        productDescription: receivables.productDescription,
+        saleDate: receivables.saleDate,
+        status: receivables.status,
+      })
+      .from(receivables)
+      .where(eq(receivables.customerId, id));
+
+    return c.json({ ...customer, receivables: customerReceivables });
   })
   .post(
     "/",

@@ -1,3 +1,5 @@
+import { Link } from "@tanstack/react-router";
+
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -8,20 +10,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+import { formatPeso } from "./format";
 import { useCustomersQuery } from "./queries";
-
-function formatPeso(cents: number) {
-  return new Intl.NumberFormat("en-PH", {
-    currency: "PHP",
-    style: "currency",
-  }).format(cents / 100);
-}
-
-const riskVariant = {
-  blacklisted: "destructive",
-  good: "outline",
-  watchlist: "secondary",
-} as const;
+import { riskVariant } from "./RiskBadge";
 
 export function CustomerList() {
   const { data, error, isLoading } = useCustomersQuery();
@@ -50,7 +41,15 @@ export function CustomerList() {
       <TableBody>
         {data.map((customer) => (
           <TableRow key={customer.id}>
-            <TableCell className="font-medium">{customer.fullName}</TableCell>
+            <TableCell className="font-medium">
+              <Link
+                className="underline-offset-4 hover:underline"
+                params={{ id: String(customer.id) }}
+                to="/customers/$id"
+              >
+                {customer.fullName}
+              </Link>
+            </TableCell>
             <TableCell>{customer.phone}</TableCell>
             <TableCell className="max-w-[200px] truncate">
               {customer.address}
