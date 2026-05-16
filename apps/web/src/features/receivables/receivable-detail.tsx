@@ -1,16 +1,9 @@
 import { Link } from "@tanstack/react-router";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { formatPeso } from "@/lib/format";
 
 import { PaymentForm } from "../payments/payment-form";
+import { PaymentHistory } from "../payments/payment-history";
 import type { ReceivableWithDetail } from "./queries";
 import { ReceivableStatusBadge } from "./receivable-status-badge";
 
@@ -106,36 +99,7 @@ export function ReceivableDetail({
 
       <div>
         <h2 className="mb-3 text-lg font-semibold">Payment History</h2>
-        {receivable.payments.length === 0 ? (
-          <p className="text-muted-foreground">No payments recorded yet.</p>
-        ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>Method</TableHead>
-                <TableHead className="text-right">Amount</TableHead>
-                <TableHead>Reference</TableHead>
-                <TableHead>Notes</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {receivable.payments.map((p) => (
-                <TableRow key={p.id}>
-                  <TableCell>{p.paymentDate}</TableCell>
-                  <TableCell className="capitalize">
-                    {p.paymentMethod.replace("_", " ")}
-                  </TableCell>
-                  <TableCell className="text-right font-mono">
-                    {formatPeso(p.amountCents)}
-                  </TableCell>
-                  <TableCell>{p.referenceNumber ?? "—"}</TableCell>
-                  <TableCell>{p.notes ?? "—"}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
+        <PaymentHistory payments={receivable.payments} />
       </div>
     </div>
   );
