@@ -9,8 +9,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { formatPeso } from "@/lib/format";
 
-import { formatPeso } from "./format";
 import { useCustomersQuery } from "./queries";
 import { riskVariant } from "./RiskBadge";
 

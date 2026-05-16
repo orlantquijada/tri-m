@@ -1,18 +1,19 @@
-import type { Map as LeafletMap } from "leaflet";
+import type { Map as LeafletMap, Marker } from "leaflet";
 import { useEffect, useRef } from "react";
-import type { RiskStatus } from "schema";
+import type { CustomerListItem } from "schema";
 
-import { formatPeso } from "@/features/customers/format";
+import { formatPeso } from "@/lib/format";
 
-type Customer = {
-  id: number;
-  fullName: string;
-  latitude: number;
-  longitude: number;
-  outstandingBalanceCents: number;
-  phone: string;
-  riskStatus: RiskStatus;
-};
+type Customer = Pick<
+  CustomerListItem,
+  | "id"
+  | "fullName"
+  | "latitude"
+  | "longitude"
+  | "outstandingBalanceCents"
+  | "phone"
+  | "riskStatus"
+>;
 
 type Props = { customers: Customer[] };
 
@@ -28,48 +29,67 @@ function esc(s: string) {
 export function MapView({ customers }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<LeafletMap | null>(null);
+  const markersRef = useRef<Marker[]>([]);
 
   useEffect(() => {
-    if (!containerRef.current || mapRef.current) {
+    if (!containerRef.current) {
       return;
     }
+    let aborted = false;
 
-    void import("leaflet").then((L) => {
-      if (!containerRef.current || mapRef.current) {
+    void (async () => {
+      const L = await import("leaflet");
+      if (aborted || !containerRef.current) {
         return;
       }
 
-      const map = L.default.map(containerRef.current).setView(MANILA, 12);
-
-      L.default
-        .tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          attribution:
-            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        })
-        .addTo(map);
-
-      for (const c of customers) {
+      if (!mapRef.current) {
+        const map = L.default.map(containerRef.current).setView(MANILA, 12);
         L.default
-          .marker([c.latitude, c.longitude])
-          .bindPopup(
-            `<div style="min-width:160px">
-              <p style="font-weight:600;margin:0 0 4px">${esc(c.fullName)}</p>
-              <p style="margin:0 0 2px">${esc(c.phone)}</p>
-              <p style="margin:0 0 2px">Risk: ${esc(c.riskStatus)}</p>
-              <p style="margin:0 0 6px">Balance: ${esc(formatPeso(c.outstandingBalanceCents))}</p>
-              <a href="/customers/${c.id}" style="margin-right:8px">Profile</a>
-              <a href="https://www.google.com/maps?q=${c.latitude},${c.longitude}" target="_blank" rel="noopener noreferrer">Google Maps</a>
-            </div>`
-          )
+          .tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution:
+              '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+          })
           .addTo(map);
+        mapRef.current = map;
       }
 
-      mapRef.current = map;
-    });
+      for (const m of markersRef.current) {
+        m.remove();
+      }
+      markersRef.current = [];
+
+      const map = mapRef.current;
+      const added: Marker[] = [];
+      for (const c of customers) {
+        if (c.latitude === null || c.longitude === null) {
+          continue;
+        }
+
+        added.push(
+          L.default
+            .marker([c.latitude, c.longitude])
+            .bindPopup(
+              `<div style="min-width:160px">
+                <p style="font-weight:600;margin:0 0 4px">${esc(c.fullName)}</p>
+                <p style="margin:0 0 2px">${esc(c.phone)}</p>
+                <p style="margin:0 0 2px">Risk: ${esc(c.riskStatus)}</p>
+                <p style="margin:0 0 6px">Balance: ${esc(formatPeso(c.outstandingBalanceCents))}</p>
+                <a href="/customers/${c.id}" style="margin-right:8px">Profile</a>
+                <a href="https://www.google.com/maps?q=${c.latitude},${c.longitude}" target="_blank" rel="noopener noreferrer">Google Maps</a>
+              </div>`
+            )
+            .addTo(map)
+        );
+      }
+      markersRef.current = added;
+    })();
 
     return () => {
+      aborted = true;
       mapRef.current?.remove();
       mapRef.current = null;
+      markersRef.current = [];
     };
   }, [customers]);
 

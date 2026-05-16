@@ -29,7 +29,7 @@ function MapPage() {
   );
 
   return (
-    <div className="-m-4 h-[calc(100svh-3.5rem)]">
+    <div className="-m-4 h-[calc(100svh-3.5rem)] isolate">
       <MapView customers={customersWithCoords} />
     </div>
   );

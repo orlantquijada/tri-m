@@ -10,9 +10,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { formatPeso } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
-import { formatPeso } from "./format";
 import { RiskBadge } from "./RiskBadge";
 
 const statusVariant = {
