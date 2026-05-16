@@ -3,10 +3,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 
-export const Route = createFileRoute("/_authed/dashboard")({
-  component: DashboardPage,
-});
-
 function DashboardPage() {
   const navigate = useNavigate();
 
@@ -24,3 +20,7 @@ function DashboardPage() {
     </main>
   );
 }
+
+export const Route = createFileRoute("/_authed/dashboard")({
+  component: DashboardPage,
+});

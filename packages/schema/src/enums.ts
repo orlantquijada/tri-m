@@ -1,0 +1,19 @@
+import { z } from "zod";
+
+export const riskStatusEnum = z.enum(["good", "watchlist", "blacklisted"]);
+export type RiskStatus = z.infer<typeof riskStatusEnum>;
+
+export const receivableStatusEnum = z.enum([
+  "current",
+  "overdue",
+  "fully_paid",
+]);
+export type ReceivableStatus = z.infer<typeof receivableStatusEnum>;
+
+export const paymentMethodEnum = z.enum([
+  "cash",
+  "gcash",
+  "bank_transfer",
+  "other",
+]);
+export type PaymentMethod = z.infer<typeof paymentMethodEnum>;
