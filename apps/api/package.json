@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@t3-oss/env-core": "catalog:",
+    "better-auth": "^1.6.11",
     "db": "workspace:*",
     "drizzle-orm": "beta",
     "hono": "^4.12.18",

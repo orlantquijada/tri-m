@@ -2,6 +2,7 @@ import { Hono } from "hono";
 
 import { env } from "./env";
 import { corsMiddleware } from "./middleware/cors";
+import { authRouter } from "./routes/auth";
 import { customers } from "./routes/customers";
 import { dashboard } from "./routes/dashboard";
 import { overdue } from "./routes/overdue";
@@ -11,6 +12,7 @@ import { receivables } from "./routes/receivables";
 const app = new Hono()
   .basePath("/api")
   .use(corsMiddleware)
+  .route("/auth", authRouter)
   .route("/customers", customers)
   .route("/receivables", receivables)
   .route("/payments", payments)

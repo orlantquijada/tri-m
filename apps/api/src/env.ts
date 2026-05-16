@@ -5,6 +5,8 @@ export const env = createEnv({
   emptyStringAsUndefined: true,
   runtimeEnv: process.env,
   server: {
+    BETTER_AUTH_SECRET: z.string().min(1),
+    BETTER_AUTH_URL: z.url().default("http://localhost:4000"),
     PORT: z.coerce.number().default(4000),
     WEB_URL: z.url().default("http://localhost:3000"),
   },

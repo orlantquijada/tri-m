@@ -1,16 +1,28 @@
+import { betterAuth } from "better-auth";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { eq } from "drizzle-orm";
+
 import { db } from "./index";
 import {
+  account,
   customers,
   distributors,
   payments,
   receivables,
-} from "./schema/domain";
+  session,
+  user,
+  verification,
+} from "./schema";
 
 // Delete in reverse FK order (idempotent)
 await db.delete(payments);
 await db.delete(receivables);
 await db.delete(customers);
 await db.delete(distributors);
+await db.delete(verification);
+await db.delete(session);
+await db.delete(account);
+await db.delete(user);
 
 await db.insert(distributors).values([
   {
@@ -113,6 +125,36 @@ await db.insert(payments).values([
   },
 ]);
 
-// Admin + distributor users are seeded in task 0c via better-auth
+// Create auth users via better-auth API
+const seedAuth = betterAuth({
+  database: drizzleAdapter(db, { provider: "sqlite" }),
+  emailAndPassword: { enabled: true },
+  secret: "seed-only-not-used-for-tokens",
+  user: {
+    additionalFields: {
+      distributorId: { required: false, type: "number" },
+      role: {
+        defaultValue: "admin",
+        input: false,
+        required: true,
+        type: "string",
+      },
+    },
+  },
+});
+
+await seedAuth.api.signUpEmail({
+  body: { email: "admin@demo.local", name: "Admin", password: "demo1234" },
+});
+
+await seedAuth.api.signUpEmail({
+  body: { email: "dist@demo.local", name: "Distributor", password: "demo1234" },
+});
+
+// Set role + distributorId for distributor user (input:false prevents setting via signUpEmail body)
+await db
+  .update(user)
+  .set({ distributorId: 1, role: "distributor" })
+  .where(eq(user.email, "dist@demo.local"));
 
 console.log("Seed complete.");
