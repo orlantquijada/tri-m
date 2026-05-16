@@ -2,9 +2,10 @@ import { zValidator } from "@hono/zod-validator";
 import {
   customers as customersTable,
   db,
+  payments as paymentsTable,
   receivables as receivablesTable,
 } from "db";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { receivableInsertSchema } from "schema";
 import { z } from "zod";
@@ -19,6 +20,42 @@ const postBodySchema = receivableInsertSchema.extend({
 
 export const receivables = new Hono<{ Variables: AuthVariables }>()
   .get("/", requireSession, (c) => c.json([]))
+  .get("/:id", requireSession, async (c) => {
+    const user = c.get("user");
+    const id = Number(c.req.param("id"));
+
+    const [receivable] = await db
+      .select()
+      .from(receivablesTable)
+      .where(eq(receivablesTable.id, id));
+
+    if (!receivable) {
+      return c.json({ error: "Not found" }, 404);
+    }
+
+    if (!isDistributorOwner(user, receivable.distributorId)) {
+      return c.json({ error: "Forbidden" }, 403);
+    }
+
+    const [customer] = await db
+      .select({
+        address: customersTable.address,
+        fullName: customersTable.fullName,
+        id: customersTable.id,
+        phone: customersTable.phone,
+        riskStatus: customersTable.riskStatus,
+      })
+      .from(customersTable)
+      .where(eq(customersTable.id, receivable.customerId));
+
+    const payments = await db
+      .select()
+      .from(paymentsTable)
+      .where(eq(paymentsTable.receivableId, id))
+      .orderBy(desc(paymentsTable.paymentDate));
+
+    return c.json({ ...receivable, customer: customer!, payments });
+  })
   .post("/", requireSession, zValidator("json", postBodySchema), async (c) => {
     const user = c.get("user");
     const data = c.req.valid("json");

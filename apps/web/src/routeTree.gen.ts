@@ -16,6 +16,7 @@ import { Route as AuthedMapRouteImport } from './routes/_authed/map'
 import { Route as AuthedDashboardRouteImport } from './routes/_authed/dashboard'
 import { Route as AuthedCustomersIndexRouteImport } from './routes/_authed/customers/index'
 import { Route as AuthedReceivablesNewRouteImport } from './routes/_authed/receivables/new'
+import { Route as AuthedReceivablesIdRouteImport } from './routes/_authed/receivables/$id'
 import { Route as AuthedCustomersNewRouteImport } from './routes/_authed/customers/new'
 import { Route as AuthedCustomersIdRouteImport } from './routes/_authed/customers/$id'
 import { Route as AuthedCustomersIdEditRouteImport } from './routes/_authed/customers/$id_.edit'
@@ -54,6 +55,11 @@ const AuthedReceivablesNewRoute = AuthedReceivablesNewRouteImport.update({
   path: '/receivables/new',
   getParentRoute: () => AuthedRoute,
 } as any)
+const AuthedReceivablesIdRoute = AuthedReceivablesIdRouteImport.update({
+  id: '/receivables/$id',
+  path: '/receivables/$id',
+  getParentRoute: () => AuthedRoute,
+} as any)
 const AuthedCustomersNewRoute = AuthedCustomersNewRouteImport.update({
   id: '/customers/new',
   path: '/customers/new',
@@ -77,6 +83,7 @@ export interface FileRoutesByFullPath {
   '/map': typeof AuthedMapRoute
   '/customers/$id': typeof AuthedCustomersIdRoute
   '/customers/new': typeof AuthedCustomersNewRoute
+  '/receivables/$id': typeof AuthedReceivablesIdRoute
   '/receivables/new': typeof AuthedReceivablesNewRoute
   '/customers/': typeof AuthedCustomersIndexRoute
   '/customers/$id/edit': typeof AuthedCustomersIdEditRoute
@@ -88,6 +95,7 @@ export interface FileRoutesByTo {
   '/map': typeof AuthedMapRoute
   '/customers/$id': typeof AuthedCustomersIdRoute
   '/customers/new': typeof AuthedCustomersNewRoute
+  '/receivables/$id': typeof AuthedReceivablesIdRoute
   '/receivables/new': typeof AuthedReceivablesNewRoute
   '/customers': typeof AuthedCustomersIndexRoute
   '/customers/$id/edit': typeof AuthedCustomersIdEditRoute
@@ -101,6 +109,7 @@ export interface FileRoutesById {
   '/_authed/map': typeof AuthedMapRoute
   '/_authed/customers/$id': typeof AuthedCustomersIdRoute
   '/_authed/customers/new': typeof AuthedCustomersNewRoute
+  '/_authed/receivables/$id': typeof AuthedReceivablesIdRoute
   '/_authed/receivables/new': typeof AuthedReceivablesNewRoute
   '/_authed/customers/': typeof AuthedCustomersIndexRoute
   '/_authed/customers/$id_/edit': typeof AuthedCustomersIdEditRoute
@@ -114,6 +123,7 @@ export interface FileRouteTypes {
     | '/map'
     | '/customers/$id'
     | '/customers/new'
+    | '/receivables/$id'
     | '/receivables/new'
     | '/customers/'
     | '/customers/$id/edit'
@@ -125,6 +135,7 @@ export interface FileRouteTypes {
     | '/map'
     | '/customers/$id'
     | '/customers/new'
+    | '/receivables/$id'
     | '/receivables/new'
     | '/customers'
     | '/customers/$id/edit'
@@ -137,6 +148,7 @@ export interface FileRouteTypes {
     | '/_authed/map'
     | '/_authed/customers/$id'
     | '/_authed/customers/new'
+    | '/_authed/receivables/$id'
     | '/_authed/receivables/new'
     | '/_authed/customers/'
     | '/_authed/customers/$id_/edit'
@@ -199,6 +211,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedReceivablesNewRouteImport
       parentRoute: typeof AuthedRoute
     }
+    '/_authed/receivables/$id': {
+      id: '/_authed/receivables/$id'
+      path: '/receivables/$id'
+      fullPath: '/receivables/$id'
+      preLoaderRoute: typeof AuthedReceivablesIdRouteImport
+      parentRoute: typeof AuthedRoute
+    }
     '/_authed/customers/new': {
       id: '/_authed/customers/new'
       path: '/customers/new'
@@ -228,6 +247,7 @@ interface AuthedRouteChildren {
   AuthedMapRoute: typeof AuthedMapRoute
   AuthedCustomersIdRoute: typeof AuthedCustomersIdRoute
   AuthedCustomersNewRoute: typeof AuthedCustomersNewRoute
+  AuthedReceivablesIdRoute: typeof AuthedReceivablesIdRoute
   AuthedReceivablesNewRoute: typeof AuthedReceivablesNewRoute
   AuthedCustomersIndexRoute: typeof AuthedCustomersIndexRoute
   AuthedCustomersIdEditRoute: typeof AuthedCustomersIdEditRoute
@@ -238,6 +258,7 @@ const AuthedRouteChildren: AuthedRouteChildren = {
   AuthedMapRoute: AuthedMapRoute,
   AuthedCustomersIdRoute: AuthedCustomersIdRoute,
   AuthedCustomersNewRoute: AuthedCustomersNewRoute,
+  AuthedReceivablesIdRoute: AuthedReceivablesIdRoute,
   AuthedReceivablesNewRoute: AuthedReceivablesNewRoute,
   AuthedCustomersIndexRoute: AuthedCustomersIndexRoute,
   AuthedCustomersIdEditRoute: AuthedCustomersIdEditRoute,

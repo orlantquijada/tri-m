@@ -126,12 +126,13 @@ export function CustomerProfile({ customer }: { customer: Customer }) {
               {customer.receivables.map((r) => (
                 <TableRow key={r.id}>
                   <TableCell className="font-medium">
-                    <a
+                    <Link
                       className="underline-offset-4 hover:underline"
-                      href={`/receivables/${r.id}`}
+                      params={{ id: String(r.id) }}
+                      to="/receivables/$id"
                     >
                       {r.productDescription}
-                    </a>
+                    </Link>
                   </TableCell>
                   <TableCell>{r.saleDate}</TableCell>
                   <TableCell className="text-right font-mono">

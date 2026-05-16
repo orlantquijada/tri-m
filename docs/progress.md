@@ -23,8 +23,8 @@ Full task details in `docs/build-plan.md`. Spec in `docs/mvp-smaller.md`.
 ## Phase 2 — Receivables
 
 - [x] **2a** — Create receivable (form + API + balance calc + blacklist enforcement)
-- [ ] **2b** — Receivable detail page (`/receivables/$id`)
-- [ ] **2c** — Wire receivables into customer profile
+- [x] **2b** — Receivable detail page (`/receivables/$id`)
+- [x] **2c** — Wire receivables into customer profile
 
 ## Phase 3 — Payments + Overdue
 
@@ -50,3 +50,4 @@ Full task details in `docs/build-plan.md`. Spec in `docs/mvp-smaller.md`.
 - 2026-05-16 — 1a — Hono RPC client with `basePath("/api")` nests routes under `api.api.*` (e.g. `api.api.customers.$get()`). Customer name rendered as plain text in list; will become Link in 1c when `$id` route is created.
 - 2026-05-16 — 1c — routeTree.gen.ts must be manually updated when adding new routes (vite plugin regenerates on dev server start). Button component uses @base-ui/react/button (no asChild); use Link + buttonVariants className instead. router.tsx `declare module "@tanstack/react-router"` block removed — routeTree.gen.ts already registers router via @tanstack/react-start; keeping both caused TS2300 duplicate identifier. Receivables links (/receivables/$id, /receivables/new) use plain <a href> since routes don't exist until 2a/2b.
 - 2026-05-16 — 1d — react-leaflet dynamically imported inside useEffect (mounted-state guard) to avoid SSR. Leaflet CSS imported statically in route file. routeTree.gen.ts patched manually with /\_authed/map entry. bun add triggers DependencyLoop; packages added directly to package.json. (vite plugin regenerates on dev server start). Button component uses @base-ui/react/button (no asChild); use Link + buttonVariants className instead. router.tsx `declare module "@tanstack/react-router"` block removed — routeTree.gen.ts already registers router via @tanstack/react-start; keeping both caused TS2300 duplicate identifier. Receivables links (/receivables/$id, /receivables/new) use plain <a href> since routes don't exist until 2a/2b.
+- 2026-05-16 — 2c — Converted plain <a href> receivable list links in customer-profile.tsx to TanStack Router <Link to="/receivables/$id"> now that route exists (2b complete).
