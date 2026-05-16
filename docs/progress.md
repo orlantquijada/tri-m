@@ -30,7 +30,7 @@ Full task details in `docs/build-plan.md`. Spec in `docs/mvp-smaller.md`.
 
 - [x] **3a** — Record payment (form + API + transactional balance update)
 - [x] **3b** — Payment history on receivable detail
-- [ ] **3c** — Overdue accounts page (`/overdue`)
+- [x] **3c** — Overdue accounts page (`/overdue`)
 
 ## Phase 4 — Dashboard + Polish
 

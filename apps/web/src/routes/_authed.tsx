@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
 
-const AuthedLayout = () => {
+function AuthedLayout() {
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -42,7 +42,7 @@ const AuthedLayout = () => {
       </SidebarInset>
     </SidebarProvider>
   );
-};
+}
 
 export const Route = createFileRoute("/_authed")({
   beforeLoad: async () => {

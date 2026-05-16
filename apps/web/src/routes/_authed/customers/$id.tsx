@@ -3,7 +3,7 @@ import { createFileRoute, useParams } from "@tanstack/react-router";
 import { CustomerProfile } from "@/features/customers/customer-profile";
 import { useCustomerQuery } from "@/features/customers/queries";
 
-const CustomerProfilePage = () => {
+function CustomerProfilePage() {
   const { id } = useParams({ from: "/_authed/customers/$id" });
   const customerId = Number.parseInt(id, 10);
   const { data, error, isLoading } = useCustomerQuery(customerId);
@@ -16,7 +16,7 @@ const CustomerProfilePage = () => {
   }
 
   return <CustomerProfile customer={data} />;
-};
+}
 
 export const Route = createFileRoute("/_authed/customers/$id")({
   component: CustomerProfilePage,

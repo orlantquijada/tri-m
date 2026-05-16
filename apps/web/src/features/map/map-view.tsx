@@ -2,7 +2,7 @@ import type { Map as LeafletMap, Marker } from "leaflet";
 import { useEffect, useRef } from "react";
 
 import type { CustomerListItem } from "@/features/customers/queries";
-import { formatPeso } from "@/lib/format";
+import { formatPeso, mapsUrl } from "@/lib/format";
 
 type Customer = Pick<
   CustomerListItem,
@@ -76,7 +76,7 @@ export function MapView({ customers }: Props) {
                 <p style="margin:0 0 2px">Risk: ${esc(c.riskStatus)}</p>
                 <p style="margin:0 0 6px">Balance: ${esc(formatPeso(c.outstandingBalanceCents))}</p>
                 <a href="/customers/${c.id}" style="margin-right:8px">Profile</a>
-                <a href="https://www.google.com/maps?q=${c.latitude},${c.longitude}" target="_blank" rel="noopener noreferrer">Google Maps</a>
+                <a href="${mapsUrl(c.latitude, c.longitude)}" target="_blank" rel="noopener noreferrer">Google Maps</a>
               </div>`
             )
             .addTo(map)

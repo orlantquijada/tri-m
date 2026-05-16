@@ -3,7 +3,7 @@ import { createFileRoute, useParams } from "@tanstack/react-router";
 import { CustomerForm } from "@/features/customers/customer-form";
 import { useCustomerQuery } from "@/features/customers/queries";
 
-const EditCustomerPage = () => {
+function EditCustomerPage() {
   const { id } = useParams({ from: "/_authed/customers/$id_/edit" });
   const customerId = Number.parseInt(id, 10);
   const { data, error, isLoading } = useCustomerQuery(customerId);
@@ -31,7 +31,7 @@ const EditCustomerPage = () => {
       <CustomerForm customerId={customerId} defaultValues={defaultValues} />
     </div>
   );
-};
+}
 
 export const Route = createFileRoute("/_authed/customers/$id_/edit")({
   component: EditCustomerPage,

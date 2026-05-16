@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthedOverdueRouteImport } from './routes/_authed/overdue'
 import { Route as AuthedMapRouteImport } from './routes/_authed/map'
 import { Route as AuthedDashboardRouteImport } from './routes/_authed/dashboard'
 import { Route as AuthedCustomersIndexRouteImport } from './routes/_authed/customers/index'
@@ -34,6 +35,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthedOverdueRoute = AuthedOverdueRouteImport.update({
+  id: '/overdue',
+  path: '/overdue',
+  getParentRoute: () => AuthedRoute,
 } as any)
 const AuthedMapRoute = AuthedMapRouteImport.update({
   id: '/map',
@@ -81,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/dashboard': typeof AuthedDashboardRoute
   '/map': typeof AuthedMapRoute
+  '/overdue': typeof AuthedOverdueRoute
   '/customers/$id': typeof AuthedCustomersIdRoute
   '/customers/new': typeof AuthedCustomersNewRoute
   '/receivables/$id': typeof AuthedReceivablesIdRoute
@@ -93,6 +100,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/dashboard': typeof AuthedDashboardRoute
   '/map': typeof AuthedMapRoute
+  '/overdue': typeof AuthedOverdueRoute
   '/customers/$id': typeof AuthedCustomersIdRoute
   '/customers/new': typeof AuthedCustomersNewRoute
   '/receivables/$id': typeof AuthedReceivablesIdRoute
@@ -107,6 +115,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/_authed/dashboard': typeof AuthedDashboardRoute
   '/_authed/map': typeof AuthedMapRoute
+  '/_authed/overdue': typeof AuthedOverdueRoute
   '/_authed/customers/$id': typeof AuthedCustomersIdRoute
   '/_authed/customers/new': typeof AuthedCustomersNewRoute
   '/_authed/receivables/$id': typeof AuthedReceivablesIdRoute
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/dashboard'
     | '/map'
+    | '/overdue'
     | '/customers/$id'
     | '/customers/new'
     | '/receivables/$id'
@@ -133,6 +143,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/dashboard'
     | '/map'
+    | '/overdue'
     | '/customers/$id'
     | '/customers/new'
     | '/receivables/$id'
@@ -146,6 +157,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/_authed/dashboard'
     | '/_authed/map'
+    | '/_authed/overdue'
     | '/_authed/customers/$id'
     | '/_authed/customers/new'
     | '/_authed/receivables/$id'
@@ -182,6 +194,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authed/overdue': {
+      id: '/_authed/overdue'
+      path: '/overdue'
+      fullPath: '/overdue'
+      preLoaderRoute: typeof AuthedOverdueRouteImport
+      parentRoute: typeof AuthedRoute
     }
     '/_authed/map': {
       id: '/_authed/map'
@@ -245,6 +264,7 @@ declare module '@tanstack/react-router' {
 interface AuthedRouteChildren {
   AuthedDashboardRoute: typeof AuthedDashboardRoute
   AuthedMapRoute: typeof AuthedMapRoute
+  AuthedOverdueRoute: typeof AuthedOverdueRoute
   AuthedCustomersIdRoute: typeof AuthedCustomersIdRoute
   AuthedCustomersNewRoute: typeof AuthedCustomersNewRoute
   AuthedReceivablesIdRoute: typeof AuthedReceivablesIdRoute
@@ -256,6 +276,7 @@ interface AuthedRouteChildren {
 const AuthedRouteChildren: AuthedRouteChildren = {
   AuthedDashboardRoute: AuthedDashboardRoute,
   AuthedMapRoute: AuthedMapRoute,
+  AuthedOverdueRoute: AuthedOverdueRoute,
   AuthedCustomersIdRoute: AuthedCustomersIdRoute,
   AuthedCustomersNewRoute: AuthedCustomersNewRoute,
   AuthedReceivablesIdRoute: AuthedReceivablesIdRoute,

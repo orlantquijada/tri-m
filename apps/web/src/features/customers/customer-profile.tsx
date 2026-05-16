@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { formatPeso } from "@/lib/format";
+import { formatPeso, mapsUrl } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 import { ReceivableStatusBadge } from "../receivables/receivable-status-badge";
@@ -21,9 +21,9 @@ export function CustomerProfile({
 }: {
   customer: CustomerWithReceivables;
 }) {
-  const mapsUrl =
+  const customerMapsUrl =
     customer.latitude !== null && customer.longitude !== null
-      ? `https://www.google.com/maps?q=${customer.latitude},${customer.longitude}`
+      ? mapsUrl(customer.latitude, customer.longitude)
       : null;
 
   return (
@@ -67,10 +67,10 @@ export function CustomerProfile({
         )}
         <div>
           <p className="text-sm text-muted-foreground">Location</p>
-          {mapsUrl ? (
+          {customerMapsUrl ? (
             <a
               className="font-medium text-blue-600 underline-offset-4 hover:underline"
-              href={mapsUrl}
+              href={customerMapsUrl}
               rel="noopener noreferrer"
               target="_blank"
             >
