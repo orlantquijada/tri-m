@@ -22,7 +22,7 @@ Full task details in `docs/build-plan.md`. Spec in `docs/mvp-smaller.md`.
 
 ## Phase 2 — Receivables
 
-- [ ] **2a** — Create receivable (form + API + balance calc + blacklist enforcement)
+- [x] **2a** — Create receivable (form + API + balance calc + blacklist enforcement)
 - [ ] **2b** — Receivable detail page (`/receivables/$id`)
 - [ ] **2c** — Wire receivables into customer profile
 

@@ -1,6 +1,6 @@
-import { Badge } from "@/components/ui/badge";
+import type { RiskStatus } from "schema";
 
-export type RiskStatus = "blacklisted" | "good" | "watchlist";
+import { Badge } from "@/components/ui/badge";
 
 export const riskVariant: Record<
   RiskStatus,

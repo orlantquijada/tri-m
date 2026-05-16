@@ -4,6 +4,7 @@ import { eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { customerInsertSchema, customerUpdateSchema } from "schema";
 
+import { isDistributorOwner } from "../lib/guards";
 import { requireSession } from "../middleware/auth";
 import type { AuthVariables } from "../middleware/auth";
 
@@ -48,10 +49,7 @@ export const customers = new Hono<{ Variables: AuthVariables }>()
     if (!customer) {
       return c.json({ error: "Not found" }, 404);
     }
-    if (
-      user.role === "distributor" &&
-      customer.distributorId !== user.distributorId
-    ) {
+    if (!isDistributorOwner(user, customer.distributorId)) {
       return c.json({ error: "Forbidden" }, 403);
     }
 
@@ -125,10 +123,7 @@ export const customers = new Hono<{ Variables: AuthVariables }>()
       if (!existing) {
         return c.json({ error: "Not found" }, 404);
       }
-      if (
-        user.role === "distributor" &&
-        existing.distributorId !== user.distributorId
-      ) {
+      if (!isDistributorOwner(user, existing.distributorId)) {
         return c.json({ error: "Forbidden" }, 403);
       }
 

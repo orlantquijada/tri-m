@@ -1,6 +1,6 @@
 import { createFileRoute, useParams } from "@tanstack/react-router";
 
-import { CustomerProfile } from "@/features/customers/CustomerProfile";
+import { CustomerProfile } from "@/features/customers/customer-profile";
 import { useCustomerQuery } from "@/features/customers/queries";
 
 const CustomerProfilePage = () => {

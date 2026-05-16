@@ -2,6 +2,7 @@ import { useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
 import { MapPin } from "lucide-react";
 import { useState } from "react";
+import type { RiskStatus } from "schema";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -14,8 +15,6 @@ import {
   useCreateCustomerMutation,
   useUpdateCustomerMutation,
 } from "./queries";
-
-type RiskStatus = "good" | "watchlist" | "blacklisted";
 
 type FormValues = {
   address: string;

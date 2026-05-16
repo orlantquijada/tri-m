@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import type { RiskStatus } from "schema";
 
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
@@ -13,7 +14,7 @@ import {
 import { formatPeso } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
-import { RiskBadge } from "./RiskBadge";
+import { RiskBadge } from "./risk-badge";
 
 const statusVariant = {
   current: "outline",
@@ -41,12 +42,12 @@ type Customer = {
   notes: string | null;
   phone: string;
   receivables: Receivable[];
-  riskStatus: "blacklisted" | "good" | "watchlist";
+  riskStatus: RiskStatus;
 };
 
 export function CustomerProfile({ customer }: { customer: Customer }) {
   const mapsUrl =
-    customer.latitude != null && customer.longitude != null
+    customer.latitude !== null && customer.longitude !== null
       ? `https://www.google.com/maps?q=${customer.latitude},${customer.longitude}`
       : null;
 

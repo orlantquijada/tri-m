@@ -12,7 +12,7 @@ import {
 import { formatPeso } from "@/lib/format";
 
 import { useCustomersQuery } from "./queries";
-import { riskVariant } from "./RiskBadge";
+import { riskVariant } from "./risk-badge";
 
 export function CustomerList() {
   const { data, error, isLoading } = useCustomersQuery();
@@ -51,7 +51,7 @@ export function CustomerList() {
               </Link>
             </TableCell>
             <TableCell>{customer.phone}</TableCell>
-            <TableCell className="max-w-[200px] truncate">
+            <TableCell className="max-w-50 truncate">
               {customer.address}
             </TableCell>
             <TableCell>
