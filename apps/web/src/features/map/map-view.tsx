@@ -20,9 +20,9 @@ const MANILA: [number, number] = [14.5995, 120.9842];
 
 function esc(s: string) {
   return s
-    .replaceAll('&', "&amp;")
-    .replaceAll('<', "&lt;")
-    .replaceAll('>', "&gt;");
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
 }
 
 export function MapView({ customers }: Props) {

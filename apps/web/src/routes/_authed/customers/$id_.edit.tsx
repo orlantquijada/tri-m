@@ -4,7 +4,7 @@ import { CustomerForm } from "@/features/customers/customer-form";
 import { useCustomerQuery } from "@/features/customers/queries";
 
 const EditCustomerPage = () => {
-  const { id } = useParams({ from: "/_authed/customers/$id/edit" });
+  const { id } = useParams({ from: "/_authed/customers/$id_/edit" });
   const customerId = Number.parseInt(id, 10);
   const { data, error, isLoading } = useCustomerQuery(customerId);
 
@@ -33,6 +33,6 @@ const EditCustomerPage = () => {
   );
 };
 
-export const Route = createFileRoute("/_authed/customers/$id/edit")({
+export const Route = createFileRoute("/_authed/customers/$id_/edit")({
   component: EditCustomerPage,
 });
