@@ -8,7 +8,7 @@ Full task details in `docs/phase2-plan.md`. MVP context in `docs/build-plan.md` 
 
 ## Phase A — Distributor Hardening
 
-- [ ] **A1** — Strict distributor 403s on every existing route + smoke test as `dist@demo.local`
+- [x] **A1** — Strict distributor 403s on every existing route + smoke test as `dist@demo.local`
 
 ## Phase B — Distributor Management UI
 
