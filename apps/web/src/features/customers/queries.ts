@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import type { InferRequestType, InferResponseType } from "hono/client";
 
 import { api } from "@/lib/api";
@@ -35,3 +36,22 @@ export const customerQueries = createResourceQueries({
 });
 
 export const customerKeys = customerQueries.keys;
+
+export function usePhoneLookup(phone: string) {
+  return useQuery({
+    enabled: phone.length > 0,
+    queryFn: async () => {
+      const res = await api.api.customers.lookup.$get({ query: { phone } });
+      if (!res.ok) {
+        return { matches: [] as PhoneLookupMatch[] };
+      }
+      return res.json() as Promise<{ matches: PhoneLookupMatch[] }>;
+    },
+    queryKey: ["customers", "lookup", phone],
+  });
+}
+
+type PhoneLookupMatch = InferResponseType<
+  typeof api.api.customers.lookup.$get,
+  200
+>["matches"][number];

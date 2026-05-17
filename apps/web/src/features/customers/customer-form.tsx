@@ -11,7 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { authClient } from "@/lib/auth-client";
 
-import { customerQueries } from "./queries";
+import { DuplicatePhoneWarning } from "./duplicate-phone-warning";
+import { customerQueries, usePhoneLookup } from "./queries";
 
 type FormValues = {
   address: string;
@@ -101,6 +102,8 @@ export function CustomerForm({ customerId, defaultValues }: CustomerFormProps) {
 
   const [geoError, setGeoError] = useState<string | null>(null);
   const [geoLoading, setGeoLoading] = useState(false);
+  const [lookupPhone, setLookupPhone] = useState(defaultValues?.phone ?? "");
+  const phoneLookup = usePhoneLookup(lookupPhone);
 
   const form = useForm({
     defaultValues: {
@@ -191,7 +194,10 @@ export function CustomerForm({ customerId, defaultValues }: CustomerFormProps) {
               id="phone"
               value={field.state.value}
               onChange={(e) => field.handleChange(e.target.value)}
-              onBlur={field.handleBlur}
+              onBlur={() => {
+                field.handleBlur();
+                setLookupPhone(field.state.value);
+              }}
             />
             {fieldError(field.state.meta.errors.filter(Boolean) as string[])}
           </div>
@@ -331,6 +337,13 @@ export function CustomerForm({ customerId, defaultValues }: CustomerFormProps) {
         </div>
         {geoError && <p className="text-sm text-destructive">{geoError}</p>}
       </div>
+
+      {phoneLookup.data && (
+        <DuplicatePhoneWarning
+          matches={phoneLookup.data.matches}
+          currentCustomerId={customerId}
+        />
+      )}
 
       {mutationError && (
         <p className="text-sm text-destructive">{mutationError.message}</p>

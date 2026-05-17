@@ -18,7 +18,7 @@ Full task details in `docs/phase2-plan.md`. MVP context in `docs/build-plan.md` 
 
 ## Phase C — Data Quality
 
-- [ ] **C1** — Duplicate customer phone warning (`GET /api/customers/lookup`)
+- [x] **C1** — Duplicate customer phone warning (`GET /api/customers/lookup`)
 
 ## Phase D — Schedules + Aging
 
@@ -40,3 +40,4 @@ Full task details in `docs/phase2-plan.md`. MVP context in `docs/build-plan.md` 
 - 2026-05-17 — B1 — Plan listed `dashboard.tsx` for the Distributors nav link, but nav lives in `app-sidebar.tsx`. Modified `app-sidebar.tsx` instead; `dashboard.tsx` untouched. Used kebab-case filename `distributor-list.tsx` per project convention (plan said `DistributorList.tsx`).
 - 2026-05-17 — B2 — Plan said `DistributorForm.tsx`; used `distributor-form.tsx` (kebab-case convention). Plan said react-hook-form; used `@tanstack/react-form` to match project pattern. Also extended `services/distributors.ts` and `queries.ts` (implicit deps not listed). Used `buttonVariants()` + Link instead of Button+asChild (Button in this project has no asChild prop). Added Edit links to `distributor-list.tsx` and New button to `distributors/index.tsx` for navigation.
 - 2026-05-17 — B3 — Plan said `AssignDistributorDialog.tsx`; used `assign-distributor-dialog.tsx` (kebab-case). Plan listed `apps/api/src/routes/users.ts` and `apps/api/src/index.ts` as files; also created `apps/web/src/features/users/queries.ts` (implicit). Zod schemas defined inline in route (not in packages/schema) since they're API-internal. Save button disabled when empty distributor selected to prevent sending undefined distributorId.
+- 2026-05-17 — C1 — Lookup triggered on phone field blur (not on keystroke). `lookupPhone` state initialised from `defaultValues.phone` so edit page shows warning immediately if phone already conflicts. Warning filters out `currentCustomerId` client-side so editing a customer's own phone does not self-warn.

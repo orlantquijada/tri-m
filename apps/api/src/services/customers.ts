@@ -3,7 +3,7 @@ import {
   db,
   receivables as receivablesTable,
 } from "db";
-import { eq, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import {
   customerDetailSchema,
   customerListItemSchema,
@@ -63,6 +63,22 @@ export async function getCustomer(user: User, id: number) {
   Scope.forUser(user).assertCanRead(customer.distributorId);
 
   return customerDetailSchema.parse({ ...customer, receivables });
+}
+
+export async function lookupCustomersByPhone(user: User, phone: string) {
+  return db
+    .select({
+      distributorId: customersTable.distributorId,
+      fullName: customersTable.fullName,
+      id: customersTable.id,
+    })
+    .from(customersTable)
+    .where(
+      and(
+        eq(customersTable.phone, phone),
+        Scope.forUser(user).filterQuery(customersTable.distributorId)
+      )
+    );
 }
 
 export async function createCustomer(user: User, data: CustomerInsert) {
