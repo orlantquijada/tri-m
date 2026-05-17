@@ -2,7 +2,7 @@
 
 Internal app for tracking furniture customer receivables, payments, overdue accounts, and customer locations on a map.
 
-The MVP demo (Phase 0–4) is complete. Active development is Phase 2 — see `docs/phase2-plan.md`.
+The MVP demo (Phase 0–4) and Phase 2 are complete. Active development is Phase 3 — see `docs/phase3-plan.md`.
 
 ## Stack
 
@@ -94,8 +94,8 @@ bun run --filter db db:studio         # Drizzle Studio
 
 ## Documentation
 
-- **Active plan**: `docs/phase2-plan.md` — Phase 2 tasks (A1 through E1) with Goal, Files, Acceptance, Depends-on.
-- **Active progress**: `docs/phase2-progress.md` — checklist + decisions log.
+- **Active plan**: `docs/phase3-plan.md` — Phase 3 tasks (F1 through I3) with Goal, Files, Acceptance, Depends-on.
+- **Active progress**: `docs/phase3-progress.md` — checklist + decisions log.
 - **MVP plan (history)**: `docs/build-plan.md`
 - **MVP progress (history)**: `docs/progress.md`
 - **Domain spec**: `docs/mvp-smaller.md` (smaller demo scope) and `docs/mvp.md` (full reference).
