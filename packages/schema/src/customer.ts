@@ -1,10 +1,10 @@
 import { z } from "zod";
 
 import { riskStatusEnum } from "./enums";
+import { receivableSummarySchema } from "./receivable";
 
 export const customerSelectSchema = z.object({
   address: z.string(),
-  createdAt: z.number().nullable(),
   distributorId: z.number(),
   fullName: z.string(),
   id: z.number(),
@@ -13,11 +13,22 @@ export const customerSelectSchema = z.object({
   notes: z.string().nullable(),
   phone: z.string(),
   riskStatus: riskStatusEnum,
-  updatedAt: z.number().nullable(),
 });
 
 export const customerListItemSchema = customerSelectSchema.extend({
   outstandingBalanceCents: z.number(),
+});
+
+export const customerDetailSchema = customerSelectSchema.extend({
+  receivables: z.array(receivableSummarySchema),
+});
+
+export const customerSummarySchema = customerSelectSchema.pick({
+  address: true,
+  fullName: true,
+  id: true,
+  phone: true,
+  riskStatus: true,
 });
 
 export const customerInsertSchema = z.object({
@@ -37,5 +48,7 @@ export const customerUpdateSchema = customerInsertSchema
 
 export type CustomerSelect = z.infer<typeof customerSelectSchema>;
 export type CustomerListItem = z.infer<typeof customerListItemSchema>;
+export type CustomerDetail = z.infer<typeof customerDetailSchema>;
+export type CustomerSummary = z.infer<typeof customerSummarySchema>;
 export type CustomerInsert = z.infer<typeof customerInsertSchema>;
 export type CustomerUpdate = z.infer<typeof customerUpdateSchema>;

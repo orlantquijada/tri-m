@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { HTTPException } from "hono/http-exception";
 
 import { env } from "./env";
 import { corsMiddleware } from "./middleware/cors";
@@ -12,6 +13,14 @@ import { receivables } from "./routes/receivables";
 const app = new Hono()
   .basePath("/api")
   .use(corsMiddleware)
+  // oxlint-disable-next-line promise/prefer-await-to-callbacks
+  .onError((err, c) => {
+    if (err instanceof HTTPException) {
+      return c.json({ error: err.message }, err.status);
+    }
+    console.error(err);
+    return c.json({ error: "Internal server error" }, 500);
+  })
   .route("/auth", authRouter)
   .route("/customers", customers)
   .route("/receivables", receivables)

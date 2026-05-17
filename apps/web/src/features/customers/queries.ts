@@ -30,12 +30,12 @@ type UpdateCustomerBody = InferRequestType<
 
 export function useCustomersQuery() {
   return useQuery({
-    queryFn: async (): Promise<CustomerListItem[]> => {
+    queryFn: async () => {
       const res = await api.api.customers.$get();
       if (!res.ok) {
         throw new Error("Failed to fetch customers");
       }
-      return (await res.json()) as CustomerListItem[];
+      return await res.json();
     },
     queryKey: customerKeys.lists(),
   });
@@ -43,14 +43,14 @@ export function useCustomersQuery() {
 
 export function useCustomerQuery(id: number) {
   return useQuery({
-    queryFn: async (): Promise<CustomerWithReceivables> => {
+    queryFn: async () => {
       const res = await api.api.customers[":id"].$get({
         param: { id: String(id) },
       });
       if (!res.ok) {
         throw new Error("Failed to fetch customer");
       }
-      return (await res.json()) as CustomerWithReceivables;
+      return await res.json();
     },
     queryKey: customerKeys.detail(id),
   });

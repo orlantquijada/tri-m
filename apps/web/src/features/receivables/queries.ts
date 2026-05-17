@@ -43,14 +43,14 @@ export type ReceivableWithDetail = InferResponseType<
 
 export function useReceivableQuery(id: number) {
   return useQuery({
-    queryFn: async (): Promise<ReceivableWithDetail> => {
+    queryFn: async () => {
       const res = await api.api.receivables[":id"].$get({
         param: { id: String(id) },
       });
       if (!res.ok) {
         throw new Error("Failed to fetch receivable");
       }
-      return (await res.json()) as ReceivableWithDetail;
+      return await res.json();
     },
     queryKey: receivableKeys.detail(id),
   });
