@@ -4,7 +4,7 @@
   "scripts": {
     "check": "ultracite check",
     "fix": "ultracite fix",
-    "dev": "bun run --hot src/index.ts",
+    "dev": "bun --env-file ../../.env run --hot src/index.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

@@ -34,7 +34,7 @@ Full task details in `docs/build-plan.md`. Spec in `docs/mvp-smaller.md`.
 
 ## Phase 4 — Dashboard + Polish
 
-- [ ] **4a** — Dashboard (4 totals cards, scoped per role)
+- [~] **4a** — Dashboard (4 totals cards, scoped per role)
 - [ ] **4b** — Expand seed + end-to-end smoke test
 
 ---
