@@ -24,6 +24,7 @@ import { Route as AuthedCustomersNewRouteImport } from './routes/_authed/custome
 import { Route as AuthedCustomersIdRouteImport } from './routes/_authed/customers/$id'
 import { Route as AuthedDistributorsIdEditRouteImport } from './routes/_authed/distributors/$id.edit'
 import { Route as AuthedCustomersIdEditRouteImport } from './routes/_authed/customers/$id_.edit'
+import { Route as AuthedBlacklistRequestsIndexRouteImport } from './routes/_authed/blacklist-requests/index'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -100,6 +101,12 @@ const AuthedCustomersIdEditRoute = AuthedCustomersIdEditRouteImport.update({
   path: '/customers/$id/edit',
   getParentRoute: () => AuthedRoute,
 } as any)
+const AuthedBlacklistRequestsIndexRoute =
+  AuthedBlacklistRequestsIndexRouteImport.update({
+    id: '/blacklist-requests/',
+    path: '/blacklist-requests/',
+    getParentRoute: () => AuthedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -116,6 +123,7 @@ export interface FileRoutesByFullPath {
   '/distributors/': typeof AuthedDistributorsIndexRoute
   '/customers/$id/edit': typeof AuthedCustomersIdEditRoute
   '/distributors/$id/edit': typeof AuthedDistributorsIdEditRoute
+  '/blacklist-requests/': typeof AuthedBlacklistRequestsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -132,6 +140,7 @@ export interface FileRoutesByTo {
   '/distributors': typeof AuthedDistributorsIndexRoute
   '/customers/$id/edit': typeof AuthedCustomersIdEditRoute
   '/distributors/$id/edit': typeof AuthedDistributorsIdEditRoute
+  '/blacklist-requests': typeof AuthedBlacklistRequestsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -150,6 +159,7 @@ export interface FileRoutesById {
   '/_authed/distributors/': typeof AuthedDistributorsIndexRoute
   '/_authed/customers/$id_/edit': typeof AuthedCustomersIdEditRoute
   '/_authed/distributors/$id/edit': typeof AuthedDistributorsIdEditRoute
+  '/_authed/blacklist-requests/': typeof AuthedBlacklistRequestsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -168,6 +178,7 @@ export interface FileRouteTypes {
     | '/distributors/'
     | '/customers/$id/edit'
     | '/distributors/$id/edit'
+    | '/blacklist-requests/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -184,6 +195,7 @@ export interface FileRouteTypes {
     | '/distributors'
     | '/customers/$id/edit'
     | '/distributors/$id/edit'
+    | '/blacklist-requests'
   id:
     | '__root__'
     | '/'
@@ -201,6 +213,7 @@ export interface FileRouteTypes {
     | '/_authed/distributors/'
     | '/_authed/customers/$id_/edit'
     | '/_authed/distributors/$id/edit'
+    | '/_authed/blacklist-requests/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -316,6 +329,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedCustomersIdEditRouteImport
       parentRoute: typeof AuthedRoute
     }
+    '/_authed/blacklist-requests/': {
+      id: '/_authed/blacklist-requests/'
+      path: '/blacklist-requests'
+      fullPath: '/blacklist-requests/'
+      preLoaderRoute: typeof AuthedBlacklistRequestsIndexRouteImport
+      parentRoute: typeof AuthedRoute
+    }
   }
 }
 
@@ -332,6 +352,7 @@ interface AuthedRouteChildren {
   AuthedDistributorsIndexRoute: typeof AuthedDistributorsIndexRoute
   AuthedCustomersIdEditRoute: typeof AuthedCustomersIdEditRoute
   AuthedDistributorsIdEditRoute: typeof AuthedDistributorsIdEditRoute
+  AuthedBlacklistRequestsIndexRoute: typeof AuthedBlacklistRequestsIndexRoute
 }
 
 const AuthedRouteChildren: AuthedRouteChildren = {
@@ -347,6 +368,7 @@ const AuthedRouteChildren: AuthedRouteChildren = {
   AuthedDistributorsIndexRoute: AuthedDistributorsIndexRoute,
   AuthedCustomersIdEditRoute: AuthedCustomersIdEditRoute,
   AuthedDistributorsIdEditRoute: AuthedDistributorsIdEditRoute,
+  AuthedBlacklistRequestsIndexRoute: AuthedBlacklistRequestsIndexRoute,
 }
 
 const AuthedRouteWithChildren =

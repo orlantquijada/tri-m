@@ -13,6 +13,7 @@ import { formatPeso, mapsUrl } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 import { ReceivableStatusBadge } from "../receivables/receivable-status-badge";
+import { BlacklistRequestButton } from "./blacklist-request-button";
 import type { CustomerWithReceivables } from "./queries";
 import { RiskBadge } from "./risk-badge";
 
@@ -32,6 +33,10 @@ export function CustomerProfile({
         <div className="space-y-2">
           <h1 className="text-2xl font-bold">{customer.fullName}</h1>
           <RiskBadge riskStatus={customer.riskStatus} />
+          <BlacklistRequestButton
+            customerId={customer.id}
+            riskStatus={customer.riskStatus}
+          />
         </div>
         <div className="flex gap-2">
           <Link

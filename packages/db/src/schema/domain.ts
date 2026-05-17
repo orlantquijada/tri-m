@@ -84,6 +84,28 @@ export const paymentSchedules = sqliteTable(
   ]
 );
 
+export const blacklistRequests = sqliteTable("blacklist_requests", {
+  createdAt: int({ mode: "timestamp_ms" })
+    .notNull()
+    .default(sql`(unixepoch('now') * 1000)`)
+    .$defaultFn(() => new Date()),
+  customerId: int()
+    .references(() => customers.id)
+    .notNull(),
+  distributorId: int()
+    .references(() => distributors.id)
+    .notNull(),
+  id: int().primaryKey({ autoIncrement: true }),
+  reason: text().notNull(),
+  requestedByUserId: text().notNull(),
+  reviewNote: text(),
+  reviewedAt: int({ mode: "timestamp_ms" }),
+  reviewedByUserId: text(),
+  status: text({ enum: ["pending", "approved", "rejected"] })
+    .notNull()
+    .default("pending"),
+});
+
 export const payments = sqliteTable("payments", {
   amountCents: int().notNull(),
   ...timestampFields,

@@ -9,7 +9,7 @@ Full task details in `docs/phase3-plan.md`. Phase 2 context in `docs/phase2-plan
 ## Phase F — Operational Corrections
 
 - [x] **F1** — Payment void/correction (admin voids payment, schedule recalculated from remaining payments)
-- [ ] **F2** — Blacklist approval workflow (distributor requests, admin approves/rejects, atomically sets riskStatus)
+- [x] **F2** — Blacklist approval workflow (distributor requests, admin approves/rejects, atomically sets riskStatus)
 
 ## Phase G — Access Management
 
