@@ -15,7 +15,7 @@ import { formatPeso, mapsUrl } from "@/lib/format";
 export type OverdueRow = InferResponseType<
   typeof api.api.overdue.$get,
   200
->[number];
+>["rows"][number];
 
 export function OverdueTable({ rows }: { rows: OverdueRow[] }) {
   if (rows.length === 0) {

@@ -10,6 +10,7 @@ import { overdueRowSchema } from "schema";
 
 import { Scope } from "../lib/scope";
 import type { User } from "../middleware/auth";
+import { getAgingBuckets } from "./dashboard";
 
 const daysOverdueSql = sql<number>`cast(julianday('now') - julianday(${receivablesTable.firstDueDate}) as integer)`;
 
@@ -113,5 +114,10 @@ export async function listOverdue(user: User) {
     a.oldestUnpaidDueDate.localeCompare(b.oldestUnpaidDueDate)
   );
 
-  return overdueRowSchema.array().parse(combined);
+  const [rows, aging] = await Promise.all([
+    Promise.resolve(overdueRowSchema.array().parse(combined)),
+    getAgingBuckets(user),
+  ]);
+
+  return { aging, rows };
 }

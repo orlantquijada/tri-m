@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { AgingBuckets } from "@/features/overdue/AgingBuckets";
 import { OverdueTable } from "@/features/overdue/overdue-table";
 import { useOverdueQuery } from "@/features/overdue/queries";
 
@@ -18,7 +19,12 @@ function OverduePage() {
       {error && (
         <p className="text-destructive">Failed to load overdue accounts.</p>
       )}
-      {data && <OverdueTable rows={data} />}
+      {data && (
+        <div className="space-y-6">
+          <AgingBuckets aging={data.aging} />
+          <OverdueTable rows={data.rows} />
+        </div>
+      )}
     </main>
   );
 }
