@@ -11,9 +11,8 @@ import {
 } from "schema";
 import type { CustomerInsert, CustomerUpdate } from "schema";
 
-import { isDistributorOwner } from "../lib/guards";
 import { badRequest, forbidden, notFound } from "../lib/http";
-import { distributorScope } from "../lib/scope";
+import { Scope } from "../lib/scope";
 import type { User } from "../middleware/auth";
 
 export async function listCustomers(user: User) {
@@ -35,7 +34,7 @@ export async function listCustomers(user: User) {
       receivablesTable,
       eq(receivablesTable.customerId, customersTable.id)
     )
-    .where(distributorScope(user, customersTable.distributorId))
+    .where(Scope.forUser(user).filterQuery(customersTable.distributorId))
     .groupBy(customersTable.id);
 
   return customerListItemSchema.array().parse(rows);
@@ -61,9 +60,7 @@ export async function getCustomer(user: User, id: number) {
   if (!customer) {
     throw notFound("Customer not found");
   }
-  if (!isDistributorOwner(user, customer.distributorId)) {
-    throw forbidden();
-  }
+  Scope.forUser(user).assertCanRead(customer.distributorId);
 
   return customerDetailSchema.parse({ ...customer, receivables });
 }
@@ -112,9 +109,7 @@ export async function updateCustomer(
   if (!existing) {
     throw notFound("Customer not found");
   }
-  if (!isDistributorOwner(user, existing.distributorId)) {
-    throw forbidden();
-  }
+  Scope.forUser(user).assertCanWrite(existing.distributorId);
 
   const [updated] = await db
     .update(customersTable)

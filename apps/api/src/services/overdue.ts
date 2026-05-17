@@ -7,7 +7,7 @@ import {
 import { and, eq, gt, sql } from "drizzle-orm";
 import { overdueRowSchema } from "schema";
 
-import { distributorScope } from "../lib/scope";
+import { Scope } from "../lib/scope";
 import type { User } from "../middleware/auth";
 
 export async function listOverdue(user: User) {
@@ -41,7 +41,7 @@ export async function listOverdue(user: User) {
       and(
         gt(receivablesTable.currentBalanceCents, 0),
         sql`date(${receivablesTable.firstDueDate}) < date('now')`,
-        distributorScope(user, receivablesTable.distributorId)
+        Scope.forUser(user).filterQuery(receivablesTable.distributorId)
       )
     )
     .orderBy(receivablesTable.firstDueDate);

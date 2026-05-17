@@ -5,6 +5,7 @@ Refactor the API auth/scope layer in apps/api into a single deep `Scope` module.
 ## Context
 
 Currently two parallel adapters exist for the same access rule:
+
 - `distributorScope(user, column)` in `apps/api/src/lib/scope.ts:7` — returns SQL WHERE clause for list queries
 - `isDistributorOwner(user, distributorId)` in `apps/api/src/lib/guards.ts:3` — boolean for single-resource checks
 - `requireAdmin(user)` in `apps/api/src/middleware/auth.ts:31` — called procedurally inside every handler (distributors.ts:15,19,27,36; users.ts:26,34,42)
@@ -52,3 +53,4 @@ Verification
 - TypeCheck green.
 - bun run --filter api dev — hit GET /api/distributors as distributor user → 403. Hit as admin → 200.
 - Confirm guards.ts is deleted and no import of isDistributorOwner, requireOwnDistributor, or requireAdmin anywhere except through Scope.
+```

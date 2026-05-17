@@ -7,8 +7,8 @@ import { eq } from "drizzle-orm";
 import { paymentSelectSchema } from "schema";
 import type { PaymentInsert } from "schema";
 
-import { isDistributorOwner } from "../lib/guards";
-import { badRequest, forbidden, notFound } from "../lib/http";
+import { badRequest, notFound } from "../lib/http";
+import { Scope } from "../lib/scope";
 import type { User } from "../middleware/auth";
 
 export function createPayment(user: User, data: PaymentInsert) {
@@ -27,9 +27,7 @@ export function createPayment(user: User, data: PaymentInsert) {
     if (!receivable) {
       throw notFound("Receivable not found");
     }
-    if (!isDistributorOwner(user, receivable.distributorId)) {
-      throw forbidden();
-    }
+    Scope.forUser(user).assertCanWrite(receivable.distributorId);
     if (receivable.status === "fully_paid") {
       throw badRequest("Receivable is already fully paid");
     }

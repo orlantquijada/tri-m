@@ -5,11 +5,11 @@ import {
 } from "db";
 import { eq, sql } from "drizzle-orm";
 
-import { distributorScope } from "../lib/scope";
+import { Scope } from "../lib/scope";
 import type { User } from "../middleware/auth";
 
 export async function getDashboardTotals(user: User) {
-  const scope = distributorScope(user, receivablesTable.distributorId);
+  const scope = Scope.forUser(user).filterQuery(receivablesTable.distributorId);
 
   const [recAgg] = await db
     .select({

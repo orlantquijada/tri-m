@@ -3,7 +3,8 @@ import { z } from "zod";
 
 import { createRouter } from "../lib/factory";
 import { badRequest } from "../lib/http";
-import { requireAdmin, requireSession } from "../middleware/auth";
+import { Scope } from "../lib/scope";
+import { requireSession } from "../middleware/auth";
 import {
   createDistributorUser,
   listDistributorUsers,
@@ -24,7 +25,7 @@ const updateDistributorUserSchema = z.object({
 
 export const users = createRouter()
   .get("/distributor-users", requireSession, async (c) => {
-    requireAdmin(c.get("user"));
+    Scope.forUser(c.get("user")).assertAdmin();
     return c.json(await listDistributorUsers());
   })
   .post(
@@ -32,7 +33,7 @@ export const users = createRouter()
     requireSession,
     zValidator("json", createDistributorUserSchema),
     async (c) => {
-      requireAdmin(c.get("user"));
+      Scope.forUser(c.get("user")).assertAdmin();
       return c.json(await createDistributorUser(c.req.valid("json")), 201);
     }
   )
@@ -41,7 +42,7 @@ export const users = createRouter()
     requireSession,
     zValidator("json", updateDistributorUserSchema),
     async (c) => {
-      requireAdmin(c.get("user"));
+      Scope.forUser(c.get("user")).assertAdmin();
       const updates = c.req.valid("json");
 
       if (!Object.keys(updates).length) {

@@ -20,29 +20,29 @@ New file apps/api/src/lib/receivable.ts exporting pure functions (no DB calls, n
 // Cents-in, cents-out. All fns are pure.
 
 export function computeOriginalBalance(input: {
-  totalAmountCents: number;
-  downPaymentCents: number;
+totalAmountCents: number;
+downPaymentCents: number;
 }): number;
 
 export function applyPayment(
-  receivable: { currentBalanceCents: number; status: string },
-  amountCents: number
+receivable: { currentBalanceCents: number; status: string },
+amountCents: number
 ): { newBalanceCents: number; newStatus: string };
 
 export function isOverdue(
-  receivable: { currentBalanceCents: number; firstDueDate: string },
-  today: Date
+receivable: { currentBalanceCents: number; firstDueDate: string },
+today: Date
 ): boolean;
 
 export function daysOverdue(
-  receivable: { firstDueDate: string },
-  today: Date
+receivable: { firstDueDate: string },
+today: Date
 ): number;
 
 // For D3 aging buckets (implement placeholder returning "current" if not yet needed):
 export function agingBucket(
-  receivable: { currentBalanceCents: number; firstDueDate: string },
-  today: Date
+receivable: { currentBalanceCents: number; firstDueDate: string },
+today: Date
 ): "current" | "1-30" | "31-60" | "61-90" | "90+";
 
 Steps
@@ -52,7 +52,7 @@ Steps
 3. Migrate services/payments.ts:56-57: const { newBalanceCents, newStatus } = applyPayment(receivable, amountCents).
 4. In services/overdue.ts: replace inline SQL date predicates with isOverdue / daysOverdue called on each row after fetch, OR keep SQL for performance but use the module's output for any post-processing. Note the SQL predicate (date(firstDueDate) < date('now')) is the authoritative definition — the pure fn should match it exactly.
 5. In services/dashboard.ts: same approach for overdue sum.
-6. Run bun run --filter '*' typecheck — must be green.
+6. Run bun run --filter '\*' typecheck — must be green.
 
 Constraints
 

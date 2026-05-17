@@ -3,7 +3,8 @@ import { distributorInsertSchema, distributorUpdateSchema } from "schema";
 
 import { createRouter } from "../lib/factory";
 import { idParam } from "../lib/params";
-import { requireAdmin, requireSession } from "../middleware/auth";
+import { Scope } from "../lib/scope";
+import { requireSession } from "../middleware/auth";
 import {
   createDistributor,
   getDistributor,
@@ -13,11 +14,11 @@ import {
 
 export const distributors = createRouter()
   .get("/", requireSession, async (c) => {
-    requireAdmin(c.get("user"));
+    Scope.forUser(c.get("user")).assertAdmin();
     return c.json(await listDistributors());
   })
   .get("/:id", requireSession, async (c) => {
-    requireAdmin(c.get("user"));
+    Scope.forUser(c.get("user")).assertAdmin();
     return c.json(await getDistributor(idParam(c)));
   })
   .post(
@@ -25,7 +26,7 @@ export const distributors = createRouter()
     requireSession,
     zValidator("json", distributorInsertSchema),
     async (c) => {
-      requireAdmin(c.get("user"));
+      Scope.forUser(c.get("user")).assertAdmin();
       return c.json(await createDistributor(c.req.valid("json")), 201);
     }
   )
@@ -34,7 +35,7 @@ export const distributors = createRouter()
     requireSession,
     zValidator("json", distributorUpdateSchema),
     async (c) => {
-      requireAdmin(c.get("user"));
+      Scope.forUser(c.get("user")).assertAdmin();
       return c.json(await updateDistributor(idParam(c), c.req.valid("json")));
     }
   );

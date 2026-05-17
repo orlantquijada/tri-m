@@ -1,8 +1,7 @@
 import { createMiddleware } from "hono/factory";
 
 import { auth } from "../lib/auth";
-import { isDistributorOwner } from "../lib/guards";
-import { forbidden, unauthorized } from "../lib/http";
+import { unauthorized } from "../lib/http";
 
 export type AuthVariables = {
   session: (typeof auth.$Infer.Session)["session"];
@@ -22,15 +21,3 @@ export const requireSession = createMiddleware<{ Variables: AuthVariables }>(
     await next();
   }
 );
-
-export function requireOwnDistributor(user: User, distributorId: number) {
-  if (!isDistributorOwner(user, distributorId)) {
-    throw forbidden();
-  }
-}
-
-export function requireAdmin(user: User) {
-  if (user.role !== "admin") {
-    throw forbidden();
-  }
-}

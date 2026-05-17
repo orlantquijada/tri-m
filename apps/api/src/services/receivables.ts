@@ -8,8 +8,8 @@ import { desc, eq } from "drizzle-orm";
 import { receivableDetailSchema, receivableSelectSchema } from "schema";
 import type { ReceivableInsert } from "schema";
 
-import { isDistributorOwner } from "../lib/guards";
 import { forbidden, notFound } from "../lib/http";
+import { Scope } from "../lib/scope";
 import type { User } from "../middleware/auth";
 
 export async function getReceivable(user: User, id: number) {
@@ -25,9 +25,7 @@ export async function getReceivable(user: User, id: number) {
   if (!receivable) {
     throw notFound("Receivable not found");
   }
-  if (!isDistributorOwner(user, receivable.distributorId)) {
-    throw forbidden();
-  }
+  Scope.forUser(user).assertCanRead(receivable.distributorId);
 
   const [customer] = await db
     .select({
@@ -57,9 +55,7 @@ export function createReceivable(user: User, data: ReceivableInsert) {
     if (!customer) {
       throw notFound("Customer not found");
     }
-    if (!isDistributorOwner(user, customer.distributorId)) {
-      throw forbidden();
-    }
+    Scope.forUser(user).assertCanWrite(customer.distributorId);
     if (customer.riskStatus === "blacklisted" && user.role === "distributor") {
       throw forbidden("Cannot create receivable for blacklisted customer");
     }
