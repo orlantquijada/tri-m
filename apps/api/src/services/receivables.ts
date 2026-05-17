@@ -9,6 +9,7 @@ import { receivableDetailSchema, receivableSelectSchema } from "schema";
 import type { ReceivableInsert } from "schema";
 
 import { forbidden, notFound } from "../lib/http";
+import { computeOriginalBalance } from "../lib/receivable";
 import { Scope } from "../lib/scope";
 import type { User } from "../middleware/auth";
 
@@ -60,7 +61,7 @@ export function createReceivable(user: User, data: ReceivableInsert) {
       throw forbidden("Cannot create receivable for blacklisted customer");
     }
 
-    const originalBalanceCents = data.totalAmountCents - data.downPaymentCents;
+    const originalBalanceCents = computeOriginalBalance(data);
 
     const [receivable] = await tx
       .insert(receivablesTable)

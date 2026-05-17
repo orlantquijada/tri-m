@@ -8,6 +8,7 @@ import { paymentSelectSchema } from "schema";
 import type { PaymentInsert } from "schema";
 
 import { badRequest, notFound } from "../lib/http";
+import { applyPayment } from "../lib/receivable";
 import { Scope } from "../lib/scope";
 import type { User } from "../middleware/auth";
 
@@ -51,12 +52,14 @@ export function createPayment(user: User, data: PaymentInsert) {
       })
       .returning();
 
-    const newBalance = receivable.currentBalanceCents - data.amountCents;
-    const newStatus = newBalance === 0 ? "fully_paid" : receivable.status;
+    const { newBalanceCents, newStatus } = applyPayment(
+      receivable,
+      data.amountCents
+    );
 
     await tx
       .update(receivablesTable)
-      .set({ currentBalanceCents: newBalance, status: newStatus })
+      .set({ currentBalanceCents: newBalanceCents, status: newStatus })
       .where(eq(receivablesTable.id, data.receivableId));
 
     return paymentSelectSchema.parse(payment);
