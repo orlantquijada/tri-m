@@ -28,7 +28,7 @@ Full task details in `docs/phase2-plan.md`. MVP context in `docs/build-plan.md` 
 
 ## Phase E — Exports
 
-- [ ] **E1** — CSV export for overdue + customers (scoped per role)
+- [x] **E1** — CSV export for overdue + customers (scoped per role)
 
 ---
 
@@ -44,3 +44,4 @@ Full task details in `docs/phase2-plan.md`. MVP context in `docs/build-plan.md` 
 - 2026-05-17 — D1 — Plan named `apps/api/src/services/receivable.ts` (singular) but the existing service file is `receivables.ts` (plural). Extended the existing file. Seed sets all schedule statuses to `pending` regardless of date; D2 will derive overdue from `dueDate < today` at query time rather than relying on the status field. Skipped id:5 (fully_paid) per plan ("3 overdue + 5 current").
 - 2026-05-17 — D2 — Two-query approach: schedule-based (GROUP BY + aggregates) and legacy (notExists). Plan file listed `apps/api/src/services/overdue.ts` as new; file already existed — rewrote in place. Added index on `payment_schedules(receivable_id)` (efficiency fix from simplify). Batched schedule updates with Promise.all. All tsconfigs updated ES2022 → ES2023 to support `toSorted` (formatter preference).
 - 2026-05-17 — D3 — Bucket classification uses `firstDueDate` (not oldest unpaid installment via payment_schedules subquery) so bucket sum exactly equals dashboard `overdueCents`. Overdue response shape changed from `OverdueRow[]` to `{ rows, aging }` — single endpoint serves both list and buckets. `AgingBuckets` component defined in overdue feature with a plain interface so dashboard-cards can import it without coupling to overdue RPC type.
+- 2026-05-17 — E1 — Route const named `csvExports` (not `exports`) to avoid CommonJS reserved-name ambiguity. Overdue export reuses `listOverdue()` and slices to 10000 client-side; customer export builds inline query with distributor join (listCustomers omits distributor name). URL constructed directly from `env.VITE_API_URL` in ExportButtons — Hono RPC proxy can't handle dotted path names like `overdue.csv` via property chaining. Export buttons use `<a download>` anchor so browser handles the download natively.

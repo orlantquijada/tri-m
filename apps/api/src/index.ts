@@ -7,6 +7,7 @@ import { authRouter } from "./routes/auth";
 import { customers } from "./routes/customers";
 import { dashboard } from "./routes/dashboard";
 import { distributors } from "./routes/distributors";
+import { csvExports } from "./routes/exports";
 import { overdue } from "./routes/overdue";
 import { payments } from "./routes/payments";
 import { receivables } from "./routes/receivables";
@@ -31,7 +32,8 @@ const app = new Hono()
   .route("/payments", payments)
   .route("/overdue", overdue)
   .route("/dashboard", dashboard)
-  .route("/users", users);
+  .route("/users", users)
+  .route("/exports", csvExports);
 
 export type AppType = typeof app;
 

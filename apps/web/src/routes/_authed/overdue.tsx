@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { OverdueExportButton } from "@/features/exports/ExportButtons";
 import { AgingBuckets } from "@/features/overdue/AgingBuckets";
 import { OverdueTable } from "@/features/overdue/overdue-table";
 import { useOverdueQuery } from "@/features/overdue/queries";
@@ -9,11 +10,14 @@ function OverduePage() {
 
   return (
     <main className="container mx-auto p-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold">Overdue Accounts</h1>
-        <p className="text-sm text-muted-foreground">
-          Receivables with outstanding balance past their first due date.
-        </p>
+      <div className="mb-6 flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Overdue Accounts</h1>
+          <p className="text-sm text-muted-foreground">
+            Receivables with outstanding balance past their first due date.
+          </p>
+        </div>
+        <OverdueExportButton />
       </div>
       {isLoading && <p className="text-muted-foreground">Loading...</p>}
       {error && (

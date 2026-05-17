@@ -1,4 +1,6 @@
 // oxlint-disable-next-line no-barrel-file
+export * from "./csv";
+// oxlint-disable-next-line no-barrel-file
 export * from "./customer";
 // oxlint-disable-next-line no-barrel-file
 export * from "./distributor";
