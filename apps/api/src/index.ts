@@ -6,6 +6,7 @@ import { corsMiddleware } from "./middleware/cors";
 import { authRouter } from "./routes/auth";
 import { customers } from "./routes/customers";
 import { dashboard } from "./routes/dashboard";
+import { distributors } from "./routes/distributors";
 import { overdue } from "./routes/overdue";
 import { payments } from "./routes/payments";
 import { receivables } from "./routes/receivables";
@@ -24,6 +25,7 @@ const app = new Hono()
   .get("/health", (c) => c.json({ status: "ok" }))
   .route("/auth", authRouter)
   .route("/customers", customers)
+  .route("/distributors", distributors)
   .route("/receivables", receivables)
   .route("/payments", payments)
   .route("/overdue", overdue)

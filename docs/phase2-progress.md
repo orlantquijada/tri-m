@@ -12,7 +12,7 @@ Full task details in `docs/phase2-plan.md`. MVP context in `docs/build-plan.md` 
 
 ## Phase B — Distributor Management UI
 
-- [ ] **B1** — Distributor list (`/distributors`) with aggregates (admin only)
+- [x] **B1** — Distributor list (`/distributors`) with aggregates (admin only)
 - [ ] **B2** — Add/Edit distributor form + API
 - [ ] **B3** — Distributor user assignment (create + reassign auth users)
 
@@ -37,3 +37,4 @@ Full task details in `docs/phase2-plan.md`. MVP context in `docs/build-plan.md` 
 (Add entries here when blocking or deviating from the plan. Format: `YYYY-MM-DD — task — note`.)
 
 - 2026-05-17 — plan — Phase 2 plan written. 9 tasks across 5 phases (A–E). Order: distributor hardening → distributor CRUD → user assignment → dupe phone → schedules → aging → CSV. Locked: schedules stored in new table, distributor users created server-side via `auth.api.signUpEmail`, CSV streamed server-side as `text/csv`.
+- 2026-05-17 — B1 — Plan listed `dashboard.tsx` for the Distributors nav link, but nav lives in `app-sidebar.tsx`. Modified `app-sidebar.tsx` instead; `dashboard.tsx` untouched. Used kebab-case filename `distributor-list.tsx` per project convention (plan said `DistributorList.tsx`).

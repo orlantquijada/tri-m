@@ -1,5 +1,6 @@
 import {
   AlertCircleIcon,
+  BuildingIcon,
   LayoutDashboardIcon,
   MapIcon,
   Package2Icon,
@@ -21,7 +22,7 @@ import {
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
 
-const navItems = [
+const baseNavItems = [
   { icon: <LayoutDashboardIcon />, title: "Dashboard", url: "/dashboard" },
   { icon: <UsersIcon />, title: "Customers", url: "/customers" },
   { icon: <MapIcon />, title: "Map", url: "/map" },
@@ -30,6 +31,20 @@ const navItems = [
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session } = authClient.useSession();
+
+  const isAdmin =
+    (session?.user as Record<string, unknown> | undefined)?.role === "admin";
+
+  const navItems = isAdmin
+    ? [
+        ...baseNavItems,
+        {
+          icon: <BuildingIcon />,
+          title: "Distributors",
+          url: "/distributors",
+        },
+      ]
+    : baseNavItems;
 
   const user = {
     avatar: session?.user.image ?? "",
