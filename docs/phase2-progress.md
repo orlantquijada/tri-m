@@ -13,7 +13,7 @@ Full task details in `docs/phase2-plan.md`. MVP context in `docs/build-plan.md` 
 ## Phase B — Distributor Management UI
 
 - [x] **B1** — Distributor list (`/distributors`) with aggregates (admin only)
-- [ ] **B2** — Add/Edit distributor form + API
+- [x] **B2** — Add/Edit distributor form + API
 - [ ] **B3** — Distributor user assignment (create + reassign auth users)
 
 ## Phase C — Data Quality
@@ -38,3 +38,4 @@ Full task details in `docs/phase2-plan.md`. MVP context in `docs/build-plan.md` 
 
 - 2026-05-17 — plan — Phase 2 plan written. 9 tasks across 5 phases (A–E). Order: distributor hardening → distributor CRUD → user assignment → dupe phone → schedules → aging → CSV. Locked: schedules stored in new table, distributor users created server-side via `auth.api.signUpEmail`, CSV streamed server-side as `text/csv`.
 - 2026-05-17 — B1 — Plan listed `dashboard.tsx` for the Distributors nav link, but nav lives in `app-sidebar.tsx`. Modified `app-sidebar.tsx` instead; `dashboard.tsx` untouched. Used kebab-case filename `distributor-list.tsx` per project convention (plan said `DistributorList.tsx`).
+- 2026-05-17 — B2 — Plan said `DistributorForm.tsx`; used `distributor-form.tsx` (kebab-case convention). Plan said react-hook-form; used `@tanstack/react-form` to match project pattern. Also extended `services/distributors.ts` and `queries.ts` (implicit deps not listed). Used `buttonVariants()` + Link instead of Button+asChild (Button in this project has no asChild prop). Added Edit links to `distributor-list.tsx` and New button to `distributors/index.tsx` for navigation.

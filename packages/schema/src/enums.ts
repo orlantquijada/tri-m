@@ -3,6 +3,9 @@ import { z } from "zod";
 export const riskStatusEnum = z.enum(["good", "watchlist", "blacklisted"]);
 export type RiskStatus = z.infer<typeof riskStatusEnum>;
 
+export const distributorStatusEnum = z.enum(["active", "inactive"]);
+export type DistributorStatus = z.infer<typeof distributorStatusEnum>;
+
 export const receivableStatusEnum = z.enum([
   "current",
   "overdue",

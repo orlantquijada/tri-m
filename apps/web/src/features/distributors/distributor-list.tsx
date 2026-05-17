@@ -1,4 +1,7 @@
+import { Link } from "@tanstack/react-router";
+
 import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -34,6 +37,7 @@ export function DistributorList() {
           <TableHead>Status</TableHead>
           <TableHead className="text-right">Customers</TableHead>
           <TableHead className="text-right">Outstanding</TableHead>
+          <TableHead />
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -50,6 +54,15 @@ export function DistributorList() {
             <TableCell className="text-right">{d.customerCount}</TableCell>
             <TableCell className="text-right font-mono">
               {formatPeso(d.outstandingCents)}
+            </TableCell>
+            <TableCell>
+              <Link
+                to="/distributors/$id/edit"
+                params={{ id: String(d.id) }}
+                className={buttonVariants({ size: "sm", variant: "ghost" })}
+              >
+                Edit
+              </Link>
             </TableCell>
           </TableRow>
         ))}

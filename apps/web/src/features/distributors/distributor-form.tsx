@@ -1,0 +1,173 @@
+import { useForm } from "@tanstack/react-form";
+import { useNavigate } from "@tanstack/react-router";
+import type { DistributorStatus } from "schema";
+import { z } from "zod";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+import {
+  useCreateDistributorMutation,
+  useUpdateDistributorMutation,
+} from "./queries";
+
+type FormValues = {
+  assignedArea: string;
+  name: string;
+  phone: string;
+  status: DistributorStatus;
+};
+
+type DistributorFormProps = {
+  defaultValues?: Partial<FormValues>;
+  distributorId?: number;
+};
+
+function fieldError(errors: string[]) {
+  if (!errors.length) {
+    return null;
+  }
+  return <p className="text-sm text-destructive">{errors[0]}</p>;
+}
+
+export function DistributorForm({
+  defaultValues,
+  distributorId,
+}: DistributorFormProps) {
+  const navigate = useNavigate();
+  const isEditing = distributorId !== undefined;
+
+  const createMutation = useCreateDistributorMutation();
+  const updateMutation = useUpdateDistributorMutation();
+
+  const form = useForm({
+    defaultValues: {
+      assignedArea: defaultValues?.assignedArea ?? "",
+      name: defaultValues?.name ?? "",
+      phone: defaultValues?.phone ?? "",
+      status: defaultValues?.status ?? "active",
+    } satisfies FormValues,
+    onSubmit: async ({ value }) => {
+      const payload = {
+        assignedArea: value.assignedArea || null,
+        name: value.name,
+        phone: value.phone,
+        status: value.status,
+      };
+      await (isEditing
+        ? updateMutation.mutateAsync({ data: payload, id: distributorId })
+        : createMutation.mutateAsync(payload));
+      void navigate({ to: "/distributors" });
+    },
+  });
+
+  const isPending = createMutation.isPending || updateMutation.isPending;
+  const mutationError = createMutation.error || updateMutation.error;
+  const idleLabel = isEditing ? "Save Changes" : "Create Distributor";
+
+  return (
+    <form
+      className="max-w-lg space-y-4"
+      onSubmit={(e) => {
+        e.preventDefault();
+        void form.handleSubmit();
+      }}
+    >
+      <form.Field
+        name="name"
+        validators={{
+          onChange: ({ value }) =>
+            z.string().min(1, "Name is required").safeParse(value).error
+              ?.issues[0]?.message,
+        }}
+      >
+        {(field) => (
+          <div className="space-y-1">
+            <Label htmlFor="name">Name</Label>
+            <Input
+              id="name"
+              value={field.state.value}
+              onChange={(e) => field.handleChange(e.target.value)}
+              onBlur={field.handleBlur}
+            />
+            {fieldError(field.state.meta.errors.filter(Boolean) as string[])}
+          </div>
+        )}
+      </form.Field>
+
+      <form.Field
+        name="phone"
+        validators={{
+          onChange: ({ value }) =>
+            z.string().min(1, "Phone is required").safeParse(value).error
+              ?.issues[0]?.message,
+        }}
+      >
+        {(field) => (
+          <div className="space-y-1">
+            <Label htmlFor="phone">Phone</Label>
+            <Input
+              id="phone"
+              value={field.state.value}
+              onChange={(e) => field.handleChange(e.target.value)}
+              onBlur={field.handleBlur}
+            />
+            {fieldError(field.state.meta.errors.filter(Boolean) as string[])}
+          </div>
+        )}
+      </form.Field>
+
+      <form.Field name="assignedArea">
+        {(field) => (
+          <div className="space-y-1">
+            <Label htmlFor="assignedArea">Assigned Area</Label>
+            <Input
+              id="assignedArea"
+              value={field.state.value}
+              onChange={(e) => field.handleChange(e.target.value)}
+              onBlur={field.handleBlur}
+            />
+          </div>
+        )}
+      </form.Field>
+
+      <form.Field name="status">
+        {(field) => (
+          <div className="space-y-1">
+            <Label htmlFor="status">Status</Label>
+            <select
+              id="status"
+              className="h-9 w-full rounded-md border border-input bg-transparent px-2.5 py-1 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+              value={field.state.value}
+              onChange={(e) =>
+                field.handleChange(e.target.value as DistributorStatus)
+              }
+              onBlur={field.handleBlur}
+            >
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+        )}
+      </form.Field>
+
+      {mutationError && (
+        <p className="text-sm text-destructive">{mutationError.message}</p>
+      )}
+
+      <div className="flex gap-2">
+        <Button type="submit" disabled={isPending}>
+          {isPending ? "Saving..." : idleLabel}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => void navigate({ to: "/distributors" })}
+        >
+          Cancel
+        </Button>
+      </div>
+    </form>
+  );
+}

@@ -19,8 +19,10 @@ import { Route as AuthedDistributorsIndexRouteImport } from './routes/_authed/di
 import { Route as AuthedCustomersIndexRouteImport } from './routes/_authed/customers/index'
 import { Route as AuthedReceivablesNewRouteImport } from './routes/_authed/receivables/new'
 import { Route as AuthedReceivablesIdRouteImport } from './routes/_authed/receivables/$id'
+import { Route as AuthedDistributorsNewRouteImport } from './routes/_authed/distributors/new'
 import { Route as AuthedCustomersNewRouteImport } from './routes/_authed/customers/new'
 import { Route as AuthedCustomersIdRouteImport } from './routes/_authed/customers/$id'
+import { Route as AuthedDistributorsIdEditRouteImport } from './routes/_authed/distributors/$id.edit'
 import { Route as AuthedCustomersIdEditRouteImport } from './routes/_authed/customers/$id_.edit'
 
 const LoginRoute = LoginRouteImport.update({
@@ -72,6 +74,11 @@ const AuthedReceivablesIdRoute = AuthedReceivablesIdRouteImport.update({
   path: '/receivables/$id',
   getParentRoute: () => AuthedRoute,
 } as any)
+const AuthedDistributorsNewRoute = AuthedDistributorsNewRouteImport.update({
+  id: '/distributors/new',
+  path: '/distributors/new',
+  getParentRoute: () => AuthedRoute,
+} as any)
 const AuthedCustomersNewRoute = AuthedCustomersNewRouteImport.update({
   id: '/customers/new',
   path: '/customers/new',
@@ -82,6 +89,12 @@ const AuthedCustomersIdRoute = AuthedCustomersIdRouteImport.update({
   path: '/customers/$id',
   getParentRoute: () => AuthedRoute,
 } as any)
+const AuthedDistributorsIdEditRoute =
+  AuthedDistributorsIdEditRouteImport.update({
+    id: '/distributors/$id/edit',
+    path: '/distributors/$id/edit',
+    getParentRoute: () => AuthedRoute,
+  } as any)
 const AuthedCustomersIdEditRoute = AuthedCustomersIdEditRouteImport.update({
   id: '/customers/$id_/edit',
   path: '/customers/$id/edit',
@@ -96,11 +109,13 @@ export interface FileRoutesByFullPath {
   '/overdue': typeof AuthedOverdueRoute
   '/customers/$id': typeof AuthedCustomersIdRoute
   '/customers/new': typeof AuthedCustomersNewRoute
+  '/distributors/new': typeof AuthedDistributorsNewRoute
   '/receivables/$id': typeof AuthedReceivablesIdRoute
   '/receivables/new': typeof AuthedReceivablesNewRoute
   '/customers/': typeof AuthedCustomersIndexRoute
   '/distributors/': typeof AuthedDistributorsIndexRoute
   '/customers/$id/edit': typeof AuthedCustomersIdEditRoute
+  '/distributors/$id/edit': typeof AuthedDistributorsIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -110,11 +125,13 @@ export interface FileRoutesByTo {
   '/overdue': typeof AuthedOverdueRoute
   '/customers/$id': typeof AuthedCustomersIdRoute
   '/customers/new': typeof AuthedCustomersNewRoute
+  '/distributors/new': typeof AuthedDistributorsNewRoute
   '/receivables/$id': typeof AuthedReceivablesIdRoute
   '/receivables/new': typeof AuthedReceivablesNewRoute
   '/customers': typeof AuthedCustomersIndexRoute
   '/distributors': typeof AuthedDistributorsIndexRoute
   '/customers/$id/edit': typeof AuthedCustomersIdEditRoute
+  '/distributors/$id/edit': typeof AuthedDistributorsIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -126,11 +143,13 @@ export interface FileRoutesById {
   '/_authed/overdue': typeof AuthedOverdueRoute
   '/_authed/customers/$id': typeof AuthedCustomersIdRoute
   '/_authed/customers/new': typeof AuthedCustomersNewRoute
+  '/_authed/distributors/new': typeof AuthedDistributorsNewRoute
   '/_authed/receivables/$id': typeof AuthedReceivablesIdRoute
   '/_authed/receivables/new': typeof AuthedReceivablesNewRoute
   '/_authed/customers/': typeof AuthedCustomersIndexRoute
   '/_authed/distributors/': typeof AuthedDistributorsIndexRoute
   '/_authed/customers/$id_/edit': typeof AuthedCustomersIdEditRoute
+  '/_authed/distributors/$id/edit': typeof AuthedDistributorsIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -142,11 +161,13 @@ export interface FileRouteTypes {
     | '/overdue'
     | '/customers/$id'
     | '/customers/new'
+    | '/distributors/new'
     | '/receivables/$id'
     | '/receivables/new'
     | '/customers/'
     | '/distributors/'
     | '/customers/$id/edit'
+    | '/distributors/$id/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -156,11 +177,13 @@ export interface FileRouteTypes {
     | '/overdue'
     | '/customers/$id'
     | '/customers/new'
+    | '/distributors/new'
     | '/receivables/$id'
     | '/receivables/new'
     | '/customers'
     | '/distributors'
     | '/customers/$id/edit'
+    | '/distributors/$id/edit'
   id:
     | '__root__'
     | '/'
@@ -171,11 +194,13 @@ export interface FileRouteTypes {
     | '/_authed/overdue'
     | '/_authed/customers/$id'
     | '/_authed/customers/new'
+    | '/_authed/distributors/new'
     | '/_authed/receivables/$id'
     | '/_authed/receivables/new'
     | '/_authed/customers/'
     | '/_authed/distributors/'
     | '/_authed/customers/$id_/edit'
+    | '/_authed/distributors/$id/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -256,6 +281,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedReceivablesIdRouteImport
       parentRoute: typeof AuthedRoute
     }
+    '/_authed/distributors/new': {
+      id: '/_authed/distributors/new'
+      path: '/distributors/new'
+      fullPath: '/distributors/new'
+      preLoaderRoute: typeof AuthedDistributorsNewRouteImport
+      parentRoute: typeof AuthedRoute
+    }
     '/_authed/customers/new': {
       id: '/_authed/customers/new'
       path: '/customers/new'
@@ -268,6 +300,13 @@ declare module '@tanstack/react-router' {
       path: '/customers/$id'
       fullPath: '/customers/$id'
       preLoaderRoute: typeof AuthedCustomersIdRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/distributors/$id/edit': {
+      id: '/_authed/distributors/$id/edit'
+      path: '/distributors/$id/edit'
+      fullPath: '/distributors/$id/edit'
+      preLoaderRoute: typeof AuthedDistributorsIdEditRouteImport
       parentRoute: typeof AuthedRoute
     }
     '/_authed/customers/$id_/edit': {
@@ -286,11 +325,13 @@ interface AuthedRouteChildren {
   AuthedOverdueRoute: typeof AuthedOverdueRoute
   AuthedCustomersIdRoute: typeof AuthedCustomersIdRoute
   AuthedCustomersNewRoute: typeof AuthedCustomersNewRoute
+  AuthedDistributorsNewRoute: typeof AuthedDistributorsNewRoute
   AuthedReceivablesIdRoute: typeof AuthedReceivablesIdRoute
   AuthedReceivablesNewRoute: typeof AuthedReceivablesNewRoute
   AuthedCustomersIndexRoute: typeof AuthedCustomersIndexRoute
   AuthedDistributorsIndexRoute: typeof AuthedDistributorsIndexRoute
   AuthedCustomersIdEditRoute: typeof AuthedCustomersIdEditRoute
+  AuthedDistributorsIdEditRoute: typeof AuthedDistributorsIdEditRoute
 }
 
 const AuthedRouteChildren: AuthedRouteChildren = {
@@ -299,11 +340,13 @@ const AuthedRouteChildren: AuthedRouteChildren = {
   AuthedOverdueRoute: AuthedOverdueRoute,
   AuthedCustomersIdRoute: AuthedCustomersIdRoute,
   AuthedCustomersNewRoute: AuthedCustomersNewRoute,
+  AuthedDistributorsNewRoute: AuthedDistributorsNewRoute,
   AuthedReceivablesIdRoute: AuthedReceivablesIdRoute,
   AuthedReceivablesNewRoute: AuthedReceivablesNewRoute,
   AuthedCustomersIndexRoute: AuthedCustomersIndexRoute,
   AuthedDistributorsIndexRoute: AuthedDistributorsIndexRoute,
   AuthedCustomersIdEditRoute: AuthedCustomersIdEditRoute,
+  AuthedDistributorsIdEditRoute: AuthedDistributorsIdEditRoute,
 }
 
 const AuthedRouteWithChildren =
