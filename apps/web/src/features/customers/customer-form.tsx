@@ -11,10 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { authClient } from "@/lib/auth-client";
 
-import {
-  useCreateCustomerMutation,
-  useUpdateCustomerMutation,
-} from "./queries";
+import { customerQueries } from "./queries";
 
 type FormValues = {
   address: string;
@@ -99,8 +96,8 @@ export function CustomerForm({ customerId, defaultValues }: CustomerFormProps) {
   const isAdmin = sessionUser?.role === "admin";
   const isEditing = customerId !== undefined;
 
-  const createMutation = useCreateCustomerMutation();
-  const updateMutation = useUpdateCustomerMutation();
+  const createMutation = customerQueries.useCreate();
+  const updateMutation = customerQueries.useUpdate();
 
   const [geoError, setGeoError] = useState<string | null>(null);
   const [geoLoading, setGeoLoading] = useState(false);

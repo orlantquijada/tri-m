@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
 import { parsePeso } from "@/lib/format";
 
-import { useCreateReceivableMutation } from "./queries";
+import { receivableQueries } from "./queries";
 
 type ReceivableFormProps = {
   customer: Pick<CustomerSelect, "fullName" | "id" | "riskStatus">;
@@ -31,7 +31,7 @@ export function ReceivableForm({ customer }: ReceivableFormProps) {
   const isAdmin = sessionUser?.role === "admin";
 
   const [adminOverride, setAdminOverride] = useState(false);
-  const createMutation = useCreateReceivableMutation();
+  const createMutation = receivableQueries.useCreate();
 
   const isBlocked =
     customer.riskStatus === "blacklisted" && !isAdmin && !adminOverride;

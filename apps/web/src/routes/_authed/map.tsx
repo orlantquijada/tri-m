@@ -1,11 +1,11 @@
 import "leaflet/dist/leaflet.css";
 import { createFileRoute } from "@tanstack/react-router";
 
-import { useCustomersQuery } from "@/features/customers/queries";
+import { customerQueries } from "@/features/customers/queries";
 import { MapView } from "@/features/map/map-view";
 
 function MapPage() {
-  const { data, error, isLoading } = useCustomersQuery();
+  const { data, error, isLoading } = customerQueries.useList();
 
   if (isLoading) {
     return (

@@ -14,13 +14,9 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useDistributorsQuery } from "@/features/distributors/queries";
+import { distributorQueries } from "@/features/distributors/queries";
 
-import {
-  useCreateDistributorUserMutation,
-  useDistributorUsersQuery,
-  useUpdateUserMutation,
-} from "./queries";
+import { userQueries } from "./queries";
 import type { DistributorUser } from "./queries";
 
 type Props = {
@@ -42,7 +38,7 @@ function ReassignRow({
   u: DistributorUser;
   distributors: { id: number; name: string }[];
 }) {
-  const updateMutation = useUpdateUserMutation();
+  const updateMutation = userQueries.useUpdate();
   const [selected, setSelected] = useState(String(u.distributorId ?? ""));
 
   return (
@@ -85,7 +81,7 @@ function ReassignRow({
 }
 
 function CreateUserForm({ distributorId }: { distributorId: number }) {
-  const createMutation = useCreateDistributorUserMutation();
+  const createMutation = userQueries.useCreate();
 
   const form = useForm({
     defaultValues: { email: "", name: "", password: "" },
@@ -221,8 +217,8 @@ function UserList({
 export function AssignDistributorDialog({ distributorId }: Props) {
   const [open, setOpen] = useState(false);
   const { data: existingUsers = [], isLoading: loadingUsers } =
-    useDistributorUsersQuery();
-  const { data: distributors = [] } = useDistributorsQuery();
+    userQueries.useList();
+  const { data: distributors = [] } = distributorQueries.useList();
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

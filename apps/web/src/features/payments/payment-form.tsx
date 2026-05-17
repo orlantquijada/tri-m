@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/native-select";
 import { formatPeso, parsePeso } from "@/lib/format";
 
-import { useCreatePaymentMutation } from "../receivables/queries";
+import { paymentQueries } from "./queries";
 
 const paymentMethodOptions: Record<PaymentMethod, string> = {
   bank_transfer: "Bank Transfer",
@@ -50,7 +50,7 @@ export function PaymentForm({
   customerId,
 }: PaymentFormProps) {
   const [open, setOpen] = useState(false);
-  const createMutation = useCreatePaymentMutation();
+  const createMutation = paymentQueries.useCreate();
   const maxPeso = (currentBalanceCents / 100).toFixed(2);
   const today = format(new Date(), "yyyy-MM-dd");
 

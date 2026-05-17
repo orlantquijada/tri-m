@@ -1,13 +1,14 @@
 import { createFileRoute, useParams } from "@tanstack/react-router";
 
 import { DistributorForm } from "@/features/distributors/distributor-form";
-import { useDistributorQuery } from "@/features/distributors/queries";
+import { distributorQueries } from "@/features/distributors/queries";
 import { AssignDistributorDialog } from "@/features/users/assign-distributor-dialog";
 
 function EditDistributorPage() {
   const { id } = useParams({ from: "/_authed/distributors/$id/edit" });
   const distributorId = Number.parseInt(id, 10);
-  const { data, error, isLoading } = useDistributorQuery(distributorId);
+  const { data, error, isLoading } =
+    distributorQueries.useDetail(distributorId);
 
   if (isLoading) {
     return <p className="p-6 text-muted-foreground">Loading...</p>;

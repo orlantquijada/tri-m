@@ -12,10 +12,10 @@ import {
 } from "@/components/ui/table";
 import { formatPeso } from "@/lib/format";
 
-import { useDistributorsQuery } from "./queries";
+import { distributorQueries } from "./queries";
 
 export function DistributorList() {
-  const { data, error, isLoading } = useDistributorsQuery();
+  const { data, error, isLoading } = distributorQueries.useList();
 
   if (isLoading) {
     return <p className="p-4 text-muted-foreground">Loading...</p>;

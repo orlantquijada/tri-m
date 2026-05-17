@@ -1,7 +1,7 @@
 import { createFileRoute, useSearch } from "@tanstack/react-router";
 import { z } from "zod";
 
-import { useCustomerQuery } from "@/features/customers/queries";
+import { customerQueries } from "@/features/customers/queries";
 import { ReceivableForm } from "@/features/receivables/receivable-form";
 
 const searchSchema = z.object({
@@ -9,7 +9,7 @@ const searchSchema = z.object({
 });
 
 function NewReceivableContent({ customerId }: { customerId: number }) {
-  const { data, error, isLoading } = useCustomerQuery(customerId);
+  const { data, error, isLoading } = customerQueries.useDetail(customerId);
 
   if (isLoading) {
     return <p className="p-6 text-muted-foreground">Loading customer…</p>;

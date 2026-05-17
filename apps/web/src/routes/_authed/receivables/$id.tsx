@@ -1,11 +1,11 @@
 import { createFileRoute, useParams } from "@tanstack/react-router";
 
-import { useReceivableQuery } from "@/features/receivables/queries";
+import { receivableQueries } from "@/features/receivables/queries";
 import { ReceivableDetail } from "@/features/receivables/receivable-detail";
 
 function ReceivableDetailPage() {
   const { id } = useParams({ from: "/_authed/receivables/$id" });
-  const { data, error, isLoading } = useReceivableQuery(Number(id));
+  const { data, error, isLoading } = receivableQueries.useDetail(Number(id));
 
   if (isLoading) {
     return <p className="p-6 text-muted-foreground">Loading…</p>;

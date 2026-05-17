@@ -11,11 +11,11 @@ import {
 } from "@/components/ui/table";
 import { formatPeso } from "@/lib/format";
 
-import { useCustomersQuery } from "./queries";
+import { customerQueries } from "./queries";
 import { riskVariant } from "./risk-badge";
 
 export function CustomerList() {
-  const { data, error, isLoading } = useCustomersQuery();
+  const { data, error, isLoading } = customerQueries.useList();
 
   if (isLoading) {
     return <p className="p-4 text-muted-foreground">Loading...</p>;

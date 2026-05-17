@@ -7,10 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import {
-  useCreateDistributorMutation,
-  useUpdateDistributorMutation,
-} from "./queries";
+import { distributorQueries } from "./queries";
 
 type FormValues = {
   assignedArea: string;
@@ -38,8 +35,8 @@ export function DistributorForm({
   const navigate = useNavigate();
   const isEditing = distributorId !== undefined;
 
-  const createMutation = useCreateDistributorMutation();
-  const updateMutation = useUpdateDistributorMutation();
+  const createMutation = distributorQueries.useCreate();
+  const updateMutation = distributorQueries.useUpdate();
 
   const form = useForm({
     defaultValues: {
