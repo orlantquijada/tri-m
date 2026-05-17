@@ -10,6 +10,7 @@ import { distributors } from "./routes/distributors";
 import { overdue } from "./routes/overdue";
 import { payments } from "./routes/payments";
 import { receivables } from "./routes/receivables";
+import { users } from "./routes/users";
 
 const app = new Hono()
   .basePath("/api")
@@ -29,7 +30,8 @@ const app = new Hono()
   .route("/receivables", receivables)
   .route("/payments", payments)
   .route("/overdue", overdue)
-  .route("/dashboard", dashboard);
+  .route("/dashboard", dashboard)
+  .route("/users", users);
 
 export type AppType = typeof app;
 

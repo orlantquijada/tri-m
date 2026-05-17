@@ -2,6 +2,7 @@ import { createFileRoute, useParams } from "@tanstack/react-router";
 
 import { DistributorForm } from "@/features/distributors/distributor-form";
 import { useDistributorQuery } from "@/features/distributors/queries";
+import { AssignDistributorDialog } from "@/features/users/assign-distributor-dialog";
 
 function EditDistributorPage() {
   const { id } = useParams({ from: "/_authed/distributors/$id/edit" });
@@ -24,7 +25,10 @@ function EditDistributorPage() {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="mb-6 text-2xl font-bold">Edit Distributor</h1>
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Edit Distributor</h1>
+        <AssignDistributorDialog distributorId={distributorId} />
+      </div>
       <DistributorForm
         distributorId={distributorId}
         defaultValues={defaultValues}

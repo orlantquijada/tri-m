@@ -82,13 +82,12 @@ export async function updateDistributor(id: number, data: DistributorUpdate) {
   const [updated] = await db
     .update(distributorsTable)
     .set({
-      ...(data.name !== undefined && { name: data.name }),
-      ...(data.phone !== undefined && { phone: data.phone }),
-      ...(data.status !== undefined && { status: data.status }),
-      assignedArea:
-        data.assignedArea !== undefined
-          ? data.assignedArea
-          : existing.assignedArea,
+      ...(data.name && { name: data.name }),
+      ...(data.phone && { phone: data.phone }),
+      ...(data.status && { status: data.status }),
+      assignedArea: data.assignedArea
+        ? existing.assignedArea
+        : data.assignedArea,
     })
     .where(eq(distributorsTable.id, id))
     .returning();
