@@ -1,6 +1,8 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { InferRequestType } from "hono/client";
 
 import { api } from "@/lib/api";
+import { parseApiError } from "@/lib/api";
 import { createResourceQueries } from "@/lib/queries";
 
 import { customerQueries } from "../customers/queries";
@@ -31,3 +33,35 @@ export const paymentQueries = createResourceQueries({
 });
 
 export const paymentKeys = paymentQueries.keys;
+
+export function useVoidPayment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: {
+      paymentId: number;
+      reason: string;
+      receivableId: number;
+      customerId: number;
+    }) => {
+      const res = await api.api.payments[":id"].void.$post({
+        json: { reason: vars.reason },
+        param: { id: String(vars.paymentId) },
+      });
+      if (!res.ok) {
+        throw await parseApiError(
+          res as unknown as Response,
+          "Failed to void payment"
+        );
+      }
+      return res.json();
+    },
+    onSuccess: (_data, vars) => {
+      void queryClient.invalidateQueries({
+        queryKey: receivableQueries.keys.detail(vars.receivableId),
+      });
+      void queryClient.invalidateQueries({
+        queryKey: customerQueries.keys.detail(vars.customerId),
+      });
+    },
+  });
+}

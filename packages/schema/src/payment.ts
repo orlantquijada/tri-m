@@ -12,6 +12,8 @@ export const paymentSelectSchema = z.object({
   receivableId: z.number(),
   recordedBy: z.string().nullable(),
   referenceNumber: z.string().nullable(),
+  voidReason: z.string().nullable(),
+  voidedAt: z.string().nullable(),
 });
 
 export const paymentInsertSchema = z.object({
@@ -23,5 +25,10 @@ export const paymentInsertSchema = z.object({
   referenceNumber: z.string().optional(),
 });
 
+export const voidPaymentSchema = z.object({
+  reason: z.string().min(1),
+});
+
 export type PaymentSelect = z.infer<typeof paymentSelectSchema>;
 export type PaymentInsert = z.infer<typeof paymentInsertSchema>;
+export type VoidPayment = z.infer<typeof voidPaymentSchema>;

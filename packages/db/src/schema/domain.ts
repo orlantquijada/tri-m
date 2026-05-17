@@ -101,4 +101,6 @@ export const payments = sqliteTable("payments", {
     .notNull(),
   recordedBy: text(),
   referenceNumber: text(),
+  voidedAt: text(),
+  voidReason: text(),
 });

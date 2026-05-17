@@ -102,7 +102,11 @@ export function ReceivableDetail({
 
       <div>
         <h2 className="mb-3 text-lg font-semibold">Payment History</h2>
-        <PaymentHistory payments={receivable.payments} />
+        <PaymentHistory
+          payments={receivable.payments}
+          receivableId={receivable.id}
+          customerId={receivable.customerId}
+        />
       </div>
     </div>
   );
