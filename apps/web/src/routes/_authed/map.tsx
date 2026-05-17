@@ -9,7 +9,7 @@ function MapPage() {
 
   if (isLoading) {
     return (
-      <div className="flex h-full items-center justify-center text-muted-foreground text-sm">
+      <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
         Loading…
       </div>
     );
@@ -17,7 +17,7 @@ function MapPage() {
 
   if (error) {
     return (
-      <div className="flex h-full items-center justify-center text-destructive text-sm">
+      <div className="flex h-full items-center justify-center text-sm text-destructive">
         Failed to load customers
       </div>
     );
@@ -29,7 +29,7 @@ function MapPage() {
   );
 
   return (
-    <div className="-m-4 h-[calc(100svh-3.5rem)] isolate">
+    <div className="isolate -m-4 h-[calc(100svh-3.5rem)]">
       <MapView customers={customersWithCoords} />
     </div>
   );

@@ -16,3 +16,5 @@ export * from "./receivable";
 export * from "./responses";
 // oxlint-disable-next-line no-barrel-file
 export * from "./schedule";
+// oxlint-disable-next-line no-barrel-file
+export * from "./user";

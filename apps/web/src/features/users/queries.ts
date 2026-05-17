@@ -16,9 +16,22 @@ type UpdateUserBody = InferRequestType<
   (typeof api.api.users)[":id"]["$patch"]
 >["json"];
 
+export const allUsersQueries = createResourceQueries({
+  idType: "string",
+  list: () => api.api.users.$get(),
+  name: "users",
+});
+
 export const userQueries = createResourceQueries({
-  create: (data: CreateDistributorUserBody) =>
-    api.api.users["distributor-users"].$post({ json: data }),
+  create: {
+    fn: (data: CreateDistributorUserBody) =>
+      api.api.users["distributor-users"].$post({ json: data }),
+    onSuccess: ({ queryClient }) => {
+      void queryClient.invalidateQueries({
+        queryKey: allUsersQueries.keys.lists(),
+      });
+    },
+  },
   idType: "string",
   list: () => api.api.users["distributor-users"].$get(),
   name: "distributor-users",
@@ -27,3 +40,7 @@ export const userQueries = createResourceQueries({
 });
 
 export const userKeys = userQueries.keys;
+
+export function useUsersQuery() {
+  return allUsersQueries.useList();
+}

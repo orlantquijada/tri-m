@@ -1,5 +1,6 @@
-import { db, user } from "db";
+import { db, distributors as distributorsTable, user } from "db";
 import { eq } from "drizzle-orm";
+import { userListItemSchema } from "schema";
 
 import { auth } from "../lib/auth";
 import { badRequest, notFound } from "../lib/http";
@@ -27,6 +28,23 @@ type UpdateUserInput = {
 // oxlint-disable-next-line require-await
 export async function listDistributorUsers() {
   return db.select(userFields).from(user).where(eq(user.role, "distributor"));
+}
+
+export async function listAllUsers() {
+  const rows = await db
+    .select({
+      createdAt: user.createdAt,
+      distributorId: user.distributorId,
+      distributorName: distributorsTable.name,
+      email: user.email,
+      id: user.id,
+      name: user.name,
+      role: user.role,
+    })
+    .from(user)
+    .leftJoin(distributorsTable, eq(distributorsTable.id, user.distributorId));
+
+  return userListItemSchema.array().parse(rows);
 }
 
 export async function createDistributorUser(input: CreateDistributorUserInput) {

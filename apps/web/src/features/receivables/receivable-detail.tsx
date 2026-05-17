@@ -64,7 +64,7 @@ export function ReceivableDetail({
         {receivable.monthlyDueAmountCents !== null && (
           <div>
             <p className="text-sm text-muted-foreground">Monthly Due</p>
-            <p className="font-medium font-mono">
+            <p className="font-mono font-medium">
               {formatPeso(receivable.monthlyDueAmountCents)}
             </p>
           </div>
@@ -74,25 +74,25 @@ export function ReceivableDetail({
       <div className="grid grid-cols-2 gap-4 rounded-lg border p-4 sm:grid-cols-4">
         <div>
           <p className="text-sm text-muted-foreground">Total Amount</p>
-          <p className="font-medium font-mono">
+          <p className="font-mono font-medium">
             {formatPeso(receivable.totalAmountCents)}
           </p>
         </div>
         <div>
           <p className="text-sm text-muted-foreground">Down Payment</p>
-          <p className="font-medium font-mono">
+          <p className="font-mono font-medium">
             {formatPeso(receivable.downPaymentCents)}
           </p>
         </div>
         <div>
           <p className="text-sm text-muted-foreground">Original Balance</p>
-          <p className="font-medium font-mono">
+          <p className="font-mono font-medium">
             {formatPeso(receivable.originalBalanceCents)}
           </p>
         </div>
         <div>
           <p className="text-sm text-muted-foreground">Current Balance</p>
-          <p className="text-lg font-bold font-mono">
+          <p className="font-mono text-lg font-bold">
             {formatPeso(receivable.currentBalanceCents)}
           </p>
         </div>

@@ -44,7 +44,7 @@ export function DashboardCards({
       </div>
       {aging && (
         <div>
-          <h2 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+          <h2 className="mb-3 text-sm font-semibold tracking-wide text-muted-foreground uppercase">
             Aging Breakdown
           </h2>
           <AgingBuckets aging={aging} />

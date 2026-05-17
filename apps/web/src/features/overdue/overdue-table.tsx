@@ -71,7 +71,7 @@ export function OverdueTable({ rows }: { rows: OverdueRow[] }) {
             <TableCell>
               {row.latitude !== null && row.longitude !== null ? (
                 <a
-                  className="underline-offset-4 hover:underline text-sm"
+                  className="text-sm underline-offset-4 hover:underline"
                   href={mapsUrl(row.latitude, row.longitude)}
                   rel="noreferrer"
                   target="_blank"
@@ -79,7 +79,7 @@ export function OverdueTable({ rows }: { rows: OverdueRow[] }) {
                   Open
                 </a>
               ) : (
-                <span className="text-muted-foreground text-sm">—</span>
+                <span className="text-sm text-muted-foreground">—</span>
               )}
             </TableCell>
           </TableRow>

@@ -15,8 +15,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthedOverdueRouteImport } from './routes/_authed/overdue'
 import { Route as AuthedMapRouteImport } from './routes/_authed/map'
 import { Route as AuthedDashboardRouteImport } from './routes/_authed/dashboard'
+import { Route as AuthedUsersIndexRouteImport } from './routes/_authed/users/index'
 import { Route as AuthedDistributorsIndexRouteImport } from './routes/_authed/distributors/index'
 import { Route as AuthedCustomersIndexRouteImport } from './routes/_authed/customers/index'
+import { Route as AuthedBlacklistRequestsIndexRouteImport } from './routes/_authed/blacklist-requests/index'
 import { Route as AuthedReceivablesNewRouteImport } from './routes/_authed/receivables/new'
 import { Route as AuthedReceivablesIdRouteImport } from './routes/_authed/receivables/$id'
 import { Route as AuthedDistributorsNewRouteImport } from './routes/_authed/distributors/new'
@@ -24,7 +26,6 @@ import { Route as AuthedCustomersNewRouteImport } from './routes/_authed/custome
 import { Route as AuthedCustomersIdRouteImport } from './routes/_authed/customers/$id'
 import { Route as AuthedDistributorsIdEditRouteImport } from './routes/_authed/distributors/$id.edit'
 import { Route as AuthedCustomersIdEditRouteImport } from './routes/_authed/customers/$id_.edit'
-import { Route as AuthedBlacklistRequestsIndexRouteImport } from './routes/_authed/blacklist-requests/index'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -55,6 +56,11 @@ const AuthedDashboardRoute = AuthedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthedRoute,
 } as any)
+const AuthedUsersIndexRoute = AuthedUsersIndexRouteImport.update({
+  id: '/users/',
+  path: '/users/',
+  getParentRoute: () => AuthedRoute,
+} as any)
 const AuthedDistributorsIndexRoute = AuthedDistributorsIndexRouteImport.update({
   id: '/distributors/',
   path: '/distributors/',
@@ -65,6 +71,12 @@ const AuthedCustomersIndexRoute = AuthedCustomersIndexRouteImport.update({
   path: '/customers/',
   getParentRoute: () => AuthedRoute,
 } as any)
+const AuthedBlacklistRequestsIndexRoute =
+  AuthedBlacklistRequestsIndexRouteImport.update({
+    id: '/blacklist-requests/',
+    path: '/blacklist-requests/',
+    getParentRoute: () => AuthedRoute,
+  } as any)
 const AuthedReceivablesNewRoute = AuthedReceivablesNewRouteImport.update({
   id: '/receivables/new',
   path: '/receivables/new',
@@ -101,12 +113,6 @@ const AuthedCustomersIdEditRoute = AuthedCustomersIdEditRouteImport.update({
   path: '/customers/$id/edit',
   getParentRoute: () => AuthedRoute,
 } as any)
-const AuthedBlacklistRequestsIndexRoute =
-  AuthedBlacklistRequestsIndexRouteImport.update({
-    id: '/blacklist-requests/',
-    path: '/blacklist-requests/',
-    getParentRoute: () => AuthedRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -119,11 +125,12 @@ export interface FileRoutesByFullPath {
   '/distributors/new': typeof AuthedDistributorsNewRoute
   '/receivables/$id': typeof AuthedReceivablesIdRoute
   '/receivables/new': typeof AuthedReceivablesNewRoute
+  '/blacklist-requests/': typeof AuthedBlacklistRequestsIndexRoute
   '/customers/': typeof AuthedCustomersIndexRoute
   '/distributors/': typeof AuthedDistributorsIndexRoute
+  '/users/': typeof AuthedUsersIndexRoute
   '/customers/$id/edit': typeof AuthedCustomersIdEditRoute
   '/distributors/$id/edit': typeof AuthedDistributorsIdEditRoute
-  '/blacklist-requests/': typeof AuthedBlacklistRequestsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -136,11 +143,12 @@ export interface FileRoutesByTo {
   '/distributors/new': typeof AuthedDistributorsNewRoute
   '/receivables/$id': typeof AuthedReceivablesIdRoute
   '/receivables/new': typeof AuthedReceivablesNewRoute
+  '/blacklist-requests': typeof AuthedBlacklistRequestsIndexRoute
   '/customers': typeof AuthedCustomersIndexRoute
   '/distributors': typeof AuthedDistributorsIndexRoute
+  '/users': typeof AuthedUsersIndexRoute
   '/customers/$id/edit': typeof AuthedCustomersIdEditRoute
   '/distributors/$id/edit': typeof AuthedDistributorsIdEditRoute
-  '/blacklist-requests': typeof AuthedBlacklistRequestsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -155,11 +163,12 @@ export interface FileRoutesById {
   '/_authed/distributors/new': typeof AuthedDistributorsNewRoute
   '/_authed/receivables/$id': typeof AuthedReceivablesIdRoute
   '/_authed/receivables/new': typeof AuthedReceivablesNewRoute
+  '/_authed/blacklist-requests/': typeof AuthedBlacklistRequestsIndexRoute
   '/_authed/customers/': typeof AuthedCustomersIndexRoute
   '/_authed/distributors/': typeof AuthedDistributorsIndexRoute
+  '/_authed/users/': typeof AuthedUsersIndexRoute
   '/_authed/customers/$id_/edit': typeof AuthedCustomersIdEditRoute
   '/_authed/distributors/$id/edit': typeof AuthedDistributorsIdEditRoute
-  '/_authed/blacklist-requests/': typeof AuthedBlacklistRequestsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -174,11 +183,12 @@ export interface FileRouteTypes {
     | '/distributors/new'
     | '/receivables/$id'
     | '/receivables/new'
+    | '/blacklist-requests/'
     | '/customers/'
     | '/distributors/'
+    | '/users/'
     | '/customers/$id/edit'
     | '/distributors/$id/edit'
-    | '/blacklist-requests/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -191,11 +201,12 @@ export interface FileRouteTypes {
     | '/distributors/new'
     | '/receivables/$id'
     | '/receivables/new'
+    | '/blacklist-requests'
     | '/customers'
     | '/distributors'
+    | '/users'
     | '/customers/$id/edit'
     | '/distributors/$id/edit'
-    | '/blacklist-requests'
   id:
     | '__root__'
     | '/'
@@ -209,11 +220,12 @@ export interface FileRouteTypes {
     | '/_authed/distributors/new'
     | '/_authed/receivables/$id'
     | '/_authed/receivables/new'
+    | '/_authed/blacklist-requests/'
     | '/_authed/customers/'
     | '/_authed/distributors/'
+    | '/_authed/users/'
     | '/_authed/customers/$id_/edit'
     | '/_authed/distributors/$id/edit'
-    | '/_authed/blacklist-requests/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -266,6 +278,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedDashboardRouteImport
       parentRoute: typeof AuthedRoute
     }
+    '/_authed/users/': {
+      id: '/_authed/users/'
+      path: '/users'
+      fullPath: '/users/'
+      preLoaderRoute: typeof AuthedUsersIndexRouteImport
+      parentRoute: typeof AuthedRoute
+    }
     '/_authed/distributors/': {
       id: '/_authed/distributors/'
       path: '/distributors'
@@ -278,6 +297,13 @@ declare module '@tanstack/react-router' {
       path: '/customers'
       fullPath: '/customers/'
       preLoaderRoute: typeof AuthedCustomersIndexRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/blacklist-requests/': {
+      id: '/_authed/blacklist-requests/'
+      path: '/blacklist-requests'
+      fullPath: '/blacklist-requests/'
+      preLoaderRoute: typeof AuthedBlacklistRequestsIndexRouteImport
       parentRoute: typeof AuthedRoute
     }
     '/_authed/receivables/new': {
@@ -329,13 +355,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedCustomersIdEditRouteImport
       parentRoute: typeof AuthedRoute
     }
-    '/_authed/blacklist-requests/': {
-      id: '/_authed/blacklist-requests/'
-      path: '/blacklist-requests'
-      fullPath: '/blacklist-requests/'
-      preLoaderRoute: typeof AuthedBlacklistRequestsIndexRouteImport
-      parentRoute: typeof AuthedRoute
-    }
   }
 }
 
@@ -348,11 +367,12 @@ interface AuthedRouteChildren {
   AuthedDistributorsNewRoute: typeof AuthedDistributorsNewRoute
   AuthedReceivablesIdRoute: typeof AuthedReceivablesIdRoute
   AuthedReceivablesNewRoute: typeof AuthedReceivablesNewRoute
+  AuthedBlacklistRequestsIndexRoute: typeof AuthedBlacklistRequestsIndexRoute
   AuthedCustomersIndexRoute: typeof AuthedCustomersIndexRoute
   AuthedDistributorsIndexRoute: typeof AuthedDistributorsIndexRoute
+  AuthedUsersIndexRoute: typeof AuthedUsersIndexRoute
   AuthedCustomersIdEditRoute: typeof AuthedCustomersIdEditRoute
   AuthedDistributorsIdEditRoute: typeof AuthedDistributorsIdEditRoute
-  AuthedBlacklistRequestsIndexRoute: typeof AuthedBlacklistRequestsIndexRoute
 }
 
 const AuthedRouteChildren: AuthedRouteChildren = {
@@ -364,11 +384,12 @@ const AuthedRouteChildren: AuthedRouteChildren = {
   AuthedDistributorsNewRoute: AuthedDistributorsNewRoute,
   AuthedReceivablesIdRoute: AuthedReceivablesIdRoute,
   AuthedReceivablesNewRoute: AuthedReceivablesNewRoute,
+  AuthedBlacklistRequestsIndexRoute: AuthedBlacklistRequestsIndexRoute,
   AuthedCustomersIndexRoute: AuthedCustomersIndexRoute,
   AuthedDistributorsIndexRoute: AuthedDistributorsIndexRoute,
+  AuthedUsersIndexRoute: AuthedUsersIndexRoute,
   AuthedCustomersIdEditRoute: AuthedCustomersIdEditRoute,
   AuthedDistributorsIdEditRoute: AuthedDistributorsIdEditRoute,
-  AuthedBlacklistRequestsIndexRoute: AuthedBlacklistRequestsIndexRoute,
 }
 
 const AuthedRouteWithChildren =

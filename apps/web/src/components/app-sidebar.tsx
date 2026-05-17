@@ -4,6 +4,7 @@ import {
   LayoutDashboardIcon,
   MapIcon,
   Package2Icon,
+  UserCogIcon,
   UsersIcon,
 } from "lucide-react";
 import * as React from "react";
@@ -42,6 +43,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           icon: <BuildingIcon />,
           title: "Distributors",
           url: "/distributors",
+        },
+        {
+          icon: <UserCogIcon />,
+          title: "Users",
+          url: "/users",
         },
       ]
     : baseNavItems;

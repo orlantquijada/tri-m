@@ -2,6 +2,7 @@ import { zValidator } from "@hono/zod-validator";
 import { hashPassword } from "better-auth/crypto";
 import { account, db, user } from "db";
 import { and, eq } from "drizzle-orm";
+import { userRoleEnum } from "schema";
 import { z } from "zod";
 
 import { createRouter } from "../lib/factory";
@@ -10,6 +11,7 @@ import { Scope } from "../lib/scope";
 import { requireSession } from "../middleware/auth";
 import {
   createDistributorUser,
+  listAllUsers,
   listDistributorUsers,
   updateUser,
 } from "../services/users";
@@ -23,7 +25,7 @@ const createDistributorUserSchema = z.object({
 
 const updateDistributorUserSchema = z.object({
   distributorId: z.number().int().positive().optional(),
-  role: z.enum(["admin", "distributor"]).optional(),
+  role: userRoleEnum.optional(),
 });
 
 const resetPasswordSchema = z.object({
@@ -31,6 +33,10 @@ const resetPasswordSchema = z.object({
 });
 
 export const users = createRouter()
+  .get("/", requireSession, async (c) => {
+    Scope.forUser(c.get("user")).assertAdmin();
+    return c.json(await listAllUsers());
+  })
   .get("/distributor-users", requireSession, async (c) => {
     Scope.forUser(c.get("user")).assertAdmin();
     return c.json(await listDistributorUsers());

@@ -14,7 +14,7 @@ Full task details in `docs/phase3-plan.md`. Phase 2 context in `docs/phase2-plan
 ## Phase G — Access Management
 
 - [x] **G1** — Admin-triggered password reset for distributor users (no email/SMTP)
-- [ ] **G2** — User management page (admin sees all users, resets passwords, navigates to distributor)
+- [x] **G2** — User management page (admin sees all users, resets passwords, navigates to distributor)
 
 ## Phase H — Map Enhancements
 
