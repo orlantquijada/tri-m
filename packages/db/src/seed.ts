@@ -7,6 +7,7 @@ import {
   account,
   customers,
   distributors,
+  paymentSchedules,
   payments,
   receivables,
   session,
@@ -16,6 +17,7 @@ import {
 
 // Delete in reverse FK order (idempotent)
 await db.delete(payments);
+await db.delete(paymentSchedules);
 await db.delete(receivables);
 await db.delete(customers);
 await db.delete(distributors);
@@ -422,6 +424,51 @@ await db.insert(payments).values([
     recordedBy: null,
     referenceNumber: null,
   },
+]);
+
+function addMonths(dateStr: string, months: number): string {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  const date = new Date(y, m - 1 + months, d);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+function makeScheduleRows(
+  receivableId: number,
+  originalBalanceCents: number,
+  paymentTermMonths: number,
+  firstDueDate: string
+) {
+  const N = paymentTermMonths;
+  const base = Math.floor(originalBalanceCents / N);
+  const remainder = originalBalanceCents - base * N;
+  return Array.from({ length: N }, (_, i) => ({
+    dueAmountCents: i === N - 1 ? base + remainder : base,
+    dueDate: addMonths(firstDueDate, i),
+    installmentNo: i + 1,
+    paidAmountCents: 0,
+    receivableId,
+    status: "pending" as const,
+  }));
+}
+
+// Generate schedules for the 3 overdue + 5 current receivables
+await db.insert(paymentSchedules).values([
+  // rec:1 — Maria Santos, 12 months, 2,000,000 orig, first due 2026-02-15
+  ...makeScheduleRows(1, 2_000_000, 12, "2026-02-15"),
+  // rec:2 — Juan dela Cruz, 6 months, 1,500,000 orig, first due 2025-07-01
+  ...makeScheduleRows(2, 1_500_000, 6, "2025-07-01"),
+  // rec:3 — Roberto Garcia, 10 months, 1,300,000 orig, first due 2025-09-01
+  ...makeScheduleRows(3, 1_300_000, 10, "2025-09-01"),
+  // rec:4 — Cecilia Mendoza, 10 months, 1,000,000 orig, first due 2025-11-01
+  ...makeScheduleRows(4, 1_000_000, 10, "2025-11-01"),
+  // rec:6 — Lorna Castro, 12 months, 1,200,000 orig, first due 2026-03-01
+  ...makeScheduleRows(6, 1_200_000, 12, "2026-03-01"),
+  // rec:7 — Fernando Bautista, 10 months, 1,500,000 orig, first due 2026-04-01
+  ...makeScheduleRows(7, 1_500_000, 10, "2026-04-01"),
+  // rec:8 — Gloria Flores, 8 months, 800,000 orig, first due 2026-01-01
+  ...makeScheduleRows(8, 800_000, 8, "2026-01-01"),
+  // rec:9 — Hernando Lopez, 8 months, 1,000,000 orig, first due 2026-02-01
+  ...makeScheduleRows(9, 1_000_000, 8, "2026-02-01"),
 ]);
 
 // Create auth users via better-auth API

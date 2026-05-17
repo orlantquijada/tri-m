@@ -22,7 +22,7 @@ Full task details in `docs/phase2-plan.md`. MVP context in `docs/build-plan.md` 
 
 ## Phase D — Schedules + Aging
 
-- [ ] **D1** — `payment_schedules` table + generation on receivable create
+- [x] **D1** — `payment_schedules` table + generation on receivable create
 - [ ] **D2** — Per-installment overdue + schedule table on receivable detail
 - [ ] **D3** — Aging buckets (0–30, 31–60, 61–90, 90+) on overdue + dashboard
 
@@ -41,3 +41,4 @@ Full task details in `docs/phase2-plan.md`. MVP context in `docs/build-plan.md` 
 - 2026-05-17 — B2 — Plan said `DistributorForm.tsx`; used `distributor-form.tsx` (kebab-case convention). Plan said react-hook-form; used `@tanstack/react-form` to match project pattern. Also extended `services/distributors.ts` and `queries.ts` (implicit deps not listed). Used `buttonVariants()` + Link instead of Button+asChild (Button in this project has no asChild prop). Added Edit links to `distributor-list.tsx` and New button to `distributors/index.tsx` for navigation.
 - 2026-05-17 — B3 — Plan said `AssignDistributorDialog.tsx`; used `assign-distributor-dialog.tsx` (kebab-case). Plan listed `apps/api/src/routes/users.ts` and `apps/api/src/index.ts` as files; also created `apps/web/src/features/users/queries.ts` (implicit). Zod schemas defined inline in route (not in packages/schema) since they're API-internal. Save button disabled when empty distributor selected to prevent sending undefined distributorId.
 - 2026-05-17 — C1 — Lookup triggered on phone field blur (not on keystroke). `lookupPhone` state initialised from `defaultValues.phone` so edit page shows warning immediately if phone already conflicts. Warning filters out `currentCustomerId` client-side so editing a customer's own phone does not self-warn.
+- 2026-05-17 — D1 — Plan named `apps/api/src/services/receivable.ts` (singular) but the existing service file is `receivables.ts` (plural). Extended the existing file. Seed sets all schedule statuses to `pending` regardless of date; D2 will derive overdue from `dueDate < today` at query time rather than relying on the status field. Skipped id:5 (fully_paid) per plan ("3 overdue + 5 current").

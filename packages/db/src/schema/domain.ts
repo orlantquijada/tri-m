@@ -63,6 +63,21 @@ export const receivables = sqliteTable("receivables", {
   totalAmountCents: int().notNull(),
 });
 
+export const paymentSchedules = sqliteTable("payment_schedules", {
+  ...timestampFields,
+  dueAmountCents: int().notNull(),
+  dueDate: text().notNull(),
+  id: int().primaryKey({ autoIncrement: true }),
+  installmentNo: int().notNull(),
+  paidAmountCents: int().notNull().default(0),
+  receivableId: int()
+    .references(() => receivables.id)
+    .notNull(),
+  status: text({ enum: ["pending", "partial", "paid", "overdue"] })
+    .notNull()
+    .default("pending"),
+});
+
 export const payments = sqliteTable("payments", {
   amountCents: int().notNull(),
   ...timestampFields,

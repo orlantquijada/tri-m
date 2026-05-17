@@ -1,10 +1,11 @@
 import {
   customers as customersTable,
   db,
+  paymentSchedules as paymentSchedulesTable,
   payments as paymentsTable,
   receivables as receivablesTable,
 } from "db";
-import { desc, eq } from "drizzle-orm";
+import { asc, desc, eq } from "drizzle-orm";
 import { receivableDetailSchema, receivableSelectSchema } from "schema";
 import type { ReceivableInsert } from "schema";
 
@@ -13,14 +14,25 @@ import { computeOriginalBalance } from "../lib/receivable";
 import { Scope } from "../lib/scope";
 import type { User } from "../middleware/auth";
 
+function addMonths(dateStr: string, months: number): string {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  const date = new Date(y, m - 1 + months, d);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
 export async function getReceivable(user: User, id: number) {
-  const [[receivable], payments] = await Promise.all([
+  const [[receivable], payments, schedule] = await Promise.all([
     db.select().from(receivablesTable).where(eq(receivablesTable.id, id)),
     db
       .select()
       .from(paymentsTable)
       .where(eq(paymentsTable.receivableId, id))
       .orderBy(desc(paymentsTable.paymentDate)),
+    db
+      .select()
+      .from(paymentSchedulesTable)
+      .where(eq(paymentSchedulesTable.receivableId, id))
+      .orderBy(asc(paymentSchedulesTable.installmentNo)),
   ]);
 
   if (!receivable) {
@@ -43,7 +55,12 @@ export async function getReceivable(user: User, id: number) {
     throw notFound("Customer not found");
   }
 
-  return receivableDetailSchema.parse({ ...receivable, customer, payments });
+  return receivableDetailSchema.parse({
+    ...receivable,
+    customer,
+    payments,
+    schedule,
+  });
 }
 
 export function createReceivable(user: User, data: ReceivableInsert) {
@@ -80,6 +97,22 @@ export function createReceivable(user: User, data: ReceivableInsert) {
         totalAmountCents: data.totalAmountCents,
       })
       .returning();
+
+    if (data.paymentTermMonths && data.paymentTermMonths > 0) {
+      const N = data.paymentTermMonths;
+      const base = Math.floor(originalBalanceCents / N);
+      const remainder = originalBalanceCents - base * N;
+      await tx.insert(paymentSchedulesTable).values(
+        Array.from({ length: N }, (_, i) => ({
+          dueAmountCents: i === N - 1 ? base + remainder : base,
+          dueDate: addMonths(data.firstDueDate, i),
+          installmentNo: i + 1,
+          paidAmountCents: 0,
+          receivableId: receivable.id,
+          status: "pending" as const,
+        }))
+      );
+    }
 
     return receivableSelectSchema.parse(receivable);
   });

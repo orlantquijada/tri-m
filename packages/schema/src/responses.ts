@@ -4,10 +4,12 @@ import { customerSummarySchema } from "./customer";
 import { receivableStatusEnum } from "./enums";
 import { paymentSelectSchema } from "./payment";
 import { receivableSelectSchema } from "./receivable";
+import { scheduleSelectSchema } from "./schedule";
 
 export const receivableDetailSchema = receivableSelectSchema.extend({
   customer: customerSummarySchema,
   payments: z.array(paymentSelectSchema),
+  schedule: z.array(scheduleSelectSchema),
 });
 
 export const overdueRowSchema = z.object({
