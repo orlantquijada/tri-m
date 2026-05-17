@@ -1,4 +1,6 @@
-import type { Map as LeafletMap, Marker } from "leaflet";
+import "leaflet.markercluster/dist/MarkerCluster.css";
+import "leaflet.markercluster/dist/MarkerCluster.Default.css";
+import type { Map as LeafletMap, Marker, MarkerClusterGroup } from "leaflet";
 import { useEffect, useRef } from "react";
 
 import type { CustomerListItem } from "@/features/customers/queries";
@@ -6,8 +8,8 @@ import { formatPeso, mapsUrl } from "@/lib/format";
 
 type Customer = Pick<
   CustomerListItem,
-  | "id"
   | "fullName"
+  | "id"
   | "latitude"
   | "longitude"
   | "outstandingBalanceCents"
@@ -29,7 +31,7 @@ function esc(s: string) {
 export function MapView({ customers }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<LeafletMap | null>(null);
-  const markersRef = useRef<Marker[]>([]);
+  const clusterRef = useRef<MarkerClusterGroup | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) {
@@ -38,7 +40,10 @@ export function MapView({ customers }: Props) {
     let aborted = false;
 
     void (async () => {
-      const L = await import("leaflet");
+      const [L] = await Promise.all([
+        import("leaflet"),
+        import("leaflet.markercluster"),
+      ]);
       if (aborted || !containerRef.current) {
         return;
       }
@@ -54,23 +59,22 @@ export function MapView({ customers }: Props) {
         mapRef.current = map;
       }
 
-      for (const m of markersRef.current) {
-        m.remove();
-      }
-      markersRef.current = [];
-
       const map = mapRef.current;
-      const added: Marker[] = [];
+      if (clusterRef.current) {
+        clusterRef.current.clearLayers();
+      } else {
+        clusterRef.current = L.default.markerClusterGroup();
+        map.addLayer(clusterRef.current);
+      }
+
+      const markers: Marker[] = [];
       for (const c of customers) {
         if (c.latitude === null || c.longitude === null) {
           continue;
         }
-
-        added.push(
-          L.default
-            .marker([c.latitude, c.longitude])
-            .bindPopup(
-              `<div style="min-width:160px">
+        markers.push(
+          L.default.marker([c.latitude, c.longitude]).bindPopup(
+            `<div style="min-width:160px">
                 <p style="font-weight:600;margin:0 0 4px">${esc(c.fullName)}</p>
                 <p style="margin:0 0 2px">${esc(c.phone)}</p>
                 <p style="margin:0 0 2px">Risk: ${esc(c.riskStatus)}</p>
@@ -78,18 +82,17 @@ export function MapView({ customers }: Props) {
                 <a href="/customers/${c.id}" style="margin-right:8px">Profile</a>
                 <a href="${mapsUrl(c.latitude, c.longitude)}" target="_blank" rel="noopener noreferrer">Google Maps</a>
               </div>`
-            )
-            .addTo(map)
+          )
         );
       }
-      markersRef.current = added;
+      clusterRef.current.addLayers(markers);
     })();
 
     return () => {
       aborted = true;
       mapRef.current?.remove();
       mapRef.current = null;
-      markersRef.current = [];
+      clusterRef.current = null;
     };
   }, [customers]);
 

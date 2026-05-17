@@ -18,7 +18,7 @@ Full task details in `docs/phase3-plan.md`. Phase 2 context in `docs/phase2-plan
 
 ## Phase H — Map Enhancements
 
-- [ ] **H1** — Map filters (risk status, overdue-only toggle) + Leaflet marker clustering
+- [x] **H1** — Map filters (risk status, overdue-only toggle) + Leaflet marker clustering
 - [ ] **H2** — Collection route view (ephemeral ordered stop list + numbered markers + CSV export)
 
 ## Phase I — Audit & Reporting
@@ -34,3 +34,4 @@ Full task details in `docs/phase3-plan.md`. Phase 2 context in `docs/phase2-plan
 (Add entries here when blocking or deviating from the plan. Format: `YYYY-MM-DD — task — note`.)
 
 - 2026-05-17 — plan — Phase 3 plan written. 9 tasks across 4 mini-phases (F–I). Order: payment void → blacklist approval → password reset → user management → map filters → collection route → audit infra → audit wiring → performance report. Locked: void is transactional with schedule recalculation replay; blacklist is a state machine; audit is append-only; route planning is client-side ephemeral; password reset is admin-triggered only.
+- 2026-05-18 — H1 — Filters sent server-side as query params (`hasOverdue=true`, `riskStatus=good,watchlist`). New `useCustomersMapQuery(filters)` lives alongside the existing `customerQueries.useList()` (kept untouched for the customer-list page). Map filter state persisted via TanStack Router `validateSearch`; navigate uses `to: "/map"`. Installed `leaflet.markercluster` + `@types/leaflet.markercluster`; CSS imported at top of `map-view.tsx`. Clustering applies to all markers via a single `MarkerClusterGroup`.

@@ -1,5 +1,9 @@
 import { zValidator } from "@hono/zod-validator";
-import { customerInsertSchema, customerUpdateSchema } from "schema";
+import {
+  customerInsertSchema,
+  customerUpdateSchema,
+  riskStatusEnum,
+} from "schema";
 import { z } from "zod";
 
 import { createRouter } from "../lib/factory";
@@ -13,9 +17,33 @@ import {
   updateCustomer,
 } from "../services/customers";
 
+const listFiltersSchema = z.object({
+  hasOverdue: z.enum(["true", "false"]).optional(),
+  riskStatus: z.preprocess((v) => {
+    if (typeof v === "string") {
+      return v.split(",").filter(Boolean);
+    }
+    if (Array.isArray(v)) {
+      return v;
+    }
+    return;
+  }, z.array(riskStatusEnum).optional()),
+});
+
 export const customers = createRouter()
-  .get("/", requireSession, async (c) =>
-    c.json(await listCustomers(c.get("user")))
+  .get(
+    "/",
+    requireSession,
+    zValidator("query", listFiltersSchema),
+    async (c) => {
+      const { hasOverdue, riskStatus } = c.req.valid("query");
+      return c.json(
+        await listCustomers(c.get("user"), {
+          hasOverdue: hasOverdue === "true",
+          riskStatus,
+        })
+      );
+    }
   )
   .get(
     "/lookup",

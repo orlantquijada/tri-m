@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import type { InferRequestType, InferResponseType } from "hono/client";
+import type { RiskStatus } from "schema";
 
 import { api } from "@/lib/api";
 import { createResourceQueries } from "@/lib/queries";
@@ -26,7 +27,7 @@ export const customerQueries = createResourceQueries({
   create: (data: CreateCustomerBody) => api.api.customers.$post({ json: data }),
   detail: (id: number) =>
     api.api.customers[":id"].$get({ param: { id: String(id) } }),
-  list: () => api.api.customers.$get(),
+  list: () => api.api.customers.$get({ query: {} }),
   name: "customers",
   update: (id: number, data: UpdateCustomerBody) =>
     api.api.customers[":id"].$patch({
@@ -55,3 +56,30 @@ type PhoneLookupMatch = InferResponseType<
   typeof api.api.customers.lookup.$get,
   200
 >["matches"][number];
+
+export type CustomersMapFilters = {
+  hasOverdue: boolean;
+  riskStatus: RiskStatus[];
+};
+
+export function useCustomersMapQuery(filters: CustomersMapFilters) {
+  const riskStatusKey = filters.riskStatus.join(",");
+  const query: Record<string, string> = {};
+  if (filters.hasOverdue) {
+    query.hasOverdue = "true";
+  }
+  if (riskStatusKey) {
+    query.riskStatus = riskStatusKey;
+  }
+
+  return useQuery({
+    queryFn: async () => {
+      const res = await api.api.customers.$get({ query });
+      if (!res.ok) {
+        throw new Error("Failed to fetch customers");
+      }
+      return res.json();
+    },
+    queryKey: ["customers", "map", filters.hasOverdue, riskStatusKey] as const,
+  });
+}

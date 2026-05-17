@@ -1,21 +1,74 @@
 import {
   customers as customersTable,
   db,
+  paymentSchedules as paymentSchedulesTable,
   receivables as receivablesTable,
 } from "db";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, exists, inArray, ne, or, sql } from "drizzle-orm";
 import {
   customerDetailSchema,
   customerListItemSchema,
   customerSelectSchema,
 } from "schema";
-import type { CustomerInsert, CustomerUpdate } from "schema";
+import type { CustomerInsert, CustomerUpdate, RiskStatus } from "schema";
 
 import { badRequest, forbidden, notFound } from "../lib/http";
 import { Scope } from "../lib/scope";
 import type { User } from "../middleware/auth";
 
-export async function listCustomers(user: User) {
+export type ListCustomersFilters = {
+  hasOverdue?: boolean;
+  riskStatus?: RiskStatus[];
+};
+
+export async function listCustomers(
+  user: User,
+  filters: ListCustomersFilters = {}
+) {
+  const scope = Scope.forUser(user);
+  const conditions = [scope.filterQuery(customersTable.distributorId)];
+
+  if (filters.riskStatus && filters.riskStatus.length > 0) {
+    conditions.push(inArray(customersTable.riskStatus, filters.riskStatus));
+  }
+
+  if (filters.hasOverdue) {
+    conditions.push(
+      exists(
+        db
+          .select({ id: receivablesTable.id })
+          .from(receivablesTable)
+          .where(
+            and(
+              eq(receivablesTable.customerId, customersTable.id),
+              ne(receivablesTable.status, "fully_paid"),
+              or(
+                sql`date(${receivablesTable.firstDueDate}) < date('now')`,
+                exists(
+                  db
+                    .select({ id: paymentSchedulesTable.id })
+                    .from(paymentSchedulesTable)
+                    .where(
+                      and(
+                        eq(
+                          paymentSchedulesTable.receivableId,
+                          receivablesTable.id
+                        ),
+                        inArray(paymentSchedulesTable.status, [
+                          "pending",
+                          "partial",
+                        ]),
+                        sql`date(${paymentSchedulesTable.dueDate}) < date('now')`
+                      )
+                    )
+                )
+              )
+            )
+          )
+      )
+    );
+  }
+
   const rows = await db
     .select({
       address: customersTable.address,
@@ -34,7 +87,7 @@ export async function listCustomers(user: User) {
       receivablesTable,
       eq(receivablesTable.customerId, customersTable.id)
     )
-    .where(Scope.forUser(user).filterQuery(customersTable.distributorId))
+    .where(and(...conditions))
     .groupBy(customersTable.id);
 
   return customerListItemSchema.array().parse(rows);
