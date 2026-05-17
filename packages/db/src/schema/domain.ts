@@ -1,22 +1,31 @@
+import { sql } from "drizzle-orm";
 import { int, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
+
+const timestampFields = {
+  createdAt: int({ mode: "timestamp_ms" })
+    .notNull()
+    .default(sql`(unixepoch('now') * 1000)`)
+    .$defaultFn(() => new Date()),
+  updatedAt: int({ mode: "timestamp_ms" })
+    .notNull()
+    .$defaultFn(() => new Date())
+    .$onUpdateFn(() => new Date()),
+};
 
 export const distributors = sqliteTable("distributors", {
   assignedArea: text(),
-  createdAt: int({ mode: "timestamp" }).$defaultFn(() => new Date()),
+  ...timestampFields,
   id: int().primaryKey({ autoIncrement: true }),
   name: text().notNull(),
   phone: text().notNull(),
   status: text({ enum: ["active", "inactive"] })
     .notNull()
     .default("active"),
-  updatedAt: int({ mode: "timestamp" })
-    .$defaultFn(() => new Date())
-    .$onUpdateFn(() => new Date()),
 });
 
 export const customers = sqliteTable("customers", {
   address: text().notNull(),
-  createdAt: int({ mode: "timestamp" }).$defaultFn(() => new Date()),
+  ...timestampFields,
   distributorId: int()
     .references(() => distributors.id)
     .notNull(),
@@ -29,13 +38,10 @@ export const customers = sqliteTable("customers", {
   riskStatus: text({ enum: ["good", "watchlist", "blacklisted"] })
     .notNull()
     .default("good"),
-  updatedAt: int({ mode: "timestamp" })
-    .$defaultFn(() => new Date())
-    .$onUpdateFn(() => new Date()),
 });
 
 export const receivables = sqliteTable("receivables", {
-  createdAt: int({ mode: "timestamp" }).$defaultFn(() => new Date()),
+  ...timestampFields,
   currentBalanceCents: int().notNull(),
   customerId: int()
     .references(() => customers.id)
@@ -55,14 +61,11 @@ export const receivables = sqliteTable("receivables", {
     .notNull()
     .default("current"),
   totalAmountCents: int().notNull(),
-  updatedAt: int({ mode: "timestamp" })
-    .$defaultFn(() => new Date())
-    .$onUpdateFn(() => new Date()),
 });
 
 export const payments = sqliteTable("payments", {
   amountCents: int().notNull(),
-  createdAt: int({ mode: "timestamp" }).$defaultFn(() => new Date()),
+  ...timestampFields,
   customerId: int()
     .references(() => customers.id)
     .notNull(),
@@ -77,7 +80,4 @@ export const payments = sqliteTable("payments", {
     .notNull(),
   recordedBy: text(),
   referenceNumber: text(),
-  updatedAt: int({ mode: "timestamp" })
-    .$defaultFn(() => new Date())
-    .$onUpdateFn(() => new Date()),
 });
