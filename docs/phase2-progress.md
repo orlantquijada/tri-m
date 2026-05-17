@@ -23,7 +23,7 @@ Full task details in `docs/phase2-plan.md`. MVP context in `docs/build-plan.md` 
 ## Phase D — Schedules + Aging
 
 - [x] **D1** — `payment_schedules` table + generation on receivable create
-- [ ] **D2** — Per-installment overdue + schedule table on receivable detail
+- [x] **D2** — Per-installment overdue + schedule table on receivable detail
 - [ ] **D3** — Aging buckets (0–30, 31–60, 61–90, 90+) on overdue + dashboard
 
 ## Phase E — Exports
@@ -42,3 +42,4 @@ Full task details in `docs/phase2-plan.md`. MVP context in `docs/build-plan.md` 
 - 2026-05-17 — B3 — Plan said `AssignDistributorDialog.tsx`; used `assign-distributor-dialog.tsx` (kebab-case). Plan listed `apps/api/src/routes/users.ts` and `apps/api/src/index.ts` as files; also created `apps/web/src/features/users/queries.ts` (implicit). Zod schemas defined inline in route (not in packages/schema) since they're API-internal. Save button disabled when empty distributor selected to prevent sending undefined distributorId.
 - 2026-05-17 — C1 — Lookup triggered on phone field blur (not on keystroke). `lookupPhone` state initialised from `defaultValues.phone` so edit page shows warning immediately if phone already conflicts. Warning filters out `currentCustomerId` client-side so editing a customer's own phone does not self-warn.
 - 2026-05-17 — D1 — Plan named `apps/api/src/services/receivable.ts` (singular) but the existing service file is `receivables.ts` (plural). Extended the existing file. Seed sets all schedule statuses to `pending` regardless of date; D2 will derive overdue from `dueDate < today` at query time rather than relying on the status field. Skipped id:5 (fully_paid) per plan ("3 overdue + 5 current").
+- 2026-05-17 — D2 — Two-query approach: schedule-based (GROUP BY + aggregates) and legacy (notExists). Plan file listed `apps/api/src/services/overdue.ts` as new; file already existed — rewrote in place. Added index on `payment_schedules(receivable_id)` (efficiency fix from simplify). Batched schedule updates with Promise.all. All tsconfigs updated ES2022 → ES2023 to support `toSorted` (formatter preference).

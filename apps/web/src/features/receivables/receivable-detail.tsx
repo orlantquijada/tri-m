@@ -6,6 +6,7 @@ import { PaymentForm } from "../payments/payment-form";
 import { PaymentHistory } from "../payments/payment-history";
 import type { ReceivableWithDetail } from "./queries";
 import { ReceivableStatusBadge } from "./receivable-status-badge";
+import { ScheduleTable } from "./schedule-table";
 
 export function ReceivableDetail({
   receivable,
@@ -96,6 +97,8 @@ export function ReceivableDetail({
           </p>
         </div>
       </div>
+
+      <ScheduleTable schedule={receivable.schedule} />
 
       <div>
         <h2 className="mb-3 text-lg font-semibold">Payment History</h2>

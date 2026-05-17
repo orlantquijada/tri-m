@@ -1,9 +1,10 @@
 import {
   db,
+  paymentSchedules as paymentSchedulesTable,
   payments as paymentsTable,
   receivables as receivablesTable,
 } from "db";
-import { eq } from "drizzle-orm";
+import { and, asc, eq, inArray } from "drizzle-orm";
 import { paymentSelectSchema } from "schema";
 import type { PaymentInsert } from "schema";
 
@@ -56,6 +57,57 @@ export function createPayment(user: User, data: PaymentInsert) {
       receivable,
       data.amountCents
     );
+
+    // Allocate payment to oldest unpaid schedule installments
+    const unpaidRows = await tx
+      .select()
+      .from(paymentSchedulesTable)
+      .where(
+        and(
+          eq(paymentSchedulesTable.receivableId, data.receivableId),
+          inArray(paymentSchedulesTable.status, ["pending", "partial"])
+        )
+      )
+      .orderBy(asc(paymentSchedulesTable.installmentNo));
+
+    if (unpaidRows.length > 0) {
+      type ScheduleUpdate = {
+        id: number;
+        paidAmountCents: number;
+        status: "paid" | "partial";
+      };
+      const updates: ScheduleUpdate[] = [];
+      let remaining = data.amountCents;
+      for (const row of unpaidRows) {
+        if (remaining <= 0) {
+          break;
+        }
+        const outstanding = row.dueAmountCents - row.paidAmountCents;
+        if (remaining >= outstanding) {
+          updates.push({
+            id: row.id,
+            paidAmountCents: row.dueAmountCents,
+            status: "paid",
+          });
+          remaining -= outstanding;
+        } else {
+          updates.push({
+            id: row.id,
+            paidAmountCents: row.paidAmountCents + remaining,
+            status: "partial",
+          });
+          remaining = 0;
+        }
+      }
+      await Promise.all(
+        updates.map(({ id, paidAmountCents, status }) =>
+          tx
+            .update(paymentSchedulesTable)
+            .set({ paidAmountCents, status })
+            .where(eq(paymentSchedulesTable.id, id))
+        )
+      );
+    }
 
     await tx
       .update(receivablesTable)

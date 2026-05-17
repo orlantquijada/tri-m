@@ -23,6 +23,8 @@ export const overdueRowSchema = z.object({
   id: z.number(),
   latitude: z.number().nullable(),
   longitude: z.number().nullable(),
+  oldestUnpaidDueDate: z.string(),
+  pastDueInstallmentCount: z.number(),
   phone: z.string(),
   productDescription: z.string(),
   status: receivableStatusEnum,

@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { int, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { index, int, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 const timestampFields = {
   createdAt: int({ mode: "timestamp_ms" })
@@ -63,20 +63,26 @@ export const receivables = sqliteTable("receivables", {
   totalAmountCents: int().notNull(),
 });
 
-export const paymentSchedules = sqliteTable("payment_schedules", {
-  ...timestampFields,
-  dueAmountCents: int().notNull(),
-  dueDate: text().notNull(),
-  id: int().primaryKey({ autoIncrement: true }),
-  installmentNo: int().notNull(),
-  paidAmountCents: int().notNull().default(0),
-  receivableId: int()
-    .references(() => receivables.id)
-    .notNull(),
-  status: text({ enum: ["pending", "partial", "paid", "overdue"] })
-    .notNull()
-    .default("pending"),
-});
+export const paymentSchedules = sqliteTable(
+  "payment_schedules",
+  {
+    ...timestampFields,
+    dueAmountCents: int().notNull(),
+    dueDate: text().notNull(),
+    id: int().primaryKey({ autoIncrement: true }),
+    installmentNo: int().notNull(),
+    paidAmountCents: int().notNull().default(0),
+    receivableId: int()
+      .references(() => receivables.id)
+      .notNull(),
+    status: text({ enum: ["pending", "partial", "paid", "overdue"] })
+      .notNull()
+      .default("pending"),
+  },
+  (table) => [
+    index("payment_schedules_receivable_id_idx").on(table.receivableId),
+  ]
+);
 
 export const payments = sqliteTable("payments", {
   amountCents: int().notNull(),
