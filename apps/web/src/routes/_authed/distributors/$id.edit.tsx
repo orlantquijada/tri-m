@@ -3,6 +3,40 @@ import { createFileRoute, useParams } from "@tanstack/react-router";
 import { DistributorForm } from "@/features/distributors/distributor-form";
 import { distributorQueries } from "@/features/distributors/queries";
 import { AssignDistributorDialog } from "@/features/users/assign-distributor-dialog";
+import { userQueries } from "@/features/users/queries";
+import { ResetPasswordDialog } from "@/features/users/reset-password-dialog";
+
+function AssignedUsersSection({ distributorId }: { distributorId: number }) {
+  const { data: users = [], isLoading } = userQueries.useList();
+  const assigned = users.filter((u) => u.distributorId === distributorId);
+
+  if (isLoading) {
+    return <p className="text-sm text-muted-foreground">Loading users...</p>;
+  }
+
+  if (assigned.length === 0) {
+    return (
+      <p className="text-sm text-muted-foreground">No assigned users yet.</p>
+    );
+  }
+
+  return (
+    <ul className="divide-y rounded-md border">
+      {assigned.map((u) => (
+        <li
+          key={u.id}
+          className="flex items-center justify-between gap-3 px-3 py-2"
+        >
+          <div className="min-w-0">
+            <p className="truncate text-sm font-medium">{u.name}</p>
+            <p className="truncate text-xs text-muted-foreground">{u.email}</p>
+          </div>
+          <ResetPasswordDialog targetUserId={u.id} targetUserName={u.name} />
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 function EditDistributorPage() {
   const { id } = useParams({ from: "/_authed/distributors/$id/edit" });
@@ -34,6 +68,10 @@ function EditDistributorPage() {
         distributorId={distributorId}
         defaultValues={defaultValues}
       />
+      <section className="mt-8 space-y-3">
+        <h2 className="text-lg font-semibold">Assigned Users</h2>
+        <AssignedUsersSection distributorId={distributorId} />
+      </section>
     </div>
   );
 }

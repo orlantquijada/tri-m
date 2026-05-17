@@ -1,8 +1,11 @@
 import { zValidator } from "@hono/zod-validator";
+import { hashPassword } from "better-auth/crypto";
+import { account, db, user } from "db";
+import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { createRouter } from "../lib/factory";
-import { badRequest } from "../lib/http";
+import { badRequest, forbidden, notFound } from "../lib/http";
 import { Scope } from "../lib/scope";
 import { requireSession } from "../middleware/auth";
 import {
@@ -21,6 +24,10 @@ const createDistributorUserSchema = z.object({
 const updateDistributorUserSchema = z.object({
   distributorId: z.number().int().positive().optional(),
   role: z.enum(["admin", "distributor"]).optional(),
+});
+
+const resetPasswordSchema = z.object({
+  newPassword: z.string().min(8),
 });
 
 export const users = createRouter()
@@ -50,5 +57,45 @@ export const users = createRouter()
       }
 
       return c.json(await updateUser(c.req.param("id"), updates));
+    }
+  )
+  .post(
+    "/:id/reset-password",
+    requireSession,
+    zValidator("json", resetPasswordSchema),
+    async (c) => {
+      Scope.forUser(c.get("user")).assertAdmin();
+      const targetId = c.req.param("id");
+      const { newPassword } = c.req.valid("json");
+
+      const [target] = await db
+        .select({ role: user.role })
+        .from(user)
+        .where(eq(user.id, targetId));
+
+      if (!target) {
+        throw notFound("User not found");
+      }
+      if (target.role !== "distributor") {
+        throw forbidden("Only distributor passwords can be reset");
+      }
+
+      const hash = await hashPassword(newPassword);
+      const updated = await db
+        .update(account)
+        .set({ password: hash })
+        .where(
+          and(
+            eq(account.userId, targetId),
+            eq(account.providerId, "credential")
+          )
+        )
+        .returning({ id: account.id });
+
+      if (updated.length === 0) {
+        throw notFound("No credential account for user");
+      }
+
+      return c.body(null, 204);
     }
   );
