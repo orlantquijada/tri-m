@@ -21,6 +21,7 @@ const app = new Hono()
     console.error(err);
     return c.json({ error: "Internal server error" }, 500);
   })
+  .get("/health", (c) => c.json({ status: "ok" }))
   .route("/auth", authRouter)
   .route("/customers", customers)
   .route("/receivables", receivables)
