@@ -1,5 +1,6 @@
 import {
   AlertCircleIcon,
+  BarChart2Icon,
   BuildingIcon,
   HistoryIcon,
   LayoutDashboardIcon,
@@ -60,6 +61,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           icon: <HistoryIcon />,
           title: "Audit Log",
           url: "/audit",
+        },
+        {
+          icon: <BarChart2Icon />,
+          title: "Reports",
+          url: "/reports",
         },
       ]
     : baseNavItems;

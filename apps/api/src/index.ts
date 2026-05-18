@@ -13,6 +13,7 @@ import { csvExports } from "./routes/exports";
 import { overdue } from "./routes/overdue";
 import { payments } from "./routes/payments";
 import { receivables } from "./routes/receivables";
+import { reports } from "./routes/reports";
 import { users } from "./routes/users";
 
 const app = new Hono()
@@ -37,7 +38,8 @@ const app = new Hono()
   .route("/users", users)
   .route("/exports", csvExports)
   .route("/blacklist-requests", blacklistRequests)
-  .route("/audit", auditRoute);
+  .route("/audit", auditRoute)
+  .route("/reports", reports);
 
 export type AppType = typeof app;
 
