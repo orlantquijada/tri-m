@@ -246,11 +246,14 @@ function BlacklistRequestsPage() {
                     })
                   }
                 >
-                  {reviewMutation.isPending
-                    ? "Processing..."
-                    : (reviewing.action === "approve"
+                  {(() => {
+                    if (reviewMutation.isPending) {
+                      return "Processing...";
+                    }
+                    return reviewing.action === "approve"
                       ? "Confirm Approve"
-                      : "Confirm Reject")}
+                      : "Confirm Reject";
+                  })()}
                 </Button>
               </DialogFooter>
             </>

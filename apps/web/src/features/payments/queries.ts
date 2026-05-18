@@ -1,8 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { InferRequestType } from "hono/client";
 
-import { api } from "@/lib/api";
-import { parseApiError } from "@/lib/api";
+import { api, parseApiError } from "@/lib/api";
 import { createResourceQueries } from "@/lib/queries";
 
 import { customerQueries } from "../customers/queries";

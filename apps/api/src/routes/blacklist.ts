@@ -63,7 +63,10 @@ export const blacklistRequests = createRouter()
         })
         .returning();
 
-      return c.json(request!, 201);
+      if (!request) {
+        throw new Error("Failed to insert blacklist request");
+      }
+      return c.json(request, 201);
     }
   )
   .get("/", requireSession, async (c) => {
@@ -142,7 +145,10 @@ export const blacklistRequests = createRouter()
               .where(eq(customersTable.id, request.customerId));
           }
 
-          return updated!;
+          if (!updated) {
+            throw new Error("Failed to update blacklist request");
+          }
+          return updated;
         })
       );
     }

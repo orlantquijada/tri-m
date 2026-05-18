@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { OverdueExportButton } from "@/features/exports/ExportButtons";
-import { AgingBuckets } from "@/features/overdue/AgingBuckets";
+import { OverdueExportButton } from "@/features/exports/export-buttons";
+import { AgingBuckets } from "@/features/overdue/aging-buckets";
 import { OverdueTable } from "@/features/overdue/overdue-table";
 import { useOverdueQuery } from "@/features/overdue/queries";
 

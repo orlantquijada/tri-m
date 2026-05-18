@@ -118,7 +118,7 @@ export async function getCustomer(user: User, id: number) {
   return customerDetailSchema.parse({ ...customer, receivables });
 }
 
-export async function lookupCustomersByPhone(user: User, phone: string) {
+export function lookupCustomersByPhone(user: User, phone: string) {
   return db
     .select({
       distributorId: customersTable.distributorId,

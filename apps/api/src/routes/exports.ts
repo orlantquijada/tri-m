@@ -13,8 +13,8 @@ import { requireSession } from "../middleware/auth";
 import { listOverdue } from "../services/overdue";
 
 function escapeField(v: unknown): string {
-  const s = v == null ? "" : String(v);
-  return /[",\r\n]/.test(s) ? `"${s.replaceAll('"', '""')}"` : s;
+  const s = v === null || v === undefined ? "" : String(v);
+  return /[",\r\n]/u.test(s) ? `"${s.replaceAll('"', '""')}"` : s;
 }
 
 function toCsv(

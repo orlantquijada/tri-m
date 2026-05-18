@@ -1,7 +1,7 @@
 import type { InferResponseType } from "hono/client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AgingBuckets } from "@/features/overdue/AgingBuckets";
+import { AgingBuckets } from "@/features/overdue/aging-buckets";
 import type { api } from "@/lib/api";
 import { formatPeso } from "@/lib/format";
 

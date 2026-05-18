@@ -223,13 +223,15 @@ export function voidPayment(user: User, paymentId: number, data: VoidPayment) {
       0
     );
     const newBalanceCents = receivable.originalBalanceCents - totalNonVoided;
-    const today = new Date().toISOString().split("T")[0]!;
-    const newStatus =
-      newBalanceCents === 0
-        ? "fully_paid"
-        : (receivable.firstDueDate < today
-          ? "overdue"
-          : "current");
+    const [today] = new Date().toISOString().split("T");
+    let newStatus: "fully_paid" | "overdue" | "current";
+    if (newBalanceCents === 0) {
+      newStatus = "fully_paid";
+    } else if (receivable.firstDueDate < today) {
+      newStatus = "overdue";
+    } else {
+      newStatus = "current";
+    }
 
     await tx
       .update(receivablesTable)

@@ -8,8 +8,8 @@ import { useMemo } from "react";
 import { riskStatusEnum } from "schema";
 import { z } from "zod";
 
-import { useCustomersMapQuery } from '@/features/customers/queries';
-import type { CustomersMapFilters } from '@/features/customers/queries';
+import { useCustomersMapQuery } from "@/features/customers/queries";
+import type { CustomersMapFilters } from "@/features/customers/queries";
 import { MapFilters } from "@/features/map/map-filters";
 import { MapView } from "@/features/map/map-view";
 

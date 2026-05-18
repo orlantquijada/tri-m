@@ -26,7 +26,6 @@ const listFiltersSchema = z.object({
     if (Array.isArray(v)) {
       return v;
     }
-    return;
   }, z.array(riskStatusEnum).optional()),
 });
 

@@ -2,7 +2,7 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 
 import { buttonVariants } from "@/components/ui/button";
 import { CustomerList } from "@/features/customers/customer-list";
-import { CustomersExportButton } from "@/features/exports/ExportButtons";
+import { CustomersExportButton } from "@/features/exports/export-buttons";
 
 function CustomersPage() {
   return (

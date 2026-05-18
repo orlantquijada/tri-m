@@ -19,7 +19,7 @@ Full task details in `docs/phase3-plan.md`. Phase 2 context in `docs/phase2-plan
 ## Phase H — Map Enhancements
 
 - [x] **H1** — Map filters (risk status, overdue-only toggle) + Leaflet marker clustering
-- [ ] **H2** — Collection route view (ephemeral ordered stop list + numbered markers + CSV export)
+- [x] **H2** — Collection route view (ephemeral ordered stop list + numbered markers + CSV export)
 
 ## Phase I — Audit & Reporting
 
@@ -35,3 +35,4 @@ Full task details in `docs/phase3-plan.md`. Phase 2 context in `docs/phase2-plan
 
 - 2026-05-17 — plan — Phase 3 plan written. 9 tasks across 4 mini-phases (F–I). Order: payment void → blacklist approval → password reset → user management → map filters → collection route → audit infra → audit wiring → performance report. Locked: void is transactional with schedule recalculation replay; blacklist is a state machine; audit is append-only; route planning is client-side ephemeral; password reset is admin-triggered only.
 - 2026-05-18 — H1 — Filters sent server-side as query params (`hasOverdue=true`, `riskStatus=good,watchlist`). New `useCustomersMapQuery(filters)` lives alongside the existing `customerQueries.useList()` (kept untouched for the customer-list page). Map filter state persisted via TanStack Router `validateSearch`; navigate uses `to: "/map"`. Installed `leaflet.markercluster` + `@types/leaflet.markercluster`; CSS imported at top of `map-view.tsx`. Clustering applies to all markers via a single `MarkerClusterGroup`.
+- 2026-05-18 — H2 — Overdue service already exposed `latitude`/`longitude` (added during H1 work), so no API service/route changes were needed. New `CollectionRouteView` reuses `useOverdueQuery`; route state is local `useState`, cleared on navigation. Numbered Leaflet markers via `L.divIcon` (inline SVG-free, dark pin with white number). Map auto-fits to stop bounds. CSV built in-memory via `Blob` + temporary `<a download>` anchor with proper RFC 4180 escaping. Customers without GPS show a "No GPS" badge and have no Add button. Sidebar link visible to admin + distributor. Patched `routeTree.gen.ts` manually to register the new route (the TanStack Start vite plugin would otherwise regenerate it on next `dev`/`build`).
