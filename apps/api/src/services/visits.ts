@@ -96,11 +96,48 @@ export async function resolvePromise(user: User, visitId: number) {
   return visitSelectSchema.parse(updated);
 }
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+function startOfLocalDay(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+function daysUntilDueLocal(promisedDate: string): number {
+  const [year, month, day] = promisedDate.split("-").map(Number);
+  if (!year || !month || !day) {
+    return 0;
+  }
+  const due = new Date(year, month - 1, day);
+  const today = startOfLocalDay(new Date());
+  return Math.round((due.getTime() - today.getTime()) / DAY_MS);
+}
+
 export async function listOpenPromises(user: User) {
   const scope = Scope.forUser(user);
   const rows = await db
-    .select()
+    .select({
+      createdAt: visitsTable.createdAt,
+      customer: {
+        address: customersTable.address,
+        fullName: customersTable.fullName,
+        id: customersTable.id,
+        phone: customersTable.phone,
+      },
+      customerId: visitsTable.customerId,
+      distributorId: visitsTable.distributorId,
+      gpsLat: visitsTable.gpsLat,
+      gpsLng: visitsTable.gpsLng,
+      id: visitsTable.id,
+      notes: visitsTable.notes,
+      outcome: visitsTable.outcome,
+      promiseResolvedAt: visitsTable.promiseResolvedAt,
+      promisedAmountCents: visitsTable.promisedAmountCents,
+      promisedDate: visitsTable.promisedDate,
+      recordedByUserId: visitsTable.recordedByUserId,
+      type: visitsTable.type,
+    })
     .from(visitsTable)
+    .innerJoin(customersTable, eq(visitsTable.customerId, customersTable.id))
     .where(
       and(
         scope.filterQuery(visitsTable.distributorId),
@@ -110,5 +147,26 @@ export async function listOpenPromises(user: User) {
     )
     .orderBy(visitsTable.promisedDate);
 
-  return visitSelectSchema.array().parse(rows);
+  return rows.map((row) => {
+    const visit = visitSelectSchema.parse({
+      createdAt: row.createdAt,
+      customerId: row.customerId,
+      distributorId: row.distributorId,
+      gpsLat: row.gpsLat,
+      gpsLng: row.gpsLng,
+      id: row.id,
+      notes: row.notes,
+      outcome: row.outcome,
+      promiseResolvedAt: row.promiseResolvedAt,
+      promisedAmountCents: row.promisedAmountCents,
+      promisedDate: row.promisedDate,
+      recordedByUserId: row.recordedByUserId,
+      type: row.type,
+    });
+    return {
+      ...visit,
+      customer: row.customer,
+      daysUntilDue: row.promisedDate ? daysUntilDueLocal(row.promisedDate) : 0,
+    };
+  });
 }
