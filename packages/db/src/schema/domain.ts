@@ -106,6 +106,29 @@ export const blacklistRequests = sqliteTable("blacklist_requests", {
     .default("pending"),
 });
 
+export const auditEvents = sqliteTable(
+  "audit_events",
+  {
+    actorId: text().notNull(),
+    createdAt: int({ mode: "timestamp_ms" })
+      .notNull()
+      .default(sql`(unixepoch('now') * 1000)`)
+      .$defaultFn(() => new Date()),
+    distributorId: int(),
+    entityId: text().notNull(),
+    entityType: text({
+      enum: ["payment", "customer", "blacklist_request", "user"],
+    }).notNull(),
+    event: text().notNull(),
+    id: int().primaryKey({ autoIncrement: true }),
+    metadata: text(),
+  },
+  (table) => [
+    index("audit_events_created_at_idx").on(table.createdAt),
+    index("audit_events_entity_idx").on(table.entityType, table.entityId),
+  ]
+);
+
 export const payments = sqliteTable("payments", {
   amountCents: int().notNull(),
   ...timestampFields,

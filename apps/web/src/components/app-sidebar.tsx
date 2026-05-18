@@ -1,6 +1,7 @@
 import {
   AlertCircleIcon,
   BuildingIcon,
+  HistoryIcon,
   LayoutDashboardIcon,
   MapIcon,
   Package2Icon,
@@ -54,6 +55,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           icon: <UserCogIcon />,
           title: "Users",
           url: "/users",
+        },
+        {
+          icon: <HistoryIcon />,
+          title: "Audit Log",
+          url: "/audit",
         },
       ]
     : baseNavItems;

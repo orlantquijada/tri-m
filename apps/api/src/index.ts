@@ -3,6 +3,7 @@ import { HTTPException } from "hono/http-exception";
 
 import { env } from "./env";
 import { corsMiddleware } from "./middleware/cors";
+import { auditRoute } from "./routes/audit";
 import { authRouter } from "./routes/auth";
 import { blacklistRequests } from "./routes/blacklist";
 import { customers } from "./routes/customers";
@@ -35,7 +36,8 @@ const app = new Hono()
   .route("/dashboard", dashboard)
   .route("/users", users)
   .route("/exports", csvExports)
-  .route("/blacklist-requests", blacklistRequests);
+  .route("/blacklist-requests", blacklistRequests)
+  .route("/audit", auditRoute);
 
 export type AppType = typeof app;
 
