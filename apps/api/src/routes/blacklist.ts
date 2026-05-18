@@ -13,6 +13,7 @@ import { badRequest, notFound } from "../lib/http";
 import { idParam } from "../lib/params";
 import { Scope } from "../lib/scope";
 import { requireSession } from "../middleware/auth";
+import { logEvent } from "../services/audit";
 
 export const blacklistRequests = createRouter()
   .post(
@@ -53,19 +54,36 @@ export const blacklistRequests = createRouter()
         );
       }
 
-      const [request] = await db
-        .insert(blacklistRequestsTable)
-        .values({
-          customerId: data.customerId,
-          distributorId: customer.distributorId,
-          reason: data.reason,
-          requestedByUserId: user.id,
-        })
-        .returning();
+      const request = await db.transaction(async (tx) => {
+        const [inserted] = await tx
+          .insert(blacklistRequestsTable)
+          .values({
+            customerId: data.customerId,
+            distributorId: customer.distributorId,
+            reason: data.reason,
+            requestedByUserId: user.id,
+          })
+          .returning();
 
-      if (!request) {
-        throw new Error("Failed to insert blacklist request");
-      }
+        if (!inserted) {
+          throw new Error("Failed to insert blacklist request");
+        }
+
+        await logEvent(tx, {
+          actorId: user.id,
+          distributorId: customer.distributorId,
+          entityId: String(inserted.id),
+          entityType: "blacklist_request",
+          event: "blacklist.requested",
+          metadata: {
+            customerId: data.customerId,
+            reason: data.reason,
+          },
+        });
+
+        return inserted;
+      });
+
       return c.json(request, 201);
     }
   )
@@ -148,6 +166,23 @@ export const blacklistRequests = createRouter()
           if (!updated) {
             throw new Error("Failed to update blacklist request");
           }
+
+          await logEvent(tx, {
+            actorId: user.id,
+            distributorId: request.distributorId,
+            entityId: String(requestId),
+            entityType: "blacklist_request",
+            event:
+              action === "approve"
+                ? "blacklist.approved"
+                : "blacklist.rejected",
+            metadata: {
+              customerId: request.customerId,
+              reason: request.reason,
+              reviewNote: reviewNote ?? null,
+            },
+          });
+
           return updated;
         })
       );

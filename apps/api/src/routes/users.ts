@@ -9,11 +9,12 @@ import { createRouter } from "../lib/factory";
 import { badRequest, forbidden, notFound } from "../lib/http";
 import { Scope } from "../lib/scope";
 import { requireSession } from "../middleware/auth";
+import { logEvent } from "../services/audit";
 import {
   createDistributorUser,
   listAllUsers,
   listDistributorUsers,
-  updateUser,
+  userFields,
 } from "../services/users";
 
 const createDistributorUserSchema = z.object({
@@ -55,14 +56,57 @@ export const users = createRouter()
     requireSession,
     zValidator("json", updateDistributorUserSchema),
     async (c) => {
-      Scope.forUser(c.get("user")).assertAdmin();
+      const actor = c.get("user");
+      Scope.forUser(actor).assertAdmin();
       const updates = c.req.valid("json");
 
       if (!Object.keys(updates).length) {
         throw badRequest("No fields to update");
       }
 
-      return c.json(await updateUser(c.req.param("id"), updates));
+      const targetId = c.req.param("id");
+      const updated = await db.transaction(async (tx) => {
+        const [existing] = await tx
+          .select({ distributorId: user.distributorId })
+          .from(user)
+          .where(eq(user.id, targetId));
+
+        if (!existing) {
+          throw notFound("User not found");
+        }
+
+        const [next] = await tx
+          .update(user)
+          .set(updates)
+          .where(eq(user.id, targetId))
+          .returning(userFields);
+
+        if (!next) {
+          throw notFound("User not found");
+        }
+
+        if (
+          updates.distributorId !== undefined &&
+          updates.distributorId !== existing.distributorId
+        ) {
+          await logEvent(tx, {
+            actorId: actor.id,
+            distributorId: updates.distributorId,
+            entityId: targetId,
+            entityType: "user",
+            event: "user.distributor_assigned",
+            metadata: {
+              newDistributorId: updates.distributorId,
+              previousDistributorId: existing.distributorId,
+              targetUserId: targetId,
+            },
+          });
+        }
+
+        return next;
+      });
+
+      return c.json(updated);
     }
   )
   .post(
@@ -70,12 +114,13 @@ export const users = createRouter()
     requireSession,
     zValidator("json", resetPasswordSchema),
     async (c) => {
-      Scope.forUser(c.get("user")).assertAdmin();
+      const actor = c.get("user");
+      Scope.forUser(actor).assertAdmin();
       const targetId = c.req.param("id");
       const { newPassword } = c.req.valid("json");
 
       const [target] = await db
-        .select({ role: user.role })
+        .select({ distributorId: user.distributorId, role: user.role })
         .from(user)
         .where(eq(user.id, targetId));
 
@@ -87,20 +132,31 @@ export const users = createRouter()
       }
 
       const hash = await hashPassword(newPassword);
-      const updated = await db
-        .update(account)
-        .set({ password: hash })
-        .where(
-          and(
-            eq(account.userId, targetId),
-            eq(account.providerId, "credential")
+      await db.transaction(async (tx) => {
+        const updated = await tx
+          .update(account)
+          .set({ password: hash })
+          .where(
+            and(
+              eq(account.userId, targetId),
+              eq(account.providerId, "credential")
+            )
           )
-        )
-        .returning({ id: account.id });
+          .returning({ id: account.id });
 
-      if (updated.length === 0) {
-        throw notFound("No credential account for user");
-      }
+        if (updated.length === 0) {
+          throw notFound("No credential account for user");
+        }
+
+        await logEvent(tx, {
+          actorId: actor.id,
+          distributorId: target.distributorId,
+          entityId: targetId,
+          entityType: "user",
+          event: "user.password_reset",
+          metadata: { targetUserId: targetId },
+        });
+      });
 
       return c.body(null, 204);
     }

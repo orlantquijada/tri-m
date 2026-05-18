@@ -15,6 +15,7 @@ import type { CustomerInsert, CustomerUpdate, RiskStatus } from "schema";
 import { badRequest, forbidden, notFound } from "../lib/http";
 import { Scope } from "../lib/scope";
 import type { User } from "../middleware/auth";
+import { logEvent } from "./audit";
 
 export type ListCustomersFilters = {
   hasOverdue?: boolean;
@@ -165,31 +166,47 @@ export async function createCustomer(user: User, data: CustomerInsert) {
   return customerSelectSchema.parse(customer);
 }
 
-export async function updateCustomer(
-  user: User,
-  id: number,
-  data: CustomerUpdate
-) {
-  const [existing] = await db
-    .select()
-    .from(customersTable)
-    .where(eq(customersTable.id, id));
+export function updateCustomer(user: User, id: number, data: CustomerUpdate) {
+  return db.transaction(async (tx) => {
+    const [existing] = await tx
+      .select()
+      .from(customersTable)
+      .where(eq(customersTable.id, id));
 
-  if (!existing) {
-    throw notFound("Customer not found");
-  }
-  Scope.forUser(user).assertCanWrite(existing.distributorId);
+    if (!existing) {
+      throw notFound("Customer not found");
+    }
+    Scope.forUser(user).assertCanWrite(existing.distributorId);
 
-  const [updated] = await db
-    .update(customersTable)
-    .set({
-      ...data,
-      latitude: data.latitude ?? existing.latitude,
-      longitude: data.longitude ?? existing.longitude,
-      notes: data.notes ?? existing.notes,
-    })
-    .where(eq(customersTable.id, id))
-    .returning();
+    const [updated] = await tx
+      .update(customersTable)
+      .set({
+        ...data,
+        latitude: data.latitude ?? existing.latitude,
+        longitude: data.longitude ?? existing.longitude,
+        notes: data.notes ?? existing.notes,
+      })
+      .where(eq(customersTable.id, id))
+      .returning();
 
-  return customerSelectSchema.parse(updated);
+    if (!updated) {
+      throw notFound("Customer not found");
+    }
+
+    if (data.riskStatus && data.riskStatus !== existing.riskStatus) {
+      await logEvent(tx, {
+        actorId: user.id,
+        distributorId: existing.distributorId,
+        entityId: String(id),
+        entityType: "customer",
+        event: "customer.status_changed",
+        metadata: {
+          newStatus: data.riskStatus,
+          previousStatus: existing.riskStatus,
+        },
+      });
+    }
+
+    return customerSelectSchema.parse(updated);
+  });
 }

@@ -12,6 +12,7 @@ import { badRequest, notFound } from "../lib/http";
 import { applyPayment } from "../lib/receivable";
 import { Scope } from "../lib/scope";
 import type { User } from "../middleware/auth";
+import { logEvent } from "./audit";
 
 export function createPayment(user: User, data: PaymentInsert) {
   return db.transaction(async (tx) => {
@@ -113,6 +114,23 @@ export function createPayment(user: User, data: PaymentInsert) {
       .update(receivablesTable)
       .set({ currentBalanceCents: newBalanceCents, status: newStatus })
       .where(eq(receivablesTable.id, data.receivableId));
+
+    if (!payment) {
+      throw new Error("Failed to insert payment");
+    }
+
+    await logEvent(tx, {
+      actorId: user.id,
+      distributorId: receivable.distributorId,
+      entityId: String(payment.id),
+      entityType: "payment",
+      event: "payment.recorded",
+      metadata: {
+        amountCents: payment.amountCents,
+        paymentId: payment.id,
+        receivableId: data.receivableId,
+      },
+    });
 
     return paymentSelectSchema.parse(payment);
   });
@@ -237,6 +255,20 @@ export function voidPayment(user: User, paymentId: number, data: VoidPayment) {
       .update(receivablesTable)
       .set({ currentBalanceCents: newBalanceCents, status: newStatus })
       .where(eq(receivablesTable.id, receivable.id));
+
+    await logEvent(tx, {
+      actorId: user.id,
+      distributorId: receivable.distributorId,
+      entityId: String(paymentId),
+      entityType: "payment",
+      event: "payment.voided",
+      metadata: {
+        amountCents: payment.amountCents,
+        paymentId,
+        reason: data.reason,
+        receivableId: receivable.id,
+      },
+    });
 
     return { newBalanceCents, paymentId };
   });
