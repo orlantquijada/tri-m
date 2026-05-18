@@ -12,3 +12,4 @@ export * from "./report";
 export * from "./responses";
 export * from "./schedule";
 export * from "./user";
+export * from "./visit";

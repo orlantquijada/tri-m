@@ -2,6 +2,7 @@ import {
   AlertCircleIcon,
   BarChart2Icon,
   BuildingIcon,
+  ClipboardListIcon,
   HistoryIcon,
   LayoutDashboardIcon,
   MapIcon,
@@ -36,6 +37,7 @@ const baseNavItems = [
     title: "Collection Route",
     url: "/collection-routes",
   },
+  { icon: <ClipboardListIcon />, title: "Visits", url: "/visits" },
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {

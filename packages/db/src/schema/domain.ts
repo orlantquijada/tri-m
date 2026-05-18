@@ -129,6 +129,52 @@ export const auditEvents = sqliteTable(
   ]
 );
 
+export const visits = sqliteTable(
+  "visits",
+  {
+    createdAt: int({ mode: "timestamp_ms" })
+      .notNull()
+      .default(sql`(unixepoch('now') * 1000)`)
+      .$defaultFn(() => new Date()),
+    customerId: int()
+      .references(() => customers.id)
+      .notNull(),
+    distributorId: int()
+      .references(() => distributors.id)
+      .notNull(),
+    gpsLat: real(),
+    gpsLng: real(),
+    id: int().primaryKey({ autoIncrement: true }),
+    notes: text(),
+    outcome: text({
+      enum: [
+        "paid",
+        "promised",
+        "no_answer",
+        "refused",
+        "wrong_contact",
+        "other",
+      ],
+    }).notNull(),
+    promiseResolvedAt: int({ mode: "timestamp_ms" }),
+    promisedAmountCents: int(),
+    promisedDate: text(),
+    recordedByUserId: text().notNull(),
+    type: text({ enum: ["in_person", "phone", "sms", "other"] }).notNull(),
+  },
+  (table) => [
+    index("visits_customer_created_at_idx").on(
+      table.customerId,
+      table.createdAt
+    ),
+    index("visits_open_promise_idx").on(
+      table.distributorId,
+      table.promiseResolvedAt,
+      table.promisedDate
+    ),
+  ]
+);
+
 export const payments = sqliteTable("payments", {
   amountCents: int().notNull(),
   ...timestampFields,

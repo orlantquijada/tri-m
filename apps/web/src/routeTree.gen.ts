@@ -15,6 +15,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthedOverdueRouteImport } from './routes/_authed/overdue'
 import { Route as AuthedMapRouteImport } from './routes/_authed/map'
 import { Route as AuthedDashboardRouteImport } from './routes/_authed/dashboard'
+import { Route as AuthedVisitsIndexRouteImport } from './routes/_authed/visits/index'
 import { Route as AuthedUsersIndexRouteImport } from './routes/_authed/users/index'
 import { Route as AuthedReportsIndexRouteImport } from './routes/_authed/reports/index'
 import { Route as AuthedDistributorsIndexRouteImport } from './routes/_authed/distributors/index'
@@ -57,6 +58,11 @@ const AuthedMapRoute = AuthedMapRouteImport.update({
 const AuthedDashboardRoute = AuthedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedVisitsIndexRoute = AuthedVisitsIndexRouteImport.update({
+  id: '/visits/',
+  path: '/visits/',
   getParentRoute: () => AuthedRoute,
 } as any)
 const AuthedUsersIndexRoute = AuthedUsersIndexRouteImport.update({
@@ -151,6 +157,7 @@ export interface FileRoutesByFullPath {
   '/distributors/': typeof AuthedDistributorsIndexRoute
   '/reports/': typeof AuthedReportsIndexRoute
   '/users/': typeof AuthedUsersIndexRoute
+  '/visits/': typeof AuthedVisitsIndexRoute
   '/customers/$id/edit': typeof AuthedCustomersIdEditRoute
   '/distributors/$id/edit': typeof AuthedDistributorsIdEditRoute
 }
@@ -172,6 +179,7 @@ export interface FileRoutesByTo {
   '/distributors': typeof AuthedDistributorsIndexRoute
   '/reports': typeof AuthedReportsIndexRoute
   '/users': typeof AuthedUsersIndexRoute
+  '/visits': typeof AuthedVisitsIndexRoute
   '/customers/$id/edit': typeof AuthedCustomersIdEditRoute
   '/distributors/$id/edit': typeof AuthedDistributorsIdEditRoute
 }
@@ -195,6 +203,7 @@ export interface FileRoutesById {
   '/_authed/distributors/': typeof AuthedDistributorsIndexRoute
   '/_authed/reports/': typeof AuthedReportsIndexRoute
   '/_authed/users/': typeof AuthedUsersIndexRoute
+  '/_authed/visits/': typeof AuthedVisitsIndexRoute
   '/_authed/customers/$id_/edit': typeof AuthedCustomersIdEditRoute
   '/_authed/distributors/$id/edit': typeof AuthedDistributorsIdEditRoute
 }
@@ -218,6 +227,7 @@ export interface FileRouteTypes {
     | '/distributors/'
     | '/reports/'
     | '/users/'
+    | '/visits/'
     | '/customers/$id/edit'
     | '/distributors/$id/edit'
   fileRoutesByTo: FileRoutesByTo
@@ -239,6 +249,7 @@ export interface FileRouteTypes {
     | '/distributors'
     | '/reports'
     | '/users'
+    | '/visits'
     | '/customers/$id/edit'
     | '/distributors/$id/edit'
   id:
@@ -261,6 +272,7 @@ export interface FileRouteTypes {
     | '/_authed/distributors/'
     | '/_authed/reports/'
     | '/_authed/users/'
+    | '/_authed/visits/'
     | '/_authed/customers/$id_/edit'
     | '/_authed/distributors/$id/edit'
   fileRoutesById: FileRoutesById
@@ -313,6 +325,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthedDashboardRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/visits/': {
+      id: '/_authed/visits/'
+      path: '/visits'
+      fullPath: '/visits/'
+      preLoaderRoute: typeof AuthedVisitsIndexRouteImport
       parentRoute: typeof AuthedRoute
     }
     '/_authed/users/': {
@@ -432,6 +451,7 @@ interface AuthedRouteChildren {
   AuthedDistributorsIndexRoute: typeof AuthedDistributorsIndexRoute
   AuthedReportsIndexRoute: typeof AuthedReportsIndexRoute
   AuthedUsersIndexRoute: typeof AuthedUsersIndexRoute
+  AuthedVisitsIndexRoute: typeof AuthedVisitsIndexRoute
   AuthedCustomersIdEditRoute: typeof AuthedCustomersIdEditRoute
   AuthedDistributorsIdEditRoute: typeof AuthedDistributorsIdEditRoute
 }
@@ -452,6 +472,7 @@ const AuthedRouteChildren: AuthedRouteChildren = {
   AuthedDistributorsIndexRoute: AuthedDistributorsIndexRoute,
   AuthedReportsIndexRoute: AuthedReportsIndexRoute,
   AuthedUsersIndexRoute: AuthedUsersIndexRoute,
+  AuthedVisitsIndexRoute: AuthedVisitsIndexRoute,
   AuthedCustomersIdEditRoute: AuthedCustomersIdEditRoute,
   AuthedDistributorsIdEditRoute: AuthedDistributorsIdEditRoute,
 }

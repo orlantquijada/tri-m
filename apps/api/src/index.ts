@@ -16,6 +16,7 @@ import { payments } from "./routes/payments";
 import { receivables } from "./routes/receivables";
 import { reports } from "./routes/reports";
 import { users } from "./routes/users";
+import { visits } from "./routes/visits";
 
 const app = new Hono()
   .basePath("/api")
@@ -41,7 +42,8 @@ const app = new Hono()
   .route("/blacklist-requests", blacklistRequests)
   .route("/audit", auditRoute)
   .route("/reports", reports)
-  .route("/geocode", geocode);
+  .route("/geocode", geocode)
+  .route("/visits", visits);
 
 export type AppType = typeof app;
 

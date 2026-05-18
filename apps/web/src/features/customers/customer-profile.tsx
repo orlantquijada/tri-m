@@ -13,6 +13,8 @@ import { formatPeso, mapsUrl } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 import { ReceivableStatusBadge } from "../receivables/receivable-status-badge";
+import { RecordVisitDialog } from "../visits/record-visit-dialog";
+import { VisitList } from "../visits/visit-list";
 import { BlacklistRequestButton } from "./blacklist-request-button";
 import type { CustomerWithReceivables } from "./queries";
 import { RiskBadge } from "./risk-badge";
@@ -38,7 +40,7 @@ export function CustomerProfile({
             riskStatus={customer.riskStatus}
           />
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Link
             className={cn(buttonVariants({ variant: "outline" }))}
             params={{ id: String(customer.id) }}
@@ -46,6 +48,7 @@ export function CustomerProfile({
           >
             Edit
           </Link>
+          <RecordVisitDialog customerId={customer.id} />
           <a
             className={cn(buttonVariants())}
             href={`/receivables/new?customerId=${customer.id}`}
@@ -129,6 +132,11 @@ export function CustomerProfile({
             </TableBody>
           </Table>
         )}
+      </div>
+
+      <div>
+        <h2 className="mb-3 text-lg font-semibold">Visits</h2>
+        <VisitList customerId={customer.id} />
       </div>
     </div>
   );
