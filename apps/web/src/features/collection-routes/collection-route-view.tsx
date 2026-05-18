@@ -1,11 +1,12 @@
-import "leaflet/dist/leaflet.css";
 import type * as Leaflet from "leaflet";
-import type { DivIcon, Map as LeafletMap, Marker } from "leaflet";
+import type { DivIcon, Marker } from "leaflet";
 import { ArrowDownIcon, ArrowUpIcon, XIcon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { DEFAULT_MAP_CENTER } from "@/features/map/constants";
+import { useLeafletMap } from "@/features/map/use-leaflet-map";
 import { useOverdueQuery } from "@/features/overdue/queries";
 import { formatPeso } from "@/lib/format";
 
@@ -23,8 +24,6 @@ type Stop = {
   longitude: number;
   balanceCents: number;
 };
-
-const MANILA: [number, number] = [14.5995, 120.9842];
 
 function numberedIcon(L: typeof Leaflet, n: number): DivIcon {
   return L.divIcon({
@@ -90,79 +89,51 @@ function downloadCsv(stops: Stop[]) {
 }
 
 function CollectionMap({ stops }: { stops: Stop[] }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<LeafletMap | null>(null);
   const markersRef = useRef<Marker[]>([]);
+  const { containerRef, leafletRef, mapRef, ready } = useLeafletMap({
+    center: DEFAULT_MAP_CENTER,
+    zoom: 12,
+  });
 
   useEffect(() => {
-    if (!containerRef.current) {
+    if (!ready) {
       return;
     }
-    let aborted = false;
+    const L = leafletRef.current;
+    const map = mapRef.current;
+    if (!(L && map)) {
+      return;
+    }
+    for (const m of markersRef.current) {
+      m.remove();
+    }
+    markersRef.current = [];
 
-    void (async () => {
-      const L = await import("leaflet");
-      if (aborted || !containerRef.current) {
-        return;
-      }
-
-      if (!mapRef.current) {
-        const map = L.default.map(containerRef.current).setView(MANILA, 12);
-        L.default
-          .tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-            attribution:
-              '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-          })
-          .addTo(map);
-        mapRef.current = map;
-      }
-
-      const map = mapRef.current;
-      for (const m of markersRef.current) {
-        m.remove();
-      }
-      markersRef.current = [];
-
-      for (const [idx, s] of stops.entries()) {
-        const marker = L.default
-          .marker([s.latitude, s.longitude], {
-            icon: numberedIcon(L.default, idx + 1),
-          })
-          .addTo(map)
-          .bindPopup(
-            `<div style="min-width:160px">
+    for (const [idx, s] of stops.entries()) {
+      const marker = L.marker([s.latitude, s.longitude], {
+        icon: numberedIcon(L, idx + 1),
+      })
+        .addTo(map)
+        .bindPopup(
+          `<div style="min-width:160px">
                 <p style="font-weight:600;margin:0 0 4px">#${idx + 1} ${esc(s.customerName)}</p>
                 <p style="margin:0 0 2px">${esc(s.phone)}</p>
                 <p style="margin:0 0 2px">${esc(s.address)}</p>
                 <p style="margin:0">Balance: ${esc(formatPeso(s.balanceCents))}</p>
               </div>`
-          );
-        markersRef.current.push(marker);
-      }
-
-      if (stops.length > 0) {
-        const bounds = L.default.latLngBounds(
-          stops.map((s) => [s.latitude, s.longitude] as [number, number])
         );
-        map.fitBounds(bounds, { maxZoom: 15, padding: [40, 40] });
-      }
-    })();
+      markersRef.current.push(marker);
+    }
 
-    return () => {
-      aborted = true;
-    };
-  }, [stops]);
+    if (stops.length > 0) {
+      const bounds = L.latLngBounds(
+        stops.map((s) => [s.latitude, s.longitude] as [number, number])
+      );
+      map.fitBounds(bounds, { maxZoom: 15, padding: [40, 40] });
+    }
+  }, [stops, ready, leafletRef, mapRef]);
 
-  useEffect(
-    () => () => {
-      mapRef.current?.remove();
-      mapRef.current = null;
-      markersRef.current = [];
-    },
-    []
-  );
-
-  return <div ref={containerRef} className="h-full w-full" />;
+  return <div className="h-full w-full" ref={containerRef} />;
 }
 
 export function CollectionRouteView() {

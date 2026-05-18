@@ -1,6 +1,5 @@
 import { useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
-import { MapPin } from "lucide-react";
 import { useState } from "react";
 import type { RiskStatus } from "schema";
 import { z } from "zod";
@@ -10,8 +9,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { authClient } from "@/lib/auth-client";
+import { parseFloatOrNull } from "@/lib/format";
 
 import { DuplicatePhoneWarning } from "./duplicate-phone-warning";
+import { LocationMapPicker } from "./location-map-picker";
 import { customerQueries, usePhoneLookup } from "./queries";
 
 export type CustomerFormValues = {
@@ -84,49 +85,6 @@ function validateDistributorId(value: string) {
   if (Number.isNaN(Number.parseInt(value, 10))) {
     return "Must be a number";
   }
-}
-
-function validateLatitude(value: string) {
-  if (!value) {
-    return;
-  }
-  const n = Number.parseFloat(value);
-  if (Number.isNaN(n) || n < -90 || n > 90) {
-    return "Must be between -90 and 90";
-  }
-}
-
-function validateLongitude(value: string) {
-  if (!value) {
-    return;
-  }
-  const n = Number.parseFloat(value);
-  if (Number.isNaN(n) || n < -180 || n > 180) {
-    return "Must be between -180 and 180";
-  }
-}
-
-function captureLocation(
-  setError: (e: string | null) => void,
-  setLoading: (l: boolean) => void,
-  onCoords: (lat: string, lon: string) => void
-) {
-  if (!navigator.geolocation) {
-    setError("Geolocation not supported");
-    return;
-  }
-  setLoading(true);
-  setError(null);
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      onCoords(String(pos.coords.latitude), String(pos.coords.longitude));
-      setLoading(false);
-    },
-    () => {
-      setError("Could not get location");
-      setLoading(false);
-    }
-  );
 }
 
 type ContactFieldsProps = {
@@ -229,15 +187,6 @@ type LocationFieldsProps = {
 };
 
 export function LocationFields({ form }: LocationFieldsProps) {
-  const [geoError, setGeoError] = useState<string | null>(null);
-  const [geoLoading, setGeoLoading] = useState(false);
-
-  const handleGetLocation = () =>
-    captureLocation(setGeoError, setGeoLoading, (lat, lon) => {
-      form.setFieldValue("latitude", lat);
-      form.setFieldValue("longitude", lon);
-    });
-
   return (
     <div className="space-y-4">
       <form.Field
@@ -264,58 +213,39 @@ export function LocationFields({ form }: LocationFieldsProps) {
       </form.Field>
 
       <div className="space-y-1">
-        <Label>Location</Label>
-        <div className="flex gap-2">
-          <form.Field
-            name="latitude"
-            validators={{ onChange: ({ value }) => validateLatitude(value) }}
-          >
-            {(field) => (
-              <div className="flex-1 space-y-1">
-                <Input
-                  placeholder="Latitude (-90 to 90)"
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  onBlur={field.handleBlur}
-                />
-                {fieldError(
-                  field.state.meta.errors.filter(Boolean) as string[]
-                )}
-              </div>
-            )}
-          </form.Field>
-
-          <form.Field
-            name="longitude"
-            validators={{ onChange: ({ value }) => validateLongitude(value) }}
-          >
-            {(field) => (
-              <div className="flex-1 space-y-1">
-                <Input
-                  placeholder="Longitude (-180 to 180)"
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  onBlur={field.handleBlur}
-                />
-                {fieldError(
-                  field.state.meta.errors.filter(Boolean) as string[]
-                )}
-              </div>
-            )}
-          </form.Field>
-
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            onClick={handleGetLocation}
-            disabled={geoLoading}
-            title="Use current location"
-          >
-            <MapPin className="size-4" />
-          </Button>
-        </div>
-        {geoError && <p className="text-sm text-destructive">{geoError}</p>}
+        <Label>Pin location</Label>
+        <form.Subscribe
+          selector={(s) => ({
+            address: s.values.address,
+            latitude: s.values.latitude,
+            longitude: s.values.longitude,
+          })}
+        >
+          {(snap) => {
+            const lat = parseFloatOrNull(snap.latitude);
+            const lng = parseFloatOrNull(snap.longitude);
+            return (
+              <LocationMapPicker
+                addressIsEmpty={snap.address.trim() === ""}
+                latitude={lat}
+                longitude={lng}
+                onChange={(nextLat, nextLng) => {
+                  form.setFieldValue(
+                    "latitude",
+                    nextLat === null ? "" : String(nextLat)
+                  );
+                  form.setFieldValue(
+                    "longitude",
+                    nextLng === null ? "" : String(nextLng)
+                  );
+                }}
+                onReverseGeocode={(displayName) => {
+                  form.setFieldValue("address", displayName);
+                }}
+              />
+            );
+          }}
+        </form.Subscribe>
       </div>
     </div>
   );
@@ -372,8 +302,8 @@ export function buildCustomerPayload(
   return {
     address: value.address,
     fullName: value.fullName,
-    latitude: value.latitude ? Number.parseFloat(value.latitude) : null,
-    longitude: value.longitude ? Number.parseFloat(value.longitude) : null,
+    latitude: parseFloatOrNull(value.latitude),
+    longitude: parseFloatOrNull(value.longitude),
     notes: value.notes || null,
     phone: value.phone,
     riskStatus: value.riskStatus,

@@ -1,9 +1,11 @@
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
-import type { Map as LeafletMap, Marker, MarkerClusterGroup } from "leaflet";
+import type { Marker, MarkerClusterGroup } from "leaflet";
 import { useEffect, useRef } from "react";
 
 import type { CustomerListItem } from "@/features/customers/queries";
+import { DEFAULT_MAP_CENTER } from "@/features/map/constants";
+import { useLeafletMap } from "@/features/map/use-leaflet-map";
 import { formatPeso, mapsUrl } from "@/lib/format";
 
 type Customer = Pick<
@@ -19,7 +21,7 @@ type Customer = Pick<
 
 type Props = { customers: Customer[] };
 
-const MANILA: [number, number] = [14.5995, 120.9842];
+const MAP_VIEW_ZOOM = 12;
 
 function esc(s: string) {
   return s
@@ -29,52 +31,37 @@ function esc(s: string) {
 }
 
 export function MapView({ customers }: Props) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<LeafletMap | null>(null);
   const clusterRef = useRef<MarkerClusterGroup | null>(null);
 
+  const { containerRef, leafletRef, ready } = useLeafletMap({
+    center: DEFAULT_MAP_CENTER,
+    onReady: async (map, L) => {
+      await import("leaflet.markercluster");
+      const cluster = L.markerClusterGroup();
+      map.addLayer(cluster);
+      clusterRef.current = cluster;
+    },
+    zoom: MAP_VIEW_ZOOM,
+  });
+
   useEffect(() => {
-    if (!containerRef.current) {
+    if (!ready) {
       return;
     }
-    let aborted = false;
-
-    void (async () => {
-      const [L] = await Promise.all([
-        import("leaflet"),
-        import("leaflet.markercluster"),
-      ]);
-      if (aborted || !containerRef.current) {
-        return;
+    const L = leafletRef.current;
+    const cluster = clusterRef.current;
+    if (!(L && cluster)) {
+      return;
+    }
+    cluster.clearLayers();
+    const markers: Marker[] = [];
+    for (const c of customers) {
+      if (c.latitude === null || c.longitude === null) {
+        continue;
       }
-
-      if (!mapRef.current) {
-        const map = L.default.map(containerRef.current).setView(MANILA, 12);
-        L.default
-          .tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-            attribution:
-              '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-          })
-          .addTo(map);
-        mapRef.current = map;
-      }
-
-      const map = mapRef.current;
-      if (clusterRef.current) {
-        clusterRef.current.clearLayers();
-      } else {
-        clusterRef.current = L.default.markerClusterGroup();
-        map.addLayer(clusterRef.current);
-      }
-
-      const markers: Marker[] = [];
-      for (const c of customers) {
-        if (c.latitude === null || c.longitude === null) {
-          continue;
-        }
-        markers.push(
-          L.default.marker([c.latitude, c.longitude]).bindPopup(
-            `<div style="min-width:160px">
+      markers.push(
+        L.marker([c.latitude, c.longitude]).bindPopup(
+          `<div style="min-width:160px">
                 <p style="font-weight:600;margin:0 0 4px">${esc(c.fullName)}</p>
                 <p style="margin:0 0 2px">${esc(c.phone)}</p>
                 <p style="margin:0 0 2px">Risk: ${esc(c.riskStatus)}</p>
@@ -82,19 +69,11 @@ export function MapView({ customers }: Props) {
                 <a href="/customers/${c.id}" style="margin-right:8px">Profile</a>
                 <a href="${mapsUrl(c.latitude, c.longitude)}" target="_blank" rel="noopener noreferrer">Google Maps</a>
               </div>`
-          )
-        );
-      }
-      clusterRef.current.addLayers(markers);
-    })();
+        )
+      );
+    }
+    cluster.addLayers(markers);
+  }, [customers, ready, leafletRef]);
 
-    return () => {
-      aborted = true;
-      mapRef.current?.remove();
-      mapRef.current = null;
-      clusterRef.current = null;
-    };
-  }, [customers]);
-
-  return <div ref={containerRef} className="h-full w-full" />;
+  return <div className="h-full w-full" ref={containerRef} />;
 }

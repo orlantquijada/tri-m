@@ -15,3 +15,11 @@ export function parsePeso(value: string): number {
 export function mapsUrl(lat: number, lng: number): string {
   return `https://www.google.com/maps?q=${lat},${lng}`;
 }
+
+export function parseFloatOrNull(value: string): number | null {
+  if (!value) {
+    return null;
+  }
+  const n = Number.parseFloat(value);
+  return Number.isNaN(n) ? null : n;
+}

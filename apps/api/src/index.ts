@@ -10,6 +10,7 @@ import { customers } from "./routes/customers";
 import { dashboard } from "./routes/dashboard";
 import { distributors } from "./routes/distributors";
 import { csvExports } from "./routes/exports";
+import { geocode } from "./routes/geocode";
 import { overdue } from "./routes/overdue";
 import { payments } from "./routes/payments";
 import { receivables } from "./routes/receivables";
@@ -39,7 +40,8 @@ const app = new Hono()
   .route("/exports", csvExports)
   .route("/blacklist-requests", blacklistRequests)
   .route("/audit", auditRoute)
-  .route("/reports", reports);
+  .route("/reports", reports)
+  .route("/geocode", geocode);
 
 export type AppType = typeof app;
 

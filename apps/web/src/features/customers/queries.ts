@@ -57,6 +57,23 @@ type PhoneLookupMatch = InferResponseType<
   200
 >["matches"][number];
 
+export function useReverseGeocodeQuery(lat: number | null, lng: number | null) {
+  return useQuery({
+    enabled: lat !== null && lng !== null,
+    queryFn: async () => {
+      const res = await api.api.geocode.reverse.$get({
+        query: { lat: String(lat), lng: String(lng) },
+      });
+      if (!res.ok) {
+        return { data: null };
+      }
+      return res.json();
+    },
+    queryKey: ["geocode", "reverse", lat, lng] as const,
+    staleTime: 1000 * 60 * 60,
+  });
+}
+
 export type CustomersMapFilters = {
   hasOverdue: boolean;
   riskStatus: RiskStatus[];
