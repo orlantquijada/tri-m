@@ -14,7 +14,7 @@ import { authClient } from "@/lib/auth-client";
 import { DuplicatePhoneWarning } from "./duplicate-phone-warning";
 import { customerQueries, usePhoneLookup } from "./queries";
 
-type FormValues = {
+export type CustomerFormValues = {
   address: string;
   distributorId: string;
   fullName: string;
@@ -25,9 +25,49 @@ type FormValues = {
   riskStatus: RiskStatus;
 };
 
+type UseCustomerFormOpts = {
+  defaultValues?: Partial<CustomerFormValues>;
+  onSubmit: (value: CustomerFormValues) => Promise<void> | void;
+};
+
+export function useCustomerForm({
+  defaultValues,
+  onSubmit,
+}: UseCustomerFormOpts) {
+  return useForm({
+    defaultValues: {
+      address: defaultValues?.address ?? "",
+      distributorId: defaultValues?.distributorId ?? "",
+      fullName: defaultValues?.fullName ?? "",
+      latitude: defaultValues?.latitude ?? "",
+      longitude: defaultValues?.longitude ?? "",
+      notes: defaultValues?.notes ?? "",
+      phone: defaultValues?.phone ?? "",
+      riskStatus: defaultValues?.riskStatus ?? ("good" as RiskStatus),
+    } satisfies CustomerFormValues,
+    onSubmit: async ({ value }) => {
+      await onSubmit(value);
+    },
+  });
+}
+
+export type CustomerFormApi = ReturnType<typeof useCustomerForm>;
+
+export const CONTACT_FIELD_NAMES = [
+  "fullName",
+  "phone",
+  "distributorId",
+] as const;
+export const LOCATION_FIELD_NAMES = [
+  "address",
+  "latitude",
+  "longitude",
+] as const;
+export const RISK_FIELD_NAMES = ["riskStatus", "notes"] as const;
+
 type CustomerFormProps = {
   customerId?: number;
-  defaultValues?: Partial<FormValues>;
+  defaultValues?: Partial<CustomerFormValues>;
 };
 
 function fieldError(errors: string[]) {
@@ -89,74 +129,22 @@ function captureLocation(
   );
 }
 
-// eslint-disable-next-line complexity
-export function CustomerForm({ customerId, defaultValues }: CustomerFormProps) {
-  const navigate = useNavigate();
-  const { data: session } = authClient.useSession();
-  const sessionUser = session?.user as { role?: string } | undefined;
-  const isAdmin = sessionUser?.role === "admin";
-  const isEditing = customerId !== undefined;
+type ContactFieldsProps = {
+  customerId?: number;
+  form: CustomerFormApi;
+  showDistributorId: boolean;
+};
 
-  const createMutation = customerQueries.useCreate();
-  const updateMutation = customerQueries.useUpdate();
-
-  const [geoError, setGeoError] = useState<string | null>(null);
-  const [geoLoading, setGeoLoading] = useState(false);
-  const [lookupPhone, setLookupPhone] = useState(defaultValues?.phone ?? "");
+export function ContactFields({
+  customerId,
+  form,
+  showDistributorId,
+}: ContactFieldsProps) {
+  const [lookupPhone, setLookupPhone] = useState(form.state.values.phone ?? "");
   const phoneLookup = usePhoneLookup(lookupPhone);
 
-  const form = useForm({
-    defaultValues: {
-      address: defaultValues?.address ?? "",
-      distributorId: defaultValues?.distributorId ?? "",
-      fullName: defaultValues?.fullName ?? "",
-      latitude: defaultValues?.latitude ?? "",
-      longitude: defaultValues?.longitude ?? "",
-      notes: defaultValues?.notes ?? "",
-      phone: defaultValues?.phone ?? "",
-      riskStatus: defaultValues?.riskStatus ?? "good",
-    },
-    onSubmit: async ({ value }) => {
-      const payload = {
-        address: value.address,
-        fullName: value.fullName,
-        latitude: value.latitude ? Number.parseFloat(value.latitude) : null,
-        longitude: value.longitude ? Number.parseFloat(value.longitude) : null,
-        notes: value.notes || null,
-        phone: value.phone,
-        riskStatus: value.riskStatus,
-        ...(isAdmin && value.distributorId
-          ? { distributorId: Number.parseInt(value.distributorId, 10) }
-          : {}),
-      };
-      await (isEditing
-        ? updateMutation.mutateAsync({
-            data: payload,
-            id: customerId as number,
-          })
-        : createMutation.mutateAsync(payload));
-      void navigate({ to: "/customers" });
-    },
-  });
-
-  const handleGetLocation = () =>
-    captureLocation(setGeoError, setGeoLoading, (lat, lon) => {
-      form.setFieldValue("latitude", lat);
-      form.setFieldValue("longitude", lon);
-    });
-
-  const isPending = createMutation.isPending || updateMutation.isPending;
-  const mutationError = createMutation.error || updateMutation.error;
-  const idleLabel = isEditing ? "Save Changes" : "Create Customer";
-
   return (
-    <form
-      className="max-w-lg space-y-4"
-      onSubmit={(e) => {
-        e.preventDefault();
-        void form.handleSubmit();
-      }}
-    >
+    <div className="space-y-4">
       <form.Field
         name="fullName"
         validators={{
@@ -204,6 +192,54 @@ export function CustomerForm({ customerId, defaultValues }: CustomerFormProps) {
         )}
       </form.Field>
 
+      {showDistributorId && (
+        <form.Field
+          name="distributorId"
+          validators={{ onChange: ({ value }) => validateDistributorId(value) }}
+        >
+          {(field) => (
+            <div className="space-y-1">
+              <Label htmlFor="distributorId">Distributor ID</Label>
+              <Input
+                id="distributorId"
+                type="number"
+                min={1}
+                value={field.state.value}
+                onChange={(e) => field.handleChange(e.target.value)}
+                onBlur={field.handleBlur}
+              />
+              {fieldError(field.state.meta.errors.filter(Boolean) as string[])}
+            </div>
+          )}
+        </form.Field>
+      )}
+
+      {phoneLookup.data && (
+        <DuplicatePhoneWarning
+          matches={phoneLookup.data.matches}
+          currentCustomerId={customerId}
+        />
+      )}
+    </div>
+  );
+}
+
+type LocationFieldsProps = {
+  form: CustomerFormApi;
+};
+
+export function LocationFields({ form }: LocationFieldsProps) {
+  const [geoError, setGeoError] = useState<string | null>(null);
+  const [geoLoading, setGeoLoading] = useState(false);
+
+  const handleGetLocation = () =>
+    captureLocation(setGeoError, setGeoLoading, (lat, lon) => {
+      form.setFieldValue("latitude", lat);
+      form.setFieldValue("longitude", lon);
+    });
+
+  return (
+    <div className="space-y-4">
       <form.Field
         name="address"
         validators={{
@@ -226,62 +262,6 @@ export function CustomerForm({ customerId, defaultValues }: CustomerFormProps) {
           </div>
         )}
       </form.Field>
-
-      <form.Field name="notes">
-        {(field) => (
-          <div className="space-y-1">
-            <Label htmlFor="notes">Notes</Label>
-            <Textarea
-              id="notes"
-              rows={2}
-              value={field.state.value}
-              onChange={(e) => field.handleChange(e.target.value)}
-              onBlur={field.handleBlur}
-            />
-          </div>
-        )}
-      </form.Field>
-
-      <form.Field name="riskStatus">
-        {(field) => (
-          <div className="space-y-1">
-            <Label htmlFor="riskStatus">Risk Status</Label>
-            <select
-              id="riskStatus"
-              className="h-9 w-full rounded-md border border-input bg-transparent px-2.5 py-1 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-              value={field.state.value}
-              onChange={(e) => field.handleChange(e.target.value as RiskStatus)}
-              onBlur={field.handleBlur}
-            >
-              <option value="good">Good</option>
-              <option value="watchlist">Watchlist</option>
-              <option value="blacklisted">Blacklisted</option>
-            </select>
-          </div>
-        )}
-      </form.Field>
-
-      {isAdmin && !isEditing && (
-        <form.Field
-          name="distributorId"
-          validators={{ onChange: ({ value }) => validateDistributorId(value) }}
-        >
-          {(field) => (
-            <div className="space-y-1">
-              <Label htmlFor="distributorId">Distributor ID</Label>
-              <Input
-                id="distributorId"
-                type="number"
-                min={1}
-                value={field.state.value}
-                onChange={(e) => field.handleChange(e.target.value)}
-                onBlur={field.handleBlur}
-              />
-              {fieldError(field.state.meta.errors.filter(Boolean) as string[])}
-            </div>
-          )}
-        </form.Field>
-      )}
 
       <div className="space-y-1">
         <Label>Location</Label>
@@ -337,13 +317,117 @@ export function CustomerForm({ customerId, defaultValues }: CustomerFormProps) {
         </div>
         {geoError && <p className="text-sm text-destructive">{geoError}</p>}
       </div>
+    </div>
+  );
+}
 
-      {phoneLookup.data && (
-        <DuplicatePhoneWarning
-          matches={phoneLookup.data.matches}
-          currentCustomerId={customerId}
-        />
-      )}
+type RiskFieldsProps = {
+  form: CustomerFormApi;
+};
+
+export function RiskFields({ form }: RiskFieldsProps) {
+  return (
+    <div className="space-y-4">
+      <form.Field name="riskStatus">
+        {(field) => (
+          <div className="space-y-1">
+            <Label htmlFor="riskStatus">Risk Status</Label>
+            <select
+              id="riskStatus"
+              className="h-9 w-full rounded-md border border-input bg-transparent px-2.5 py-1 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+              value={field.state.value}
+              onChange={(e) => field.handleChange(e.target.value as RiskStatus)}
+              onBlur={field.handleBlur}
+            >
+              <option value="good">Good</option>
+              <option value="watchlist">Watchlist</option>
+              <option value="blacklisted">Blacklisted</option>
+            </select>
+          </div>
+        )}
+      </form.Field>
+
+      <form.Field name="notes">
+        {(field) => (
+          <div className="space-y-1">
+            <Label htmlFor="notes">Notes</Label>
+            <Textarea
+              id="notes"
+              rows={2}
+              value={field.state.value}
+              onChange={(e) => field.handleChange(e.target.value)}
+              onBlur={field.handleBlur}
+            />
+          </div>
+        )}
+      </form.Field>
+    </div>
+  );
+}
+
+export function buildCustomerPayload(
+  value: CustomerFormValues,
+  opts: { includeDistributorId: boolean }
+) {
+  return {
+    address: value.address,
+    fullName: value.fullName,
+    latitude: value.latitude ? Number.parseFloat(value.latitude) : null,
+    longitude: value.longitude ? Number.parseFloat(value.longitude) : null,
+    notes: value.notes || null,
+    phone: value.phone,
+    riskStatus: value.riskStatus,
+    ...(opts.includeDistributorId && value.distributorId
+      ? { distributorId: Number.parseInt(value.distributorId, 10) }
+      : {}),
+  };
+}
+
+export function CustomerForm({ customerId, defaultValues }: CustomerFormProps) {
+  const navigate = useNavigate();
+  const { data: session } = authClient.useSession();
+  const sessionUser = session?.user as { role?: string } | undefined;
+  const isAdmin = sessionUser?.role === "admin";
+  const isEditing = customerId !== undefined;
+
+  const createMutation = customerQueries.useCreate();
+  const updateMutation = customerQueries.useUpdate();
+
+  const form = useCustomerForm({
+    defaultValues,
+    onSubmit: async (value) => {
+      const payload = buildCustomerPayload(value, {
+        includeDistributorId: isAdmin && !isEditing,
+      });
+      await (isEditing
+        ? updateMutation.mutateAsync({
+            data: payload,
+            id: customerId as number,
+          })
+        : createMutation.mutateAsync(payload));
+      void navigate({ to: "/customers" });
+    },
+  });
+
+  const isPending = createMutation.isPending || updateMutation.isPending;
+  const mutationError = createMutation.error || updateMutation.error;
+  const idleLabel = isEditing ? "Save Changes" : "Create Customer";
+
+  return (
+    <form
+      className="max-w-lg space-y-4"
+      onSubmit={(e) => {
+        e.preventDefault();
+        void form.handleSubmit();
+      }}
+    >
+      <ContactFields
+        customerId={customerId}
+        form={form}
+        showDistributorId={isAdmin && !isEditing}
+      />
+      <LocationFields form={form} />
+      <RiskFields form={form} />
 
       {mutationError && (
         <p className="text-sm text-destructive">{mutationError.message}</p>
