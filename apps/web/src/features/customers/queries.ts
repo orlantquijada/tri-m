@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { InferRequestType, InferResponseType } from "hono/client";
 import type { RiskStatus } from "schema";
 
-import { api } from "@/lib/api";
+import { api, parseApiError } from "@/lib/api";
 import { createResourceQueries } from "@/lib/queries";
 
 export type CustomerListItem = InferResponseType<
@@ -36,7 +36,37 @@ export const customerQueries = createResourceQueries({
     }),
 });
 
-export const customerKeys = customerQueries.keys;
+export const customerKeys = {
+  ...customerQueries.keys,
+  timeline: (id: number) =>
+    [...customerQueries.keys.detail(id), "timeline"] as const,
+};
+
+export type CustomerTimeline = InferResponseType<
+  (typeof api.api.customers)[":id"]["timeline"]["$get"],
+  200
+>;
+
+export type CustomerTimelineEvent = CustomerTimeline["events"][number];
+
+export function useCustomerTimelineQuery(customerId: number) {
+  return useQuery({
+    queryFn: async () => {
+      const res = await api.api.customers[":id"].timeline.$get({
+        param: { id: String(customerId) },
+        query: {},
+      });
+      if (!res.ok) {
+        throw await parseApiError(
+          res as unknown as Response,
+          "Failed to load timeline"
+        );
+      }
+      return res.json();
+    },
+    queryKey: customerKeys.timeline(customerId),
+  });
+}
 
 export function usePhoneLookup(phone: string) {
   return useQuery({

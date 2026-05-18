@@ -16,6 +16,7 @@ import { ReceivableStatusBadge } from "../receivables/receivable-status-badge";
 import { RecordVisitDialog } from "../visits/record-visit-dialog";
 import { VisitList } from "../visits/visit-list";
 import { BlacklistRequestButton } from "./blacklist-request-button";
+import { CustomerTimeline } from "./customer-timeline";
 import type { CustomerWithReceivables } from "./queries";
 import { RiskBadge } from "./risk-badge";
 
@@ -137,6 +138,11 @@ export function CustomerProfile({
       <div>
         <h2 className="mb-3 text-lg font-semibold">Visits</h2>
         <VisitList customerId={customer.id} />
+      </div>
+
+      <div>
+        <h2 className="mb-3 text-lg font-semibold">Activity</h2>
+        <CustomerTimeline customerId={customer.id} />
       </div>
     </div>
   );

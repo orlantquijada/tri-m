@@ -11,5 +11,6 @@ export * from "./receivable";
 export * from "./report";
 export * from "./responses";
 export * from "./schedule";
+export * from "./timeline";
 export * from "./user";
 export * from "./visit";

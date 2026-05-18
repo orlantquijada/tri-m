@@ -16,6 +16,7 @@ import {
   lookupCustomersByPhone,
   updateCustomer,
 } from "../services/customers";
+import { buildTimeline } from "../services/timeline";
 
 const listFiltersSchema = z.object({
   hasOverdue: z.enum(["true", "false"]).optional(),
@@ -27,6 +28,11 @@ const listFiltersSchema = z.object({
       return v;
     }
   }, z.array(riskStatusEnum).optional()),
+});
+
+const timelineQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(200).default(50),
+  page: z.coerce.number().int().min(1).default(1),
 });
 
 export const customers = createRouter()
@@ -56,6 +62,15 @@ export const customers = createRouter()
   )
   .get("/:id", requireSession, async (c) =>
     c.json(await getCustomer(c.get("user"), idParam(c)))
+  )
+  .get(
+    "/:id/timeline",
+    requireSession,
+    zValidator("query", timelineQuerySchema),
+    async (c) =>
+      c.json(
+        await buildTimeline(c.get("user"), idParam(c), c.req.valid("query"))
+      )
   )
   .post(
     "/",
