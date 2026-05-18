@@ -2,7 +2,7 @@
 
 Internal app for tracking furniture customer receivables, payments, overdue accounts, and customer locations on a map.
 
-The MVP demo (Phase 0–4) and Phase 2 are complete. Active development is Phase 3 — see `docs/phase3-plan.md`.
+The MVP demo (Phase 0–4), Phase 2, and Phase 3 are complete. Active development is Phase 4 (distributor field workflow — customer intake, visit/promise tracking, mobile-responsive UX) — see `docs/phase4-plan.md`.
 
 ## Stack
 
@@ -94,11 +94,15 @@ bun run --filter db db:studio         # Drizzle Studio
 
 ## Documentation
 
-- **Active plan**: `docs/phase3-plan.md` — Phase 3 tasks (F1 through I3) with Goal, Files, Acceptance, Depends-on.
-- **Active progress**: `docs/phase3-progress.md` — checklist + decisions log.
+- **Active plan**: `docs/phase4-plan.md` — Phase 4 tasks (J1 through L3) with Goal, Files, Acceptance, Depends-on.
+- **Active progress**: `docs/phase4-progress.md` — checklist + decisions log.
+- **Phase 3 plan (history)**: `docs/phase3-plan.md`
+- **Phase 3 progress (history)**: `docs/phase3-progress.md`
+- **Phase 2 plan (history)**: `docs/phase2-plan.md`
+- **Phase 2 progress (history)**: `docs/phase2-progress.md`
 - **MVP plan (history)**: `docs/build-plan.md`
 - **MVP progress (history)**: `docs/progress.md`
-- **Domain spec**: `docs/mvp-smaller.md` (smaller demo scope) and `docs/mvp.md` (full reference).
+- **Domain spec**: `docs/mvp.md` (full reference) and `docs/mvp-smaller.md` (smaller demo scope).
 - **AI agent guidance**: `CLAUDE.md` — workflow rules for Claude / coding agents working in this repo.
 
 ## Conventions
