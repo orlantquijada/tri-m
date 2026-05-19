@@ -16,6 +16,10 @@ export function mapsUrl(lat: number, lng: number): string {
   return `https://www.google.com/maps?q=${lat},${lng}`;
 }
 
+export function mapHref(lat: number, lng: number, isMobile: boolean): string {
+  return isMobile ? `geo:${lat},${lng}?q=${lat},${lng}` : mapsUrl(lat, lng);
+}
+
 export function parseFloatOrNull(value: string): number | null {
   if (!value) {
     return null;

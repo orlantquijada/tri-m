@@ -106,6 +106,7 @@ export async function getToday(user: User) {
           customerName: customersTable.fullName,
           id: visitsTable.id,
           outcome: visitsTable.outcome,
+          phone: customersTable.phone,
           type: visitsTable.type,
         })
         .from(visitsTable)
@@ -129,7 +130,10 @@ export async function getToday(user: User) {
           dueAmountCents: paymentSchedulesTable.dueAmountCents,
           id: paymentSchedulesTable.id,
           installmentNo: paymentSchedulesTable.installmentNo,
+          latitude: customersTable.latitude,
+          longitude: customersTable.longitude,
           paidAmountCents: paymentSchedulesTable.paidAmountCents,
+          phone: customersTable.phone,
           receivableId: paymentSchedulesTable.receivableId,
         })
         .from(paymentSchedulesTable)
@@ -159,6 +163,9 @@ export async function getToday(user: User) {
           daysOverdue: sql<number>`cast(julianday('now') - julianday(${receivablesTable.firstDueDate}) as integer)`,
           firstDueDate: receivablesTable.firstDueDate,
           id: receivablesTable.id,
+          latitude: customersTable.latitude,
+          longitude: customersTable.longitude,
+          phone: customersTable.phone,
         })
         .from(receivablesTable)
         .innerJoin(

@@ -8,7 +8,6 @@ import {
 import type { ReactNode } from "react";
 
 import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -16,10 +15,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { QuickActionsBar } from "@/features/shared/quick-actions-bar";
 import { OpenPromisesCard } from "@/features/visits/open-promises-card";
-import { RecordVisitDialog } from "@/features/visits/record-visit-dialog";
 import { formatPeso } from "@/lib/format";
-import { cn } from "@/lib/utils";
 
 import { useTodayQuery } from "./queries";
 import type { TodayPayload } from "./queries";
@@ -133,7 +131,17 @@ function OverdueSection({
     <ul className="space-y-2">
       {rows.map((row) => (
         <TodayListRow
-          action={<RecordVisitDialog customerId={row.customerId} />}
+          action={
+            <QuickActionsBar
+              currentBalanceCents={row.currentBalanceCents}
+              customerId={row.customerId}
+              latitude={row.latitude}
+              layout="row"
+              longitude={row.longitude}
+              phone={row.phone}
+              receivableId={row.id}
+            />
+          }
           customerId={row.customerId}
           customerName={row.customerName}
           key={row.id}
@@ -173,15 +181,15 @@ function DueTodaySection({ rows }: { rows: TodayPayload["dueToday"] }) {
         return (
           <TodayListRow
             action={
-              <Link
-                className={cn(
-                  buttonVariants({ size: "sm", variant: "outline" })
-                )}
-                params={{ id: String(row.receivableId) }}
-                to="/receivables/$id"
-              >
-                Record payment
-              </Link>
+              <QuickActionsBar
+                currentBalanceCents={outstanding}
+                customerId={row.customerId}
+                latitude={row.latitude}
+                layout="row"
+                longitude={row.longitude}
+                phone={row.phone}
+                receivableId={row.receivableId}
+              />
             }
             customerId={row.customerId}
             customerName={row.customerName}

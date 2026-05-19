@@ -121,6 +121,8 @@ export async function listOpenPromises(user: User) {
         address: customersTable.address,
         fullName: customersTable.fullName,
         id: customersTable.id,
+        latitude: customersTable.latitude,
+        longitude: customersTable.longitude,
         phone: customersTable.phone,
       },
       customerId: visitsTable.customerId,

@@ -1,9 +1,4 @@
-import {
-  Outlet,
-  createFileRoute,
-  redirect,
-  useNavigate,
-} from "@tanstack/react-router";
+import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 
 import { AppSidebar } from "@/components/app-sidebar";
@@ -14,15 +9,19 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { authClient } from "@/lib/auth-client";
+import { authClient, requireSession } from "@/lib/auth-client";
 
 function AuthedLayout() {
   const navigate = useNavigate();
 
   useEffect(() => {
     const check = async () => {
-      const { data } = await authClient.getSession();
-      if (!data?.session) {
+      try {
+        const { data } = await authClient.getSession();
+        if (!data?.session) {
+          void navigate({ to: "/login" });
+        }
+      } catch {
         void navigate({ to: "/login" });
       }
     };
@@ -51,10 +50,7 @@ export const Route = createFileRoute("/_authed")({
     if (typeof window === "undefined") {
       return;
     }
-    const { data } = await authClient.getSession();
-    if (!data?.session) {
-      throw redirect({ to: "/login" });
-    }
+    await requireSession();
   },
   component: AuthedLayout,
 });

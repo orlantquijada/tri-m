@@ -34,6 +34,7 @@ type PaymentFormProps = {
   currentBalanceCents: number;
   receivableId: number;
   customerId: number;
+  trigger?: React.ReactElement;
 };
 
 function fieldError(errors: (string | undefined)[]) {
@@ -48,6 +49,7 @@ export function PaymentForm({
   currentBalanceCents,
   receivableId,
   customerId,
+  trigger,
 }: PaymentFormProps) {
   const [open, setOpen] = useState(false);
   const createMutation = paymentQueries.useCreate();
@@ -83,7 +85,9 @@ export function PaymentForm({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         render={
-          <Button disabled={currentBalanceCents === 0}>Record Payment</Button>
+          trigger ?? (
+            <Button disabled={currentBalanceCents === 0}>Record Payment</Button>
+          )
         }
       />
       <DialogContent>

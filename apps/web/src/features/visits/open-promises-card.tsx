@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { QuickActionsBar } from "@/features/shared/quick-actions-bar";
 import { formatPeso } from "@/lib/format";
 
 import { useOpenPromisesQuery, useResolvePromiseMutation } from "./queries";
@@ -104,24 +105,31 @@ function OpenPromiseRow({ promise }: { promise: OpenPromiseItem }) {
           <span>{promise.promisedDate ?? "—"}</span>
         </div>
       </div>
-      <div className="flex flex-col items-start gap-1 sm:items-end">
+      <div className="flex flex-col items-start gap-2 sm:items-end">
         <div className="flex flex-wrap items-center gap-2">
           <Badge className={TONE_CLASSES[tone.tone]} variant="outline">
             {tone.label}
           </Badge>
           <Button
-            size="sm"
-            variant="outline"
             onClick={() =>
               resolveMutation.mutate({
                 customerId: promise.customer.id,
                 visitId: promise.id,
               })
             }
+            size="sm"
+            variant="outline"
           >
             Resolved
           </Button>
         </div>
+        <QuickActionsBar
+          customerId={promise.customer.id}
+          latitude={promise.customer.latitude}
+          layout="row"
+          longitude={promise.customer.longitude}
+          phone={promise.customer.phone}
+        />
         {resolveMutation.error && (
           <p className="text-xs text-destructive">
             {resolveMutation.error.message}

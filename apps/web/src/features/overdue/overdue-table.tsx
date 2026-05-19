@@ -3,12 +3,9 @@ import type { InferResponseType } from "hono/client";
 
 import { ResponsiveTable } from "@/components/responsive-table";
 import type { ResponsiveColumn } from "@/components/responsive-table";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { QuickActionsBar } from "@/features/shared/quick-actions-bar";
 import type { api } from "@/lib/api";
-import { formatPeso, mapsUrl } from "@/lib/format";
-import { cn } from "@/lib/utils";
-
-import { RecordVisitDialog } from "../visits/record-visit-dialog";
+import { formatPeso } from "@/lib/format";
 
 export type OverdueRow = InferResponseType<
   typeof api.api.overdue.$get,
@@ -90,21 +87,19 @@ const columns: ResponsiveColumn<OverdueRow>[] = [
     mobileLabel: "Days overdue",
   },
   {
-    cell: (row) =>
-      row.latitude !== null && row.longitude !== null ? (
-        <a
-          className="text-sm underline-offset-4 hover:underline"
-          href={mapsUrl(row.latitude, row.longitude)}
-          rel="noreferrer"
-          target="_blank"
-        >
-          Open
-        </a>
-      ) : (
-        <span className="text-sm text-muted-foreground">—</span>
-      ),
-    header: "Map",
-    key: "map",
+    cell: (row) => (
+      <QuickActionsBar
+        currentBalanceCents={row.currentBalanceCents}
+        customerId={row.customerId}
+        latitude={row.latitude}
+        layout="wrap"
+        longitude={row.longitude}
+        phone={row.phone}
+        receivableId={row.id}
+      />
+    ),
+    header: "",
+    key: "actions",
     mobileHidden: true,
   },
 ];
@@ -114,32 +109,18 @@ export function OverdueTable({ rows }: { rows: OverdueRow[] }) {
     <ResponsiveTable
       columns={columns}
       data={rows}
-      keyExtractor={(r) => r.id}
       emptyMessage="No overdue accounts found."
+      keyExtractor={(r) => r.id}
       mobileFooter={(row) => (
-        <div className="flex flex-wrap gap-2 pt-1">
-          {row.latitude !== null && row.longitude !== null ? (
-            <a
-              className={cn(
-                buttonVariants({ size: "sm", variant: "outline" }),
-                "min-h-11"
-              )}
-              href={mapsUrl(row.latitude, row.longitude)}
-              rel="noreferrer"
-              target="_blank"
-            >
-              Map
-            </a>
-          ) : null}
-          <RecordVisitDialog
-            customerId={row.customerId}
-            trigger={
-              <Button size="sm" variant="outline" className="min-h-11">
-                Visit
-              </Button>
-            }
-          />
-        </div>
+        <QuickActionsBar
+          currentBalanceCents={row.currentBalanceCents}
+          customerId={row.customerId}
+          latitude={row.latitude}
+          layout="row"
+          longitude={row.longitude}
+          phone={row.phone}
+          receivableId={row.id}
+        />
       )}
     />
   );

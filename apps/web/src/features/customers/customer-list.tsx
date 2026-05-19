@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { ResponsiveTable } from "@/components/responsive-table";
 import type { ResponsiveColumn } from "@/components/responsive-table";
 import { Badge } from "@/components/ui/badge";
+import { QuickActionsBar } from "@/features/shared/quick-actions-bar";
 import { formatPeso } from "@/lib/format";
 
 import { customerQueries } from "./queries";
@@ -54,6 +55,20 @@ const columns: ResponsiveColumn<CustomerListItem>[] = [
     key: "outstanding",
     mobileLabel: "Outstanding",
   },
+  {
+    cell: (c) => (
+      <QuickActionsBar
+        customerId={c.id}
+        latitude={c.latitude}
+        layout="wrap"
+        longitude={c.longitude}
+        phone={c.phone}
+      />
+    ),
+    header: "",
+    key: "actions",
+    mobileHidden: true,
+  },
 ];
 
 export function CustomerList() {
@@ -70,8 +85,17 @@ export function CustomerList() {
     <ResponsiveTable
       columns={columns}
       data={data ?? []}
-      keyExtractor={(c) => c.id}
       emptyMessage="No customers found."
+      keyExtractor={(c) => c.id}
+      mobileFooter={(c) => (
+        <QuickActionsBar
+          customerId={c.id}
+          latitude={c.latitude}
+          layout="row"
+          longitude={c.longitude}
+          phone={c.phone}
+        />
+      )}
     />
   );
 }
