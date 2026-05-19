@@ -17,6 +17,7 @@ import { Route as AuthedMapRouteImport } from './routes/_authed/map'
 import { Route as AuthedDashboardRouteImport } from './routes/_authed/dashboard'
 import { Route as AuthedVisitsIndexRouteImport } from './routes/_authed/visits/index'
 import { Route as AuthedUsersIndexRouteImport } from './routes/_authed/users/index'
+import { Route as AuthedTodayIndexRouteImport } from './routes/_authed/today/index'
 import { Route as AuthedReportsIndexRouteImport } from './routes/_authed/reports/index'
 import { Route as AuthedDistributorsIndexRouteImport } from './routes/_authed/distributors/index'
 import { Route as AuthedCustomersIndexRouteImport } from './routes/_authed/customers/index'
@@ -68,6 +69,11 @@ const AuthedVisitsIndexRoute = AuthedVisitsIndexRouteImport.update({
 const AuthedUsersIndexRoute = AuthedUsersIndexRouteImport.update({
   id: '/users/',
   path: '/users/',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedTodayIndexRoute = AuthedTodayIndexRouteImport.update({
+  id: '/today/',
+  path: '/today/',
   getParentRoute: () => AuthedRoute,
 } as any)
 const AuthedReportsIndexRoute = AuthedReportsIndexRouteImport.update({
@@ -156,6 +162,7 @@ export interface FileRoutesByFullPath {
   '/customers/': typeof AuthedCustomersIndexRoute
   '/distributors/': typeof AuthedDistributorsIndexRoute
   '/reports/': typeof AuthedReportsIndexRoute
+  '/today/': typeof AuthedTodayIndexRoute
   '/users/': typeof AuthedUsersIndexRoute
   '/visits/': typeof AuthedVisitsIndexRoute
   '/customers/$id/edit': typeof AuthedCustomersIdEditRoute
@@ -178,6 +185,7 @@ export interface FileRoutesByTo {
   '/customers': typeof AuthedCustomersIndexRoute
   '/distributors': typeof AuthedDistributorsIndexRoute
   '/reports': typeof AuthedReportsIndexRoute
+  '/today': typeof AuthedTodayIndexRoute
   '/users': typeof AuthedUsersIndexRoute
   '/visits': typeof AuthedVisitsIndexRoute
   '/customers/$id/edit': typeof AuthedCustomersIdEditRoute
@@ -202,6 +210,7 @@ export interface FileRoutesById {
   '/_authed/customers/': typeof AuthedCustomersIndexRoute
   '/_authed/distributors/': typeof AuthedDistributorsIndexRoute
   '/_authed/reports/': typeof AuthedReportsIndexRoute
+  '/_authed/today/': typeof AuthedTodayIndexRoute
   '/_authed/users/': typeof AuthedUsersIndexRoute
   '/_authed/visits/': typeof AuthedVisitsIndexRoute
   '/_authed/customers/$id_/edit': typeof AuthedCustomersIdEditRoute
@@ -226,6 +235,7 @@ export interface FileRouteTypes {
     | '/customers/'
     | '/distributors/'
     | '/reports/'
+    | '/today/'
     | '/users/'
     | '/visits/'
     | '/customers/$id/edit'
@@ -248,6 +258,7 @@ export interface FileRouteTypes {
     | '/customers'
     | '/distributors'
     | '/reports'
+    | '/today'
     | '/users'
     | '/visits'
     | '/customers/$id/edit'
@@ -271,6 +282,7 @@ export interface FileRouteTypes {
     | '/_authed/customers/'
     | '/_authed/distributors/'
     | '/_authed/reports/'
+    | '/_authed/today/'
     | '/_authed/users/'
     | '/_authed/visits/'
     | '/_authed/customers/$id_/edit'
@@ -339,6 +351,13 @@ declare module '@tanstack/react-router' {
       path: '/users'
       fullPath: '/users/'
       preLoaderRoute: typeof AuthedUsersIndexRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/today/': {
+      id: '/_authed/today/'
+      path: '/today'
+      fullPath: '/today/'
+      preLoaderRoute: typeof AuthedTodayIndexRouteImport
       parentRoute: typeof AuthedRoute
     }
     '/_authed/reports/': {
@@ -450,6 +469,7 @@ interface AuthedRouteChildren {
   AuthedCustomersIndexRoute: typeof AuthedCustomersIndexRoute
   AuthedDistributorsIndexRoute: typeof AuthedDistributorsIndexRoute
   AuthedReportsIndexRoute: typeof AuthedReportsIndexRoute
+  AuthedTodayIndexRoute: typeof AuthedTodayIndexRoute
   AuthedUsersIndexRoute: typeof AuthedUsersIndexRoute
   AuthedVisitsIndexRoute: typeof AuthedVisitsIndexRoute
   AuthedCustomersIdEditRoute: typeof AuthedCustomersIdEditRoute
@@ -471,6 +491,7 @@ const AuthedRouteChildren: AuthedRouteChildren = {
   AuthedCustomersIndexRoute: AuthedCustomersIndexRoute,
   AuthedDistributorsIndexRoute: AuthedDistributorsIndexRoute,
   AuthedReportsIndexRoute: AuthedReportsIndexRoute,
+  AuthedTodayIndexRoute: AuthedTodayIndexRoute,
   AuthedUsersIndexRoute: AuthedUsersIndexRoute,
   AuthedVisitsIndexRoute: AuthedVisitsIndexRoute,
   AuthedCustomersIdEditRoute: AuthedCustomersIdEditRoute,

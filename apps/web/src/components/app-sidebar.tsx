@@ -8,6 +8,7 @@ import {
   MapIcon,
   Package2Icon,
   RouteIcon,
+  SunIcon,
   UserCogIcon,
   UsersIcon,
 } from "lucide-react";
@@ -28,6 +29,7 @@ import {
 import { authClient } from "@/lib/auth-client";
 
 const baseNavItems = [
+  { icon: <SunIcon />, title: "Today", url: "/today" },
   { icon: <LayoutDashboardIcon />, title: "Dashboard", url: "/dashboard" },
   { icon: <UsersIcon />, title: "Customers", url: "/customers" },
   { icon: <MapIcon />, title: "Map", url: "/map" },
