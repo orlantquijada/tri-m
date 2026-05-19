@@ -21,8 +21,8 @@ import { RecordVisitDialog } from "@/features/visits/record-visit-dialog";
 import { formatPeso } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
-import { useTodayQuery } from './queries';
-import type { TodayPayload } from './queries';
+import { useTodayQuery } from "./queries";
+import type { TodayPayload } from "./queries";
 
 function formatRelativeTime(input: string | Date): string {
   const date = typeof input === "string" ? new Date(input) : input;

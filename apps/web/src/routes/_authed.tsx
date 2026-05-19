@@ -7,6 +7,7 @@ import {
 import { useEffect } from "react";
 
 import { AppSidebar } from "@/components/app-sidebar";
+import { MobileBottomNav } from "@/components/mobile-bottom-nav";
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
@@ -34,11 +35,12 @@ function AuthedLayout() {
       <SidebarInset>
         <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4">
           <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
+          <Separator className="mr-2 h-4" orientation="vertical" />
         </header>
-        <main className="flex flex-1 flex-col p-4">
+        <main className="flex flex-1 flex-col p-4 pb-20 md:pb-4">
           <Outlet />
         </main>
+        <MobileBottomNav />
       </SidebarInset>
     </SidebarProvider>
   );

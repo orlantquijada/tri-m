@@ -31,31 +31,43 @@ export function CustomerProfile({
       : null;
 
   return (
-    <div className="container mx-auto space-y-8 p-6">
-      <div className="flex items-start justify-between gap-4">
-        <div className="space-y-2">
-          <h1 className="text-2xl font-bold">{customer.fullName}</h1>
-          <RiskBadge riskStatus={customer.riskStatus} />
-          <BlacklistRequestButton
-            customerId={customer.id}
-            riskStatus={customer.riskStatus}
-          />
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Link
-            className={cn(buttonVariants({ variant: "outline" }))}
-            params={{ id: String(customer.id) }}
-            to="/customers/$id/edit"
-          >
-            Edit
-          </Link>
-          <RecordVisitDialog customerId={customer.id} />
-          <a
-            className={cn(buttonVariants())}
-            href={`/receivables/new?customerId=${customer.id}`}
-          >
-            Add Receivable
-          </a>
+    <div className="container mx-auto space-y-8 p-4 sm:p-6">
+      <div className="sticky top-14 z-20 -mx-4 border-b bg-background/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className="space-y-2">
+            <h1 className="text-xl font-bold sm:text-2xl">
+              {customer.fullName}
+            </h1>
+            <div className="flex flex-wrap items-center gap-2">
+              <RiskBadge riskStatus={customer.riskStatus} />
+              <BlacklistRequestButton
+                customerId={customer.id}
+                riskStatus={customer.riskStatus}
+              />
+            </div>
+          </div>
+          <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
+            <Link
+              className={cn(
+                buttonVariants({ variant: "outline" }),
+                "min-h-11 shrink-0 whitespace-nowrap"
+              )}
+              params={{ id: String(customer.id) }}
+              to="/customers/$id/edit"
+            >
+              Edit
+            </Link>
+            <RecordVisitDialog customerId={customer.id} />
+            <a
+              className={cn(
+                buttonVariants(),
+                "min-h-11 shrink-0 whitespace-nowrap"
+              )}
+              href={`/receivables/new?customerId=${customer.id}`}
+            >
+              Add Receivable
+            </a>
+          </div>
         </div>
       </div>
 
