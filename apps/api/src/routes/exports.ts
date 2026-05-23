@@ -1,37 +1,20 @@
-import {
-  customers as customersTable,
-  db,
-  distributors as distributorsTable,
-} from "db";
-import { eq } from "drizzle-orm";
 import { CUSTOMER_CSV_COLUMNS, OVERDUE_CSV_COLUMNS } from "schema";
 import type { CustomerCsvRow, OverdueCsvRow } from "schema";
 
+import { toCsv } from "../lib/csv";
 import { createRouter } from "../lib/factory";
-import { Scope } from "../lib/scope";
 import { requireSession } from "../middleware/auth";
+import { listCustomersForExport } from "../services/customers";
 import { listOverdue } from "../services/overdue";
 
-function escapeField(v: unknown): string {
-  const s = v === null || v === undefined ? "" : String(v);
-  return /[",\r\n]/u.test(s) ? `"${s.replaceAll('"', '""')}"` : s;
-}
-
-function toCsv(
-  columns: readonly string[],
-  rows: Record<string, unknown>[]
-): string {
-  const header = [...columns].join(",");
-  const body = rows
-    .map((row) => [...columns].map((col) => escapeField(row[col])).join(","))
-    .join("\n");
-  return `${header}\n${body}`;
-}
+const EXPORT_ROW_LIMIT = 10_000;
 
 export const csvExports = createRouter()
   .get("/overdue.csv", requireSession, async (c) => {
-    const { rows } = await listOverdue(c.get("user"));
-    const csvRows: Record<string, unknown>[] = rows.slice(0, 10_000).map(
+    const { rows } = await listOverdue(c.get("user"), {
+      limit: EXPORT_ROW_LIMIT,
+    });
+    const csvRows: Record<string, unknown>[] = rows.map(
       (r): OverdueCsvRow => ({
         address: r.address,
         current_balance_cents: r.currentBalanceCents,
@@ -52,27 +35,7 @@ export const csvExports = createRouter()
     });
   })
   .get("/customers.csv", requireSession, async (c) => {
-    const user = c.get("user");
-    const scope = Scope.forUser(user);
-
-    const rows = await db
-      .select({
-        address: customersTable.address,
-        distributorName: distributorsTable.name,
-        fullName: customersTable.fullName,
-        latitude: customersTable.latitude,
-        longitude: customersTable.longitude,
-        phone: customersTable.phone,
-        riskStatus: customersTable.riskStatus,
-      })
-      .from(customersTable)
-      .innerJoin(
-        distributorsTable,
-        eq(customersTable.distributorId, distributorsTable.id)
-      )
-      .where(scope.filterQuery(customersTable.distributorId))
-      .limit(10_000);
-
+    const rows = await listCustomersForExport(c.get("user"), EXPORT_ROW_LIMIT);
     const csvRows: Record<string, unknown>[] = rows.map(
       (r): CustomerCsvRow => ({
         address: r.address,

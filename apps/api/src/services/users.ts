@@ -1,9 +1,12 @@
-import { db, distributors as distributorsTable, user } from "db";
-import { eq } from "drizzle-orm";
+import { hashPassword } from "better-auth/crypto";
+import { account, db, distributors as distributorsTable, user } from "db";
+import { and, eq } from "drizzle-orm";
 import { userListItemSchema } from "schema";
 
 import { auth } from "../lib/auth";
-import { badRequest, notFound } from "../lib/http";
+import { badRequest, forbidden, notFound } from "../lib/http";
+import type { User } from "../middleware/auth";
+import { logEvent } from "./audit";
 
 export const userFields = {
   distributorId: user.distributorId,
@@ -20,7 +23,7 @@ type CreateDistributorUserInput = {
   password: string;
 };
 
-type UpdateUserInput = {
+type UpdateDistributorUserInput = {
   distributorId?: number;
   role?: "admin" | "distributor";
 };
@@ -66,16 +69,91 @@ export async function createDistributorUser(input: CreateDistributorUserInput) {
   return created;
 }
 
-export async function updateUser(id: string, updates: UpdateUserInput) {
-  const [updated] = await db
-    .update(user)
-    .set(updates)
-    .where(eq(user.id, id))
-    .returning(userFields);
-
-  if (!updated) {
-    throw notFound("User not found");
+export function updateDistributorUser(
+  actor: User,
+  targetId: string,
+  updates: UpdateDistributorUserInput
+) {
+  if (Object.keys(updates).length === 0) {
+    throw badRequest("No fields to update");
   }
 
-  return updated;
+  return db.transaction(async (tx) => {
+    const [existing] = await tx
+      .select({ distributorId: user.distributorId })
+      .from(user)
+      .where(eq(user.id, targetId));
+
+    if (!existing) {
+      throw notFound("User not found");
+    }
+
+    const [next] = await tx
+      .update(user)
+      .set(updates)
+      .where(eq(user.id, targetId))
+      .returning(userFields);
+
+    if (
+      updates.distributorId !== undefined &&
+      updates.distributorId !== existing.distributorId
+    ) {
+      await logEvent(tx, {
+        actorId: actor.id,
+        distributorId: updates.distributorId,
+        entityId: targetId,
+        entityType: "user",
+        event: "user.distributor_assigned",
+        metadata: {
+          newDistributorId: updates.distributorId,
+          previousDistributorId: existing.distributorId,
+          targetUserId: targetId,
+        },
+      });
+    }
+
+    return next;
+  });
+}
+
+export async function resetDistributorUserPassword(
+  actor: User,
+  targetId: string,
+  newPassword: string
+) {
+  const [target] = await db
+    .select({ distributorId: user.distributorId, role: user.role })
+    .from(user)
+    .where(eq(user.id, targetId));
+
+  if (!target) {
+    throw notFound("User not found");
+  }
+  if (target.role !== "distributor") {
+    throw forbidden("Only distributor passwords can be reset");
+  }
+
+  const hash = await hashPassword(newPassword);
+  await db.transaction(async (tx) => {
+    const updated = await tx
+      .update(account)
+      .set({ password: hash })
+      .where(
+        and(eq(account.userId, targetId), eq(account.providerId, "credential"))
+      )
+      .returning({ id: account.id });
+
+    if (updated.length === 0) {
+      throw notFound("No credential account for user");
+    }
+
+    await logEvent(tx, {
+      actorId: actor.id,
+      distributorId: target.distributorId,
+      entityId: targetId,
+      entityType: "user",
+      event: "user.password_reset",
+      metadata: { targetUserId: targetId },
+    });
+  });
 }

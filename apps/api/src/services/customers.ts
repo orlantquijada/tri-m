@@ -1,6 +1,7 @@
 import {
   customers as customersTable,
   db,
+  distributors as distributorsTable,
   paymentSchedules as paymentSchedulesTable,
   receivables as receivablesTable,
 } from "db";
@@ -117,6 +118,26 @@ export async function getCustomer(user: User, id: number) {
   Scope.forUser(user).assertCanRead(customer.distributorId);
 
   return customerDetailSchema.parse({ ...customer, receivables });
+}
+
+export function listCustomersForExport(user: User, limit = 10_000) {
+  return db
+    .select({
+      address: customersTable.address,
+      distributorName: distributorsTable.name,
+      fullName: customersTable.fullName,
+      latitude: customersTable.latitude,
+      longitude: customersTable.longitude,
+      phone: customersTable.phone,
+      riskStatus: customersTable.riskStatus,
+    })
+    .from(customersTable)
+    .innerJoin(
+      distributorsTable,
+      eq(customersTable.distributorId, distributorsTable.id)
+    )
+    .where(Scope.forUser(user).filterQuery(customersTable.distributorId))
+    .limit(limit);
 }
 
 export function lookupCustomersByPhone(user: User, phone: string) {

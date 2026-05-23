@@ -7,7 +7,6 @@ import { requireSession } from "../middleware/auth";
 import { createReceivable, getReceivable } from "../services/receivables";
 
 export const receivables = createRouter()
-  .get("/", requireSession, (c) => c.json([]))
   .get("/:id", requireSession, async (c) =>
     c.json(await getReceivable(c.get("user"), idParam(c)))
   )

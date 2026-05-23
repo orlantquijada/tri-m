@@ -14,7 +14,7 @@ import { getAgingBuckets } from "./dashboard";
 
 const daysOverdueSql = sql<number>`cast(julianday('now') - julianday(${receivablesTable.firstDueDate}) as integer)`;
 
-export async function listOverdue(user: User) {
+export async function listOverdue(user: User, opts: { limit?: number } = {}) {
   const scope = Scope.forUser(user);
 
   const [withSchedule, withoutSchedule] = await Promise.all([
@@ -113,9 +113,11 @@ export async function listOverdue(user: User) {
   combined.sort((a, b) =>
     a.oldestUnpaidDueDate.localeCompare(b.oldestUnpaidDueDate)
   );
+  const limited =
+    opts.limit !== undefined ? combined.slice(0, opts.limit) : combined;
 
   const [rows, aging] = await Promise.all([
-    Promise.resolve(overdueRowSchema.array().parse(combined)),
+    Promise.resolve(overdueRowSchema.array().parse(limited)),
     getAgingBuckets(user),
   ]);
 
