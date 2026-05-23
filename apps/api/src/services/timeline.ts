@@ -8,7 +8,7 @@ import {
   visits as visitsTable,
 } from "db";
 import type { InferSelectModel } from "drizzle-orm";
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, inArray } from "drizzle-orm";
 import type {
   TimelineEvent,
   TimelineResponse,
@@ -72,9 +72,9 @@ type VisitRow = Pick<
   | "type"
 >;
 
-type StatusChangeRow = Pick<
+type CustomerAuditRow = Pick<
   InferSelectModel<typeof auditEventsTable>,
-  "actorId" | "createdAt" | "metadata"
+  "actorId" | "createdAt" | "event" | "metadata"
 >;
 
 type BlacklistRow = Pick<
@@ -164,18 +164,53 @@ function visitEvents(row: VisitRow): TimelineEvent[] {
   ];
 }
 
-function statusChangeEvent(row: StatusChangeRow): TimelineEvent {
+function nullableString(value: unknown): string | null {
+  return typeof value === "string" ? value : null;
+}
+
+function nullableNumber(value: unknown): number | null {
+  return typeof value === "number" ? value : null;
+}
+
+function customerAuditEvent(row: CustomerAuditRow): TimelineEvent | null {
   const meta = parseMetadata(row.metadata);
-  return {
-    data: {
-      actorId: row.actorId,
-      newStatus: typeof meta.newStatus === "string" ? meta.newStatus : null,
-      previousStatus:
-        typeof meta.previousStatus === "string" ? meta.previousStatus : null,
-    },
-    occurredAt: row.createdAt,
-    type: "customer.status_changed",
-  };
+  if (row.event === "customer.status_changed") {
+    return {
+      data: {
+        actorId: row.actorId,
+        newStatus: nullableString(meta.newStatus),
+        previousStatus: nullableString(meta.previousStatus),
+      },
+      occurredAt: row.createdAt,
+      type: "customer.status_changed",
+    };
+  }
+  if (row.event === "customer.created") {
+    return {
+      data: {
+        actorId: row.actorId,
+        hasLocation: meta.hasLocation === true,
+      },
+      occurredAt: row.createdAt,
+      type: "customer.created",
+    };
+  }
+  if (row.event === "customer.location_changed") {
+    return {
+      data: {
+        actorId: row.actorId,
+        newAddress: nullableString(meta.newAddress),
+        newLatitude: nullableNumber(meta.newLatitude),
+        newLongitude: nullableNumber(meta.newLongitude),
+        previousAddress: nullableString(meta.previousAddress),
+        previousLatitude: nullableNumber(meta.previousLatitude),
+        previousLongitude: nullableNumber(meta.previousLongitude),
+      },
+      occurredAt: row.createdAt,
+      type: "customer.location_changed",
+    };
+  }
+  return null;
 }
 
 function blacklistEvents(row: BlacklistRow): TimelineEvent[] {
@@ -231,7 +266,7 @@ export async function buildTimeline(
     receivableRows,
     paymentRows,
     visitRows,
-    statusChangeRows,
+    customerAuditRows,
     blacklistRows,
   ] = await Promise.all([
     db
@@ -283,6 +318,7 @@ export async function buildTimeline(
       .select({
         actorId: auditEventsTable.actorId,
         createdAt: auditEventsTable.createdAt,
+        event: auditEventsTable.event,
         metadata: auditEventsTable.metadata,
       })
       .from(auditEventsTable)
@@ -290,7 +326,11 @@ export async function buildTimeline(
         and(
           eq(auditEventsTable.entityType, "customer"),
           eq(auditEventsTable.entityId, String(customerId)),
-          eq(auditEventsTable.event, "customer.status_changed")
+          inArray(auditEventsTable.event, [
+            "customer.status_changed",
+            "customer.created",
+            "customer.location_changed",
+          ])
         )
       )
       .orderBy(desc(auditEventsTable.createdAt))
@@ -311,11 +351,15 @@ export async function buildTimeline(
       .limit(upperBound),
   ]);
 
+  const customerAuditEvents = customerAuditRows
+    .map(customerAuditEvent)
+    .filter((event): event is TimelineEvent => event !== null);
+
   const events: TimelineEvent[] = [
     ...receivableRows.map(receivableEvent),
     ...paymentRows.flatMap(paymentEvents),
     ...visitRows.flatMap(visitEvents),
-    ...statusChangeRows.map(statusChangeEvent),
+    ...customerAuditEvents,
     ...blacklistRows.flatMap(blacklistEvents),
   ];
 

@@ -183,10 +183,16 @@ export function ContactFields({
 }
 
 type LocationFieldsProps = {
+  autoLocateOnMount?: boolean;
   form: CustomerFormApi;
+  pinRequired?: boolean;
 };
 
-export function LocationFields({ form }: LocationFieldsProps) {
+export function LocationFields({
+  autoLocateOnMount,
+  form,
+  pinRequired,
+}: LocationFieldsProps) {
   return (
     <div className="space-y-4">
       <form.Field
@@ -213,7 +219,12 @@ export function LocationFields({ form }: LocationFieldsProps) {
       </form.Field>
 
       <div className="space-y-1">
-        <Label>Pin location</Label>
+        <Label>
+          Pin location
+          {pinRequired ? (
+            <span className="ml-1 text-destructive">*</span>
+          ) : null}
+        </Label>
         <form.Subscribe
           selector={(s) => ({
             address: s.values.address,
@@ -227,6 +238,7 @@ export function LocationFields({ form }: LocationFieldsProps) {
             return (
               <LocationMapPicker
                 addressIsEmpty={snap.address.trim() === ""}
+                autoLocateOnMount={autoLocateOnMount}
                 latitude={lat}
                 longitude={lng}
                 onChange={(nextLat, nextLng) => {
@@ -242,6 +254,7 @@ export function LocationFields({ form }: LocationFieldsProps) {
                 onReverseGeocode={(displayName) => {
                   form.setFieldValue("address", displayName);
                 }}
+                pinRequired={pinRequired}
               />
             );
           }}

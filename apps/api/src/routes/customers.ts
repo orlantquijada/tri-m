@@ -20,6 +20,7 @@ import { buildTimeline } from "../services/timeline";
 
 const listFiltersSchema = z.object({
   hasOverdue: z.enum(["true", "false"]).optional(),
+  missingLocation: z.enum(["true", "false"]).optional(),
   riskStatus: z.preprocess((v) => {
     if (typeof v === "string") {
       return v.split(",").filter(Boolean);
@@ -41,10 +42,11 @@ export const customers = createRouter()
     requireSession,
     zValidator("query", listFiltersSchema),
     async (c) => {
-      const { hasOverdue, riskStatus } = c.req.valid("query");
+      const { hasOverdue, missingLocation, riskStatus } = c.req.valid("query");
       return c.json(
         await listCustomers(c.get("user"), {
           hasOverdue: hasOverdue === "true",
+          missingLocation: missingLocation === "true",
           riskStatus,
         })
       );

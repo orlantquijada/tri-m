@@ -6,7 +6,9 @@ export type TimelineEventType =
   | "payment.voided"
   | "visit.recorded"
   | "promise.resolved"
+  | "customer.created"
   | "customer.status_changed"
+  | "customer.location_changed"
   | "blacklist.requested"
   | "blacklist.approved"
   | "blacklist.rejected";
@@ -54,6 +56,21 @@ export type StatusChangedData = {
   newStatus: string | null;
 };
 
+export type CustomerCreatedData = {
+  actorId: string;
+  hasLocation: boolean;
+};
+
+export type LocationChangedData = {
+  actorId: string;
+  previousLatitude: number | null;
+  previousLongitude: number | null;
+  previousAddress: string | null;
+  newLatitude: number | null;
+  newLongitude: number | null;
+  newAddress: string | null;
+};
+
 export type BlacklistRequestedData = {
   requestId: number;
   reason: string;
@@ -79,6 +96,16 @@ export type TimelineEvent =
       type: "customer.status_changed";
       occurredAt: Date;
       data: StatusChangedData;
+    }
+  | {
+      type: "customer.created";
+      occurredAt: Date;
+      data: CustomerCreatedData;
+    }
+  | {
+      type: "customer.location_changed";
+      occurredAt: Date;
+      data: LocationChangedData;
     }
   | {
       type: "blacklist.requested";

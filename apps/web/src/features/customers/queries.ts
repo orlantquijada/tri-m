@@ -104,6 +104,24 @@ export function useReverseGeocodeQuery(lat: number | null, lng: number | null) {
   });
 }
 
+export function useMissingLocationCustomersQuery() {
+  return useQuery({
+    queryFn: async () => {
+      const res = await api.api.customers.$get({
+        query: { missingLocation: "true" },
+      });
+      if (!res.ok) {
+        throw await parseApiError(
+          res as unknown as Response,
+          "Failed to fetch customers"
+        );
+      }
+      return res.json();
+    },
+    queryKey: ["customers", "missing-location"] as const,
+  });
+}
+
 export type CustomersMapFilters = {
   hasOverdue: boolean;
   riskStatus: RiskStatus[];

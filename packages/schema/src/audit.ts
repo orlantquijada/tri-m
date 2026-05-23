@@ -10,7 +10,9 @@ export const auditEntityTypeEnum = z.enum([
 export const auditEventTypeEnum = z.enum([
   "payment.recorded",
   "payment.voided",
+  "customer.created",
   "customer.status_changed",
+  "customer.location_changed",
   "blacklist.requested",
   "blacklist.approved",
   "blacklist.rejected",

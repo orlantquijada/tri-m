@@ -3,10 +3,12 @@ import {
   CheckCircle2,
   CircleDollarSign,
   FileText,
+  MapPin,
   PhoneCall,
   ShieldAlert,
   ShieldCheck,
   ShieldX,
+  UserPlus,
   XCircle,
 } from "lucide-react";
 import type { ReactNode } from "react";
@@ -142,6 +144,65 @@ function renderPromiseResolved(
   };
 }
 
+function renderCustomerCreated(
+  data: Extract<CustomerTimelineEvent, { type: "customer.created" }>["data"]
+): RenderedEvent {
+  return {
+    detail: data.hasLocation
+      ? "Pin captured at creation"
+      : "No pin at creation",
+    icon: <UserPlus className="size-4" />,
+    muted: !data.hasLocation,
+    title: "Customer added",
+  };
+}
+
+function renderLocationChanged(
+  data: Extract<
+    CustomerTimelineEvent,
+    { type: "customer.location_changed" }
+  >["data"]
+): RenderedEvent {
+  const addressChanged =
+    (data.previousAddress ?? "") !== (data.newAddress ?? "");
+  const coordsChanged =
+    data.previousLatitude !== data.newLatitude ||
+    data.previousLongitude !== data.newLongitude;
+
+  let detail: ReactNode = null;
+  let title = "Location updated";
+  if (addressChanged && coordsChanged) {
+    detail = (
+      <>
+        Address: "{data.previousAddress ?? "—"}" → "{data.newAddress ?? "—"}"
+      </>
+    );
+  } else if (addressChanged) {
+    detail = (
+      <>
+        "{data.previousAddress ?? "—"}" → "{data.newAddress ?? "—"}"
+      </>
+    );
+    title = "Address updated";
+  } else if (coordsChanged) {
+    const prev =
+      data.previousLatitude !== null && data.previousLongitude !== null
+        ? `${data.previousLatitude.toFixed(5)}, ${data.previousLongitude.toFixed(5)}`
+        : "no pin";
+    const next =
+      data.newLatitude !== null && data.newLongitude !== null
+        ? `${data.newLatitude.toFixed(5)}, ${data.newLongitude.toFixed(5)}`
+        : "no pin";
+    detail = `${prev} → ${next}`;
+    title = "Pin moved";
+  }
+  return {
+    detail,
+    icon: <MapPin className="size-4" />,
+    title,
+  };
+}
+
 function renderStatusChanged(
   data: Extract<
     CustomerTimelineEvent,
@@ -198,6 +259,12 @@ function renderEvent(event: CustomerTimelineEvent): RenderedEvent {
     case "customer.status_changed": {
       return renderStatusChanged(event.data);
     }
+    case "customer.created": {
+      return renderCustomerCreated(event.data);
+    }
+    case "customer.location_changed": {
+      return renderLocationChanged(event.data);
+    }
     case "blacklist.requested": {
       return {
         detail: event.data.reason,
@@ -231,7 +298,9 @@ function eventKey(event: CustomerTimelineEvent): string {
     case "promise.resolved": {
       return `${event.type}-${event.data.visitId}`;
     }
-    case "customer.status_changed": {
+    case "customer.status_changed":
+    case "customer.created":
+    case "customer.location_changed": {
       return `${event.type}-${event.occurredAt}`;
     }
     case "blacklist.requested":

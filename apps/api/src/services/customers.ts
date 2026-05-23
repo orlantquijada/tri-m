@@ -5,7 +5,7 @@ import {
   paymentSchedules as paymentSchedulesTable,
   receivables as receivablesTable,
 } from "db";
-import { and, eq, exists, inArray, ne, or, sql } from "drizzle-orm";
+import { and, eq, exists, inArray, isNull, ne, or, sql } from "drizzle-orm";
 import {
   customerDetailSchema,
   customerListItemSchema,
@@ -20,6 +20,7 @@ import { logEvent } from "./audit";
 
 export type ListCustomersFilters = {
   hasOverdue?: boolean;
+  missingLocation?: boolean;
   riskStatus?: RiskStatus[];
 };
 
@@ -28,10 +29,19 @@ export async function listCustomers(
   filters: ListCustomersFilters = {}
 ) {
   const scope = Scope.forUser(user);
+  if (filters.missingLocation) {
+    scope.assertAdmin();
+  }
   const conditions = [scope.filterQuery(customersTable.distributorId)];
 
   if (filters.riskStatus && filters.riskStatus.length > 0) {
     conditions.push(inArray(customersTable.riskStatus, filters.riskStatus));
+  }
+
+  if (filters.missingLocation) {
+    conditions.push(
+      or(isNull(customersTable.latitude), isNull(customersTable.longitude))
+    );
   }
 
   if (filters.hasOverdue) {
@@ -156,13 +166,18 @@ export function lookupCustomersByPhone(user: User, phone: string) {
     );
 }
 
-export async function createCustomer(user: User, data: CustomerInsert) {
+export function createCustomer(user: User, data: CustomerInsert) {
   let distributorId: number;
+  const latitude = data.latitude ?? null;
+  const longitude = data.longitude ?? null;
   if (user.role === "distributor") {
     if (!user.distributorId) {
       throw forbidden("No distributor assigned");
     }
     ({ distributorId } = user);
+    if (latitude === null || longitude === null) {
+      throw badRequest("Location pin is required");
+    }
   } else {
     if (!data.distributorId) {
       throw badRequest("distributorId is required");
@@ -170,21 +185,32 @@ export async function createCustomer(user: User, data: CustomerInsert) {
     ({ distributorId } = data);
   }
 
-  const [customer] = await db
-    .insert(customersTable)
-    .values({
-      address: data.address,
-      distributorId,
-      fullName: data.fullName,
-      latitude: data.latitude ?? null,
-      longitude: data.longitude ?? null,
-      notes: data.notes ?? null,
-      phone: data.phone,
-      riskStatus: data.riskStatus ?? "good",
-    })
-    .returning();
+  return db.transaction(async (tx) => {
+    const [customer] = await tx
+      .insert(customersTable)
+      .values({
+        address: data.address,
+        distributorId,
+        fullName: data.fullName,
+        latitude,
+        longitude,
+        notes: data.notes ?? null,
+        phone: data.phone,
+        riskStatus: data.riskStatus ?? "good",
+      })
+      .returning();
 
-  return customerSelectSchema.parse(customer);
+    await logEvent(tx, {
+      actorId: user.id,
+      distributorId,
+      entityId: String(customer.id),
+      entityType: "customer",
+      event: "customer.created",
+      metadata: { hasLocation: latitude !== null && longitude !== null },
+    });
+
+    return customerSelectSchema.parse(customer);
+  });
 }
 
 export function updateCustomer(user: User, id: number, data: CustomerUpdate) {
@@ -224,6 +250,31 @@ export function updateCustomer(user: User, id: number, data: CustomerUpdate) {
         metadata: {
           newStatus: data.riskStatus,
           previousStatus: existing.riskStatus,
+        },
+      });
+    }
+
+    const latChanged =
+      data.latitude !== undefined && data.latitude !== existing.latitude;
+    const lngChanged =
+      data.longitude !== undefined && data.longitude !== existing.longitude;
+    const addressChanged =
+      data.address !== undefined && data.address !== existing.address;
+
+    if (latChanged || lngChanged || addressChanged) {
+      await logEvent(tx, {
+        actorId: user.id,
+        distributorId: existing.distributorId,
+        entityId: String(id),
+        entityType: "customer",
+        event: "customer.location_changed",
+        metadata: {
+          newAddress: updated.address,
+          newLatitude: updated.latitude,
+          newLongitude: updated.longitude,
+          previousAddress: existing.address,
+          previousLatitude: existing.latitude,
+          previousLongitude: existing.longitude,
         },
       });
     }

@@ -9,23 +9,28 @@ import { useLeafletMap } from "@/features/map/use-leaflet-map";
 import { useReverseGeocodeQuery } from "./queries";
 
 type Props = {
+  addressIsEmpty: boolean;
+  autoLocateOnMount?: boolean;
   latitude: number | null;
   longitude: number | null;
   onChange: (lat: number | null, lng: number | null) => void;
   onReverseGeocode?: (displayName: string) => void;
-  addressIsEmpty: boolean;
+  pinRequired?: boolean;
 };
 
 const DRAG_DEBOUNCE_MS = 1000;
 const PINNED_ZOOM = 16;
 const USE_MY_LOCATION_ZOOM = 17;
 
+// oxlint-disable-next-line complexity
 export function LocationMapPicker({
+  addressIsEmpty,
+  autoLocateOnMount,
   latitude,
   longitude,
   onChange,
   onReverseGeocode,
-  addressIsEmpty,
+  pinRequired,
 }: Props) {
   const markerRef = useRef<Marker | null>(null);
   const dragTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -51,6 +56,7 @@ export function LocationMapPicker({
 
   const hasInitialCoords =
     initialLatRef.current !== null && initialLngRef.current !== null;
+  const autoLocateOnMountRef = useRef(autoLocateOnMount);
   const { containerRef, leafletRef, mapRef } = useLeafletMap({
     center: hasInitialCoords
       ? [initialLatRef.current as number, initialLngRef.current as number]
@@ -66,6 +72,9 @@ export function LocationMapPicker({
           immediate: true,
           triggerGeocode: false,
         });
+      } else if (autoLocateOnMountRef.current) {
+        // oxlint-disable-next-line no-use-before-define
+        handleUseMyLocation();
       }
     },
     zoom: hasInitialCoords ? PINNED_ZOOM : DEFAULT_MAP_ZOOM,
@@ -185,6 +194,15 @@ export function LocationMapPicker({
   const showSuggestionLink =
     suggestion && !addressIsEmpty && lastSuggestionRef.current === suggestion;
 
+  let coordsClass = "text-muted-foreground text-xs";
+  let coordsLabel = "Tap the map to drop a pin";
+  if (latitude !== null && longitude !== null) {
+    coordsLabel = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+  } else if (pinRequired) {
+    coordsClass = "text-destructive text-xs font-medium";
+    coordsLabel = "Pin required — tap the map or use GPS";
+  }
+
   return (
     <div className="space-y-2">
       <div
@@ -212,11 +230,7 @@ export function LocationMapPicker({
           <X className="mr-1 size-4" />
           Clear
         </Button>
-        <p className="text-muted-foreground text-xs">
-          {latitude !== null && longitude !== null
-            ? `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`
-            : "Tap the map to drop a pin"}
-        </p>
+        <p className={coordsClass}>{coordsLabel}</p>
       </div>
       {geoError && <p className="text-destructive text-sm">{geoError}</p>}
       {showSuggestionLink && (

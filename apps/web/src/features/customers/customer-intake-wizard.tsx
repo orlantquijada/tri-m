@@ -51,7 +51,8 @@ function getStepFieldNames(
 
 function getRequiredFieldNames(
   step: StepKey,
-  showDistributorId: boolean
+  showDistributorId: boolean,
+  requirePin: boolean
 ): (keyof CustomerFormValues)[] {
   if (step === "contact") {
     return showDistributorId
@@ -59,7 +60,7 @@ function getRequiredFieldNames(
       : ["fullName", "phone"];
   }
   if (step === "location") {
-    return ["address"];
+    return requirePin ? ["address", "latitude", "longitude"] : ["address"];
   }
   return [];
 }
@@ -193,7 +194,12 @@ export function CustomerIntakeWizard() {
 
   const step = STEPS[stepIdx];
   const showDistributorId = isAdmin;
-  const required = getRequiredFieldNames(step.key, showDistributorId);
+  const requirePin = !isAdmin;
+  const required = getRequiredFieldNames(
+    step.key,
+    showDistributorId,
+    requirePin
+  );
   const optional = getStepFieldNames(step.key, showDistributorId).filter(
     (n) => !required.includes(n)
   );
@@ -238,7 +244,13 @@ export function CustomerIntakeWizard() {
       {step.key === "contact" && (
         <ContactFields form={form} showDistributorId={showDistributorId} />
       )}
-      {step.key === "location" && <LocationFields form={form} />}
+      {step.key === "location" && (
+        <LocationFields
+          form={form}
+          autoLocateOnMount={requirePin}
+          pinRequired={requirePin}
+        />
+      )}
       {step.key === "risk" && (
         <div className="space-y-4">
           <RiskFields form={form} />

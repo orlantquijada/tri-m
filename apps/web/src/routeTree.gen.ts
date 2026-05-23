@@ -28,6 +28,7 @@ import { Route as AuthedReceivablesNewRouteImport } from './routes/_authed/recei
 import { Route as AuthedReceivablesIdRouteImport } from './routes/_authed/receivables/$id'
 import { Route as AuthedDistributorsNewRouteImport } from './routes/_authed/distributors/new'
 import { Route as AuthedCustomersNewRouteImport } from './routes/_authed/customers/new'
+import { Route as AuthedCustomersMissingLocationRouteImport } from './routes/_authed/customers/missing-location'
 import { Route as AuthedCustomersIdRouteImport } from './routes/_authed/customers/$id'
 import { Route as AuthedDistributorsIdEditRouteImport } from './routes/_authed/distributors/$id.edit'
 import { Route as AuthedCustomersIdEditRouteImport } from './routes/_authed/customers/$id_.edit'
@@ -128,6 +129,12 @@ const AuthedCustomersNewRoute = AuthedCustomersNewRouteImport.update({
   path: '/customers/new',
   getParentRoute: () => AuthedRoute,
 } as any)
+const AuthedCustomersMissingLocationRoute =
+  AuthedCustomersMissingLocationRouteImport.update({
+    id: '/customers/missing-location',
+    path: '/customers/missing-location',
+    getParentRoute: () => AuthedRoute,
+  } as any)
 const AuthedCustomersIdRoute = AuthedCustomersIdRouteImport.update({
   id: '/customers/$id',
   path: '/customers/$id',
@@ -152,6 +159,7 @@ export interface FileRoutesByFullPath {
   '/map': typeof AuthedMapRoute
   '/overdue': typeof AuthedOverdueRoute
   '/customers/$id': typeof AuthedCustomersIdRoute
+  '/customers/missing-location': typeof AuthedCustomersMissingLocationRoute
   '/customers/new': typeof AuthedCustomersNewRoute
   '/distributors/new': typeof AuthedDistributorsNewRoute
   '/receivables/$id': typeof AuthedReceivablesIdRoute
@@ -175,6 +183,7 @@ export interface FileRoutesByTo {
   '/map': typeof AuthedMapRoute
   '/overdue': typeof AuthedOverdueRoute
   '/customers/$id': typeof AuthedCustomersIdRoute
+  '/customers/missing-location': typeof AuthedCustomersMissingLocationRoute
   '/customers/new': typeof AuthedCustomersNewRoute
   '/distributors/new': typeof AuthedDistributorsNewRoute
   '/receivables/$id': typeof AuthedReceivablesIdRoute
@@ -200,6 +209,7 @@ export interface FileRoutesById {
   '/_authed/map': typeof AuthedMapRoute
   '/_authed/overdue': typeof AuthedOverdueRoute
   '/_authed/customers/$id': typeof AuthedCustomersIdRoute
+  '/_authed/customers/missing-location': typeof AuthedCustomersMissingLocationRoute
   '/_authed/customers/new': typeof AuthedCustomersNewRoute
   '/_authed/distributors/new': typeof AuthedDistributorsNewRoute
   '/_authed/receivables/$id': typeof AuthedReceivablesIdRoute
@@ -225,6 +235,7 @@ export interface FileRouteTypes {
     | '/map'
     | '/overdue'
     | '/customers/$id'
+    | '/customers/missing-location'
     | '/customers/new'
     | '/distributors/new'
     | '/receivables/$id'
@@ -248,6 +259,7 @@ export interface FileRouteTypes {
     | '/map'
     | '/overdue'
     | '/customers/$id'
+    | '/customers/missing-location'
     | '/customers/new'
     | '/distributors/new'
     | '/receivables/$id'
@@ -272,6 +284,7 @@ export interface FileRouteTypes {
     | '/_authed/map'
     | '/_authed/overdue'
     | '/_authed/customers/$id'
+    | '/_authed/customers/missing-location'
     | '/_authed/customers/new'
     | '/_authed/distributors/new'
     | '/_authed/receivables/$id'
@@ -430,6 +443,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedCustomersNewRouteImport
       parentRoute: typeof AuthedRoute
     }
+    '/_authed/customers/missing-location': {
+      id: '/_authed/customers/missing-location'
+      path: '/customers/missing-location'
+      fullPath: '/customers/missing-location'
+      preLoaderRoute: typeof AuthedCustomersMissingLocationRouteImport
+      parentRoute: typeof AuthedRoute
+    }
     '/_authed/customers/$id': {
       id: '/_authed/customers/$id'
       path: '/customers/$id'
@@ -459,6 +479,7 @@ interface AuthedRouteChildren {
   AuthedMapRoute: typeof AuthedMapRoute
   AuthedOverdueRoute: typeof AuthedOverdueRoute
   AuthedCustomersIdRoute: typeof AuthedCustomersIdRoute
+  AuthedCustomersMissingLocationRoute: typeof AuthedCustomersMissingLocationRoute
   AuthedCustomersNewRoute: typeof AuthedCustomersNewRoute
   AuthedDistributorsNewRoute: typeof AuthedDistributorsNewRoute
   AuthedReceivablesIdRoute: typeof AuthedReceivablesIdRoute
@@ -481,6 +502,7 @@ const AuthedRouteChildren: AuthedRouteChildren = {
   AuthedMapRoute: AuthedMapRoute,
   AuthedOverdueRoute: AuthedOverdueRoute,
   AuthedCustomersIdRoute: AuthedCustomersIdRoute,
+  AuthedCustomersMissingLocationRoute: AuthedCustomersMissingLocationRoute,
   AuthedCustomersNewRoute: AuthedCustomersNewRoute,
   AuthedDistributorsNewRoute: AuthedDistributorsNewRoute,
   AuthedReceivablesIdRoute: AuthedReceivablesIdRoute,
