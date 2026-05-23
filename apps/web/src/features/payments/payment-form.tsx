@@ -16,9 +16,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  NativeSelect,
-  NativeSelectOption,
-} from "@/components/ui/native-select";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { formatPeso, parsePeso } from "@/lib/format";
 
 import { paymentQueries } from "./queries";
@@ -150,22 +153,29 @@ export function PaymentForm({
             {(field) => (
               <div className="space-y-1">
                 <Label htmlFor="paymentMethod">Payment Method</Label>
-                <NativeSelect
-                  id="paymentMethod"
+                <Select
                   value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) =>
-                    field.handleChange(e.target.value as PaymentMethod)
+                  onValueChange={(value) =>
+                    field.handleChange(value as PaymentMethod)
                   }
                 >
-                  {Object.entries(paymentMethodOptions).map(
-                    ([value, label]) => (
-                      <NativeSelectOption value={value} key={value}>
-                        {label}
-                      </NativeSelectOption>
-                    )
-                  )}
-                </NativeSelect>
+                  <SelectTrigger
+                    id="paymentMethod"
+                    className="w-full"
+                    onBlur={field.handleBlur}
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(paymentMethodOptions).map(
+                      ([value, label]) => (
+                        <SelectItem key={value} value={value}>
+                          {label}
+                        </SelectItem>
+                      )
+                    )}
+                  </SelectContent>
+                </Select>
                 {fieldError(field.state.meta.errors)}
               </div>
             )}

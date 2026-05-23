@@ -6,6 +6,13 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 import { distributorQueries } from "./queries";
 
@@ -133,18 +140,24 @@ export function DistributorForm({
         {(field) => (
           <div className="space-y-1">
             <Label htmlFor="status">Status</Label>
-            <select
-              id="status"
-              className="h-9 w-full rounded-md border border-input bg-transparent px-2.5 py-1 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+            <Select
               value={field.state.value}
-              onChange={(e) =>
-                field.handleChange(e.target.value as DistributorStatus)
+              onValueChange={(value) =>
+                field.handleChange(value as DistributorStatus)
               }
-              onBlur={field.handleBlur}
             >
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-            </select>
+              <SelectTrigger
+                id="status"
+                className="w-full"
+                onBlur={field.handleBlur}
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         )}
       </form.Field>

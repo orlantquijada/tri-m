@@ -48,10 +48,7 @@ export function CustomerProfile({
           </div>
           <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
             <Link
-              className={cn(
-                buttonVariants({ variant: "outline" }),
-                "min-h-11 shrink-0 whitespace-nowrap"
-              )}
+              className={cn(buttonVariants({ variant: "outline" }))}
               params={{ id: String(customer.id) }}
               to="/customers/$id/edit"
             >
@@ -59,10 +56,7 @@ export function CustomerProfile({
             </Link>
             <RecordVisitDialog customerId={customer.id} />
             <a
-              className={cn(
-                buttonVariants(),
-                "min-h-11 shrink-0 whitespace-nowrap"
-              )}
+              className={cn(buttonVariants())}
               href={`/receivables/new?customerId=${customer.id}`}
             >
               Add Receivable

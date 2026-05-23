@@ -7,6 +7,13 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { authClient } from "@/lib/auth-client";
 import { parseFloatOrNull } from "@/lib/format";
@@ -275,17 +282,23 @@ export function RiskFields({ form }: RiskFieldsProps) {
         {(field) => (
           <div className="space-y-1">
             <Label htmlFor="riskStatus">Risk Status</Label>
-            <select
-              id="riskStatus"
-              className="h-9 w-full rounded-md border border-input bg-transparent px-2.5 py-1 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+            <Select
               value={field.state.value}
-              onChange={(e) => field.handleChange(e.target.value as RiskStatus)}
-              onBlur={field.handleBlur}
+              onValueChange={(value) => field.handleChange(value as RiskStatus)}
             >
-              <option value="good">Good</option>
-              <option value="watchlist">Watchlist</option>
-              <option value="blacklisted">Blacklisted</option>
-            </select>
+              <SelectTrigger
+                id="riskStatus"
+                className="w-full"
+                onBlur={field.handleBlur}
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="good">Good</SelectItem>
+                <SelectItem value="watchlist">Watchlist</SelectItem>
+                <SelectItem value="blacklisted">Blacklisted</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         )}
       </form.Field>

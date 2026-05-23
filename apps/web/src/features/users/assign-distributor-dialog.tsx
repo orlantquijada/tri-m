@@ -15,6 +15,13 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { distributorQueries } from "@/features/distributors/queries";
 
 import { allUsersQueries, userQueries } from "./queries";
@@ -49,18 +56,21 @@ function ReassignRow({
         <p className="truncate text-sm font-medium">{u.name}</p>
         <p className="truncate text-xs text-muted-foreground">{u.email}</p>
       </div>
-      <select
-        className="h-8 rounded-md border border-input bg-transparent px-2 text-sm"
+      <Select
         value={selected}
-        onChange={(e) => setSelected(e.target.value)}
+        onValueChange={(value) => setSelected(value ?? "")}
       >
-        <option value="">— unassigned —</option>
-        {distributors.map((d) => (
-          <option key={d.id} value={String(d.id)}>
-            {d.name}
-          </option>
-        ))}
-      </select>
+        <SelectTrigger size="sm">
+          <SelectValue placeholder="— unassigned —" />
+        </SelectTrigger>
+        <SelectContent>
+          {distributors.map((d) => (
+            <SelectItem key={d.id} value={String(d.id)}>
+              {d.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
       <Button
         size="sm"
         variant="outline"

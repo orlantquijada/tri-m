@@ -5,9 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  NativeSelect,
-  NativeSelectOption,
-} from "@/components/ui/native-select";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -77,21 +80,25 @@ export function AuditLog() {
       <div className="flex flex-wrap items-end gap-3 rounded-md border bg-muted/40 px-4 py-3">
         <div className="space-y-1">
           <Label htmlFor="audit-filter-entity">Entity</Label>
-          <NativeSelect
-            id="audit-filter-entity"
+          <Select
             value={entityType}
-            onChange={(e) =>
+            onValueChange={(value) =>
               handleFilterChange(() =>
-                setEntityType(e.target.value as AuditEntityType | "all")
+                setEntityType(value as AuditEntityType | "all")
               )
             }
           >
-            {ENTITY_TYPE_OPTIONS.map((opt) => (
-              <NativeSelectOption key={opt.value} value={opt.value}>
-                {opt.label}
-              </NativeSelectOption>
-            ))}
-          </NativeSelect>
+            <SelectTrigger id="audit-filter-entity">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {ENTITY_TYPE_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div className="space-y-1">
           <Label htmlFor="audit-filter-from">From</Label>
