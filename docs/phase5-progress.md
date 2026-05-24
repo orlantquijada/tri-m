@@ -10,7 +10,7 @@ Full task details in `docs/phase5-plan.md`. Phase 4 context in `docs/phase4-plan
 
 - [x] **P1** — Products schema + zod (`products` table, audit `entityType` enum extended, `productSchema` / `createProductSchema` / `updateProductSchema`). Depends on: Phase 4 complete.
 - [x] **P2** — Products API (scope-aware CRUD + archive, audit each mutation, mount in `index.ts`). Depends on: P1.
-- [ ] **P3** — Products UI (list, create, edit, archive; sidebar + mobile nav entries; works on 375px). Depends on: P2.
+- [x] **P3** — Products UI (list, create, edit, archive; sidebar + mobile nav entries; works on 375px). Depends on: P2.
 
 ## Phase Q — Stock movements ledger
 
@@ -36,3 +36,4 @@ Full task details in `docs/phase5-plan.md`. Phase 4 context in `docs/phase4-plan
 - 2026-05-24 — plan — 9 tasks across P (catalog) / Q (stock ledger) / R (polish). Locked: distributor-scoped products, per-distributor unique SKU, integer-unit qty, ledger-style movements (sign per type, void replaces edit, negative stock allowed), audit events `product.*` + `stock.*`, low-stock threshold fixed at 5, no receivable wiring.
 - 2026-05-24 — P2 — Products API mounted at `/api/products`. SKU conflict handled via pre-insert SELECT inside the tx → `HTTPException(409)` (no DB-error parsing). Distributor users get `distributorId` auto-resolved from session; admin must pass it. Update path omits SKU per plan. Archive is idempotent (returns row unchanged if already archived, no double audit). List endpoint returns rows shaped to `productListItemSchema` with `currentQty: 0` placeholder — Q3 wires the real number via separate stock-levels endpoint.
 - 2026-05-24 — P1 — `products` table added with `(distributorId, sku)` UNIQUE + `(distributorId, status)` indexes. `auditEvents.entityType` enum extended with `product` + `stock_movement` (added now so Q1 needs no second migration). Audit event-type enum gained `product.*` + `stock.*` events. Zod schemas in `packages/schema/src/product.ts`. `db:push` + `typecheck` green.
+- 2026-05-24 — P3 — Products UI shipped: TanStack-Query hooks (`productQueries` + `useArchiveProduct`), shadcn data table (Active/Archived tabs, search by name/SKU, columns with `—` stock placeholder per Q3), TanStack-Form `ProductForm` (admin distributor combobox on create, SKU disabled on edit, price input in pesos → cents on submit), routes `/products`, `/products/new`, `/products/$id`, `/products/$id_/edit`, sidebar "Inventory" group + mobile bottom nav "Products" entry (visible to both roles). Row archive uses confirm AlertDialog. Route tree regenerated via `@tanstack/router-cli generate`. `typecheck` green.

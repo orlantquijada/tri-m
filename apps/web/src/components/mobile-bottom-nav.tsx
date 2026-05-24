@@ -1,5 +1,11 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { ClipboardListIcon, MenuIcon, SunIcon, UsersIcon } from "lucide-react";
+import {
+  BoxIcon,
+  ClipboardListIcon,
+  MenuIcon,
+  SunIcon,
+  UsersIcon,
+} from "lucide-react";
 import type { ComponentType } from "react";
 
 import { useSidebar } from "@/components/ui/sidebar";
@@ -8,7 +14,7 @@ import { cn } from "@/lib/utils";
 
 type NavLink = {
   label: string;
-  to: "/today" | "/customers" | "/visits";
+  to: "/today" | "/customers" | "/visits" | "/products";
   icon: ComponentType<{ className?: string }>;
   matchPrefix: string;
 };
@@ -26,6 +32,12 @@ const ALL_LINKS: NavLink[] = [
     label: "Visits",
     matchPrefix: "/visits",
     to: "/visits",
+  },
+  {
+    icon: BoxIcon,
+    label: "Products",
+    matchPrefix: "/products",
+    to: "/products",
   },
 ];
 

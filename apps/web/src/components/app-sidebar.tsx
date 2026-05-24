@@ -1,6 +1,7 @@
 import {
   AlertCircleIcon,
   BarChart2Icon,
+  BoxIcon,
   BuildingIcon,
   ClipboardListIcon,
   HistoryIcon,
@@ -67,6 +68,11 @@ const collectionsGroup: NavGroup = {
   label: "Collections",
 };
 
+const inventoryGroup: NavGroup = {
+  items: [{ icon: <BoxIcon />, title: "Products", url: "/products" }],
+  label: "Inventory",
+};
+
 const adminGroup: NavGroup = {
   items: [
     { icon: <BuildingIcon />, title: "Distributors", url: "/distributors" },
@@ -100,8 +106,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     (session?.user as Record<string, unknown> | undefined)?.role === "admin";
 
   const groups: NavGroup[] = isAdmin
-    ? [workspaceGroup, collectionsGroup, adminGroup]
-    : [workspaceGroup, collectionsGroup];
+    ? [workspaceGroup, collectionsGroup, inventoryGroup, adminGroup]
+    : [workspaceGroup, collectionsGroup, inventoryGroup];
 
   const user = {
     avatar: session?.user.image ?? "",

@@ -19,6 +19,7 @@ import { Route as AuthedVisitsIndexRouteImport } from './routes/_authed/visits/i
 import { Route as AuthedUsersIndexRouteImport } from './routes/_authed/users/index'
 import { Route as AuthedTodayIndexRouteImport } from './routes/_authed/today/index'
 import { Route as AuthedReportsIndexRouteImport } from './routes/_authed/reports/index'
+import { Route as AuthedProductsIndexRouteImport } from './routes/_authed/products/index'
 import { Route as AuthedDistributorsIndexRouteImport } from './routes/_authed/distributors/index'
 import { Route as AuthedCustomersIndexRouteImport } from './routes/_authed/customers/index'
 import { Route as AuthedCollectionRoutesIndexRouteImport } from './routes/_authed/collection-routes/index'
@@ -26,10 +27,13 @@ import { Route as AuthedBlacklistRequestsIndexRouteImport } from './routes/_auth
 import { Route as AuthedAuditIndexRouteImport } from './routes/_authed/audit/index'
 import { Route as AuthedReceivablesNewRouteImport } from './routes/_authed/receivables/new'
 import { Route as AuthedReceivablesIdRouteImport } from './routes/_authed/receivables/$id'
+import { Route as AuthedProductsNewRouteImport } from './routes/_authed/products/new'
+import { Route as AuthedProductsIdRouteImport } from './routes/_authed/products/$id'
 import { Route as AuthedDistributorsNewRouteImport } from './routes/_authed/distributors/new'
 import { Route as AuthedCustomersNewRouteImport } from './routes/_authed/customers/new'
 import { Route as AuthedCustomersMissingLocationRouteImport } from './routes/_authed/customers/missing-location'
 import { Route as AuthedCustomersIdRouteImport } from './routes/_authed/customers/$id'
+import { Route as AuthedProductsIdEditRouteImport } from './routes/_authed/products/$id_.edit'
 import { Route as AuthedDistributorsIdEditRouteImport } from './routes/_authed/distributors/$id.edit'
 import { Route as AuthedCustomersIdEditRouteImport } from './routes/_authed/customers/$id_.edit'
 
@@ -82,6 +86,11 @@ const AuthedReportsIndexRoute = AuthedReportsIndexRouteImport.update({
   path: '/reports/',
   getParentRoute: () => AuthedRoute,
 } as any)
+const AuthedProductsIndexRoute = AuthedProductsIndexRouteImport.update({
+  id: '/products/',
+  path: '/products/',
+  getParentRoute: () => AuthedRoute,
+} as any)
 const AuthedDistributorsIndexRoute = AuthedDistributorsIndexRouteImport.update({
   id: '/distributors/',
   path: '/distributors/',
@@ -119,6 +128,16 @@ const AuthedReceivablesIdRoute = AuthedReceivablesIdRouteImport.update({
   path: '/receivables/$id',
   getParentRoute: () => AuthedRoute,
 } as any)
+const AuthedProductsNewRoute = AuthedProductsNewRouteImport.update({
+  id: '/products/new',
+  path: '/products/new',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedProductsIdRoute = AuthedProductsIdRouteImport.update({
+  id: '/products/$id',
+  path: '/products/$id',
+  getParentRoute: () => AuthedRoute,
+} as any)
 const AuthedDistributorsNewRoute = AuthedDistributorsNewRouteImport.update({
   id: '/distributors/new',
   path: '/distributors/new',
@@ -138,6 +157,11 @@ const AuthedCustomersMissingLocationRoute =
 const AuthedCustomersIdRoute = AuthedCustomersIdRouteImport.update({
   id: '/customers/$id',
   path: '/customers/$id',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedProductsIdEditRoute = AuthedProductsIdEditRouteImport.update({
+  id: '/products/$id_/edit',
+  path: '/products/$id/edit',
   getParentRoute: () => AuthedRoute,
 } as any)
 const AuthedDistributorsIdEditRoute =
@@ -162,6 +186,8 @@ export interface FileRoutesByFullPath {
   '/customers/missing-location': typeof AuthedCustomersMissingLocationRoute
   '/customers/new': typeof AuthedCustomersNewRoute
   '/distributors/new': typeof AuthedDistributorsNewRoute
+  '/products/$id': typeof AuthedProductsIdRoute
+  '/products/new': typeof AuthedProductsNewRoute
   '/receivables/$id': typeof AuthedReceivablesIdRoute
   '/receivables/new': typeof AuthedReceivablesNewRoute
   '/audit/': typeof AuthedAuditIndexRoute
@@ -169,12 +195,14 @@ export interface FileRoutesByFullPath {
   '/collection-routes/': typeof AuthedCollectionRoutesIndexRoute
   '/customers/': typeof AuthedCustomersIndexRoute
   '/distributors/': typeof AuthedDistributorsIndexRoute
+  '/products/': typeof AuthedProductsIndexRoute
   '/reports/': typeof AuthedReportsIndexRoute
   '/today/': typeof AuthedTodayIndexRoute
   '/users/': typeof AuthedUsersIndexRoute
   '/visits/': typeof AuthedVisitsIndexRoute
   '/customers/$id/edit': typeof AuthedCustomersIdEditRoute
   '/distributors/$id/edit': typeof AuthedDistributorsIdEditRoute
+  '/products/$id/edit': typeof AuthedProductsIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -186,6 +214,8 @@ export interface FileRoutesByTo {
   '/customers/missing-location': typeof AuthedCustomersMissingLocationRoute
   '/customers/new': typeof AuthedCustomersNewRoute
   '/distributors/new': typeof AuthedDistributorsNewRoute
+  '/products/$id': typeof AuthedProductsIdRoute
+  '/products/new': typeof AuthedProductsNewRoute
   '/receivables/$id': typeof AuthedReceivablesIdRoute
   '/receivables/new': typeof AuthedReceivablesNewRoute
   '/audit': typeof AuthedAuditIndexRoute
@@ -193,12 +223,14 @@ export interface FileRoutesByTo {
   '/collection-routes': typeof AuthedCollectionRoutesIndexRoute
   '/customers': typeof AuthedCustomersIndexRoute
   '/distributors': typeof AuthedDistributorsIndexRoute
+  '/products': typeof AuthedProductsIndexRoute
   '/reports': typeof AuthedReportsIndexRoute
   '/today': typeof AuthedTodayIndexRoute
   '/users': typeof AuthedUsersIndexRoute
   '/visits': typeof AuthedVisitsIndexRoute
   '/customers/$id/edit': typeof AuthedCustomersIdEditRoute
   '/distributors/$id/edit': typeof AuthedDistributorsIdEditRoute
+  '/products/$id/edit': typeof AuthedProductsIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -212,6 +244,8 @@ export interface FileRoutesById {
   '/_authed/customers/missing-location': typeof AuthedCustomersMissingLocationRoute
   '/_authed/customers/new': typeof AuthedCustomersNewRoute
   '/_authed/distributors/new': typeof AuthedDistributorsNewRoute
+  '/_authed/products/$id': typeof AuthedProductsIdRoute
+  '/_authed/products/new': typeof AuthedProductsNewRoute
   '/_authed/receivables/$id': typeof AuthedReceivablesIdRoute
   '/_authed/receivables/new': typeof AuthedReceivablesNewRoute
   '/_authed/audit/': typeof AuthedAuditIndexRoute
@@ -219,12 +253,14 @@ export interface FileRoutesById {
   '/_authed/collection-routes/': typeof AuthedCollectionRoutesIndexRoute
   '/_authed/customers/': typeof AuthedCustomersIndexRoute
   '/_authed/distributors/': typeof AuthedDistributorsIndexRoute
+  '/_authed/products/': typeof AuthedProductsIndexRoute
   '/_authed/reports/': typeof AuthedReportsIndexRoute
   '/_authed/today/': typeof AuthedTodayIndexRoute
   '/_authed/users/': typeof AuthedUsersIndexRoute
   '/_authed/visits/': typeof AuthedVisitsIndexRoute
   '/_authed/customers/$id_/edit': typeof AuthedCustomersIdEditRoute
   '/_authed/distributors/$id/edit': typeof AuthedDistributorsIdEditRoute
+  '/_authed/products/$id_/edit': typeof AuthedProductsIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -238,6 +274,8 @@ export interface FileRouteTypes {
     | '/customers/missing-location'
     | '/customers/new'
     | '/distributors/new'
+    | '/products/$id'
+    | '/products/new'
     | '/receivables/$id'
     | '/receivables/new'
     | '/audit/'
@@ -245,12 +283,14 @@ export interface FileRouteTypes {
     | '/collection-routes/'
     | '/customers/'
     | '/distributors/'
+    | '/products/'
     | '/reports/'
     | '/today/'
     | '/users/'
     | '/visits/'
     | '/customers/$id/edit'
     | '/distributors/$id/edit'
+    | '/products/$id/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -262,6 +302,8 @@ export interface FileRouteTypes {
     | '/customers/missing-location'
     | '/customers/new'
     | '/distributors/new'
+    | '/products/$id'
+    | '/products/new'
     | '/receivables/$id'
     | '/receivables/new'
     | '/audit'
@@ -269,12 +311,14 @@ export interface FileRouteTypes {
     | '/collection-routes'
     | '/customers'
     | '/distributors'
+    | '/products'
     | '/reports'
     | '/today'
     | '/users'
     | '/visits'
     | '/customers/$id/edit'
     | '/distributors/$id/edit'
+    | '/products/$id/edit'
   id:
     | '__root__'
     | '/'
@@ -287,6 +331,8 @@ export interface FileRouteTypes {
     | '/_authed/customers/missing-location'
     | '/_authed/customers/new'
     | '/_authed/distributors/new'
+    | '/_authed/products/$id'
+    | '/_authed/products/new'
     | '/_authed/receivables/$id'
     | '/_authed/receivables/new'
     | '/_authed/audit/'
@@ -294,12 +340,14 @@ export interface FileRouteTypes {
     | '/_authed/collection-routes/'
     | '/_authed/customers/'
     | '/_authed/distributors/'
+    | '/_authed/products/'
     | '/_authed/reports/'
     | '/_authed/today/'
     | '/_authed/users/'
     | '/_authed/visits/'
     | '/_authed/customers/$id_/edit'
     | '/_authed/distributors/$id/edit'
+    | '/_authed/products/$id_/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -380,6 +428,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedReportsIndexRouteImport
       parentRoute: typeof AuthedRoute
     }
+    '/_authed/products/': {
+      id: '/_authed/products/'
+      path: '/products'
+      fullPath: '/products/'
+      preLoaderRoute: typeof AuthedProductsIndexRouteImport
+      parentRoute: typeof AuthedRoute
+    }
     '/_authed/distributors/': {
       id: '/_authed/distributors/'
       path: '/distributors'
@@ -429,6 +484,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedReceivablesIdRouteImport
       parentRoute: typeof AuthedRoute
     }
+    '/_authed/products/new': {
+      id: '/_authed/products/new'
+      path: '/products/new'
+      fullPath: '/products/new'
+      preLoaderRoute: typeof AuthedProductsNewRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/products/$id': {
+      id: '/_authed/products/$id'
+      path: '/products/$id'
+      fullPath: '/products/$id'
+      preLoaderRoute: typeof AuthedProductsIdRouteImport
+      parentRoute: typeof AuthedRoute
+    }
     '/_authed/distributors/new': {
       id: '/_authed/distributors/new'
       path: '/distributors/new'
@@ -457,6 +526,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedCustomersIdRouteImport
       parentRoute: typeof AuthedRoute
     }
+    '/_authed/products/$id_/edit': {
+      id: '/_authed/products/$id_/edit'
+      path: '/products/$id/edit'
+      fullPath: '/products/$id/edit'
+      preLoaderRoute: typeof AuthedProductsIdEditRouteImport
+      parentRoute: typeof AuthedRoute
+    }
     '/_authed/distributors/$id/edit': {
       id: '/_authed/distributors/$id/edit'
       path: '/distributors/$id/edit'
@@ -482,6 +558,8 @@ interface AuthedRouteChildren {
   AuthedCustomersMissingLocationRoute: typeof AuthedCustomersMissingLocationRoute
   AuthedCustomersNewRoute: typeof AuthedCustomersNewRoute
   AuthedDistributorsNewRoute: typeof AuthedDistributorsNewRoute
+  AuthedProductsIdRoute: typeof AuthedProductsIdRoute
+  AuthedProductsNewRoute: typeof AuthedProductsNewRoute
   AuthedReceivablesIdRoute: typeof AuthedReceivablesIdRoute
   AuthedReceivablesNewRoute: typeof AuthedReceivablesNewRoute
   AuthedAuditIndexRoute: typeof AuthedAuditIndexRoute
@@ -489,12 +567,14 @@ interface AuthedRouteChildren {
   AuthedCollectionRoutesIndexRoute: typeof AuthedCollectionRoutesIndexRoute
   AuthedCustomersIndexRoute: typeof AuthedCustomersIndexRoute
   AuthedDistributorsIndexRoute: typeof AuthedDistributorsIndexRoute
+  AuthedProductsIndexRoute: typeof AuthedProductsIndexRoute
   AuthedReportsIndexRoute: typeof AuthedReportsIndexRoute
   AuthedTodayIndexRoute: typeof AuthedTodayIndexRoute
   AuthedUsersIndexRoute: typeof AuthedUsersIndexRoute
   AuthedVisitsIndexRoute: typeof AuthedVisitsIndexRoute
   AuthedCustomersIdEditRoute: typeof AuthedCustomersIdEditRoute
   AuthedDistributorsIdEditRoute: typeof AuthedDistributorsIdEditRoute
+  AuthedProductsIdEditRoute: typeof AuthedProductsIdEditRoute
 }
 
 const AuthedRouteChildren: AuthedRouteChildren = {
@@ -505,6 +585,8 @@ const AuthedRouteChildren: AuthedRouteChildren = {
   AuthedCustomersMissingLocationRoute: AuthedCustomersMissingLocationRoute,
   AuthedCustomersNewRoute: AuthedCustomersNewRoute,
   AuthedDistributorsNewRoute: AuthedDistributorsNewRoute,
+  AuthedProductsIdRoute: AuthedProductsIdRoute,
+  AuthedProductsNewRoute: AuthedProductsNewRoute,
   AuthedReceivablesIdRoute: AuthedReceivablesIdRoute,
   AuthedReceivablesNewRoute: AuthedReceivablesNewRoute,
   AuthedAuditIndexRoute: AuthedAuditIndexRoute,
@@ -512,12 +594,14 @@ const AuthedRouteChildren: AuthedRouteChildren = {
   AuthedCollectionRoutesIndexRoute: AuthedCollectionRoutesIndexRoute,
   AuthedCustomersIndexRoute: AuthedCustomersIndexRoute,
   AuthedDistributorsIndexRoute: AuthedDistributorsIndexRoute,
+  AuthedProductsIndexRoute: AuthedProductsIndexRoute,
   AuthedReportsIndexRoute: AuthedReportsIndexRoute,
   AuthedTodayIndexRoute: AuthedTodayIndexRoute,
   AuthedUsersIndexRoute: AuthedUsersIndexRoute,
   AuthedVisitsIndexRoute: AuthedVisitsIndexRoute,
   AuthedCustomersIdEditRoute: AuthedCustomersIdEditRoute,
   AuthedDistributorsIdEditRoute: AuthedDistributorsIdEditRoute,
+  AuthedProductsIdEditRoute: AuthedProductsIdEditRoute,
 }
 
 const AuthedRouteWithChildren =
@@ -531,12 +615,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
