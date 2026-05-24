@@ -20,3 +20,6 @@ export const paymentMethodEnum = z.enum([
   "other",
 ]);
 export type PaymentMethod = z.infer<typeof paymentMethodEnum>;
+
+export const productStatusEnum = z.enum(["active", "archived"]);
+export type ProductStatus = z.infer<typeof productStatusEnum>;

@@ -7,6 +7,7 @@ export * from "./distributor";
 export * from "./enums";
 export * from "./geocode";
 export * from "./payment";
+export * from "./product";
 export * from "./receivable";
 export * from "./report";
 export * from "./responses";

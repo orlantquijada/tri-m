@@ -5,6 +5,8 @@ export const auditEntityTypeEnum = z.enum([
   "customer",
   "blacklist_request",
   "user",
+  "product",
+  "stock_movement",
 ]);
 
 export const auditEventTypeEnum = z.enum([
@@ -18,6 +20,15 @@ export const auditEventTypeEnum = z.enum([
   "blacklist.rejected",
   "user.password_reset",
   "user.distributor_assigned",
+  "product.created",
+  "product.updated",
+  "product.archived",
+  "stock.received",
+  "stock.sold",
+  "stock.adjusted",
+  "stock.transferred_in",
+  "stock.transferred_out",
+  "stock.voided",
 ]);
 
 export const auditEventSelectSchema = z.object({

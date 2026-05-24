@@ -1,6 +1,13 @@
 import { createId } from "@paralleldrive/cuid2";
 import { sql } from "drizzle-orm";
-import { index, int, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import {
+  index,
+  int,
+  real,
+  sqliteTable,
+  text,
+  uniqueIndex,
+} from "drizzle-orm/sqlite-core";
 
 const timestampFields = {
   createdAt: int({ mode: "timestamp_ms" })
@@ -128,7 +135,14 @@ export const auditEvents = sqliteTable(
     distributorId: text(),
     entityId: text().notNull(),
     entityType: text({
-      enum: ["payment", "customer", "blacklist_request", "user"],
+      enum: [
+        "payment",
+        "customer",
+        "blacklist_request",
+        "user",
+        "product",
+        "stock_movement",
+      ],
     }).notNull(),
     event: text().notNull(),
     id: text()
@@ -186,6 +200,36 @@ export const visits = sqliteTable(
       table.distributorId,
       table.promiseResolvedAt,
       table.promisedDate
+    ),
+  ]
+);
+
+export const products = sqliteTable(
+  "products",
+  {
+    ...timestampFields,
+    description: text(),
+    distributorId: text()
+      .references(() => distributors.id)
+      .notNull(),
+    id: text()
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    name: text().notNull(),
+    sku: text().notNull(),
+    status: text({ enum: ["active", "archived"] })
+      .notNull()
+      .default("active"),
+    unitPriceCents: int(),
+  },
+  (table) => [
+    uniqueIndex("products_distributor_sku_idx").on(
+      table.distributorId,
+      table.sku
+    ),
+    index("products_distributor_status_idx").on(
+      table.distributorId,
+      table.status
     ),
   ]
 );
