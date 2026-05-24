@@ -229,9 +229,6 @@ export function CustomerIntakeWizard() {
       className="max-w-lg space-y-6"
       onSubmit={(e) => {
         e.preventDefault();
-        if (isLast) {
-          void form.handleSubmit();
-        }
       }}
     >
       <StepIndicator current={stepIdx} />
@@ -297,7 +294,11 @@ export function CustomerIntakeWizard() {
                   Cancel
                 </Button>
                 {isLast ? (
-                  <Button disabled={!canAdvance || isPending} type="submit">
+                  <Button
+                    disabled={!canAdvance || isPending}
+                    onClick={() => void form.handleSubmit()}
+                    type="button"
+                  >
                     {isPending ? "Saving..." : "Create Customer"}
                   </Button>
                 ) : (

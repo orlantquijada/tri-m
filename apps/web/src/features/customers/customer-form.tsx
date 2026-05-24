@@ -1,12 +1,22 @@
 import { useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { RiskStatus } from "schema";
 import { z } from "zod";
 
+import { PhPhoneInput } from "@/components/ph-phone-input";
 import { Button } from "@/components/ui/button";
+import {
+  Combobox,
+  ComboboxCollection,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from "@/components/ui/combobox";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -17,7 +27,9 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { authClient } from "@/lib/auth-client";
 import { parseFloatOrNull } from "@/lib/format";
+import { isValidPhMobile, normalizePhMobile } from "@/lib/phone";
 
+import { distributorQueries } from "../distributors/queries";
 import { DuplicatePhoneWarning } from "./duplicate-phone-warning";
 import { LocationMapPicker } from "./location-map-picker";
 import { customerQueries, usePhoneLookup } from "./queries";
@@ -78,11 +90,8 @@ type CustomerFormProps = {
   defaultValues?: Partial<CustomerFormValues>;
 };
 
-function fieldError(errors: string[]) {
-  if (!errors.length) {
-    return null;
-  }
-  return <p className="text-sm text-destructive">{errors[0]}</p>;
+function toFieldErrors(errors: unknown[]) {
+  return errors.filter(Boolean).map((msg) => ({ message: String(msg) }));
 }
 
 function validateDistributorId(value: string) {
@@ -92,6 +101,65 @@ function validateDistributorId(value: string) {
   if (Number.isNaN(Number.parseInt(value, 10))) {
     return "Must be a number";
   }
+}
+
+type DistributorOption = { label: string; value: string };
+
+type DistributorComboFieldProps = {
+  form: CustomerFormApi;
+};
+
+function DistributorComboField({ form }: DistributorComboFieldProps) {
+  const { data: distributors = [] } = distributorQueries.useList();
+  const items = useMemo<DistributorOption[]>(
+    () => distributors.map((d) => ({ label: d.name, value: String(d.id) })),
+    [distributors]
+  );
+
+  return (
+    <form.Field
+      name="distributorId"
+      validators={{ onChange: ({ value }) => validateDistributorId(value) }}
+    >
+      {(field) => {
+        const selected =
+          items.find((i) => i.value === field.state.value) ?? null;
+        return (
+          <Field>
+            <FieldLabel htmlFor="distributorId">Distributor</FieldLabel>
+            <Combobox
+              items={items}
+              value={selected}
+              onValueChange={(item) =>
+                field.handleChange(
+                  (item as DistributorOption | null)?.value ?? ""
+                )
+              }
+            >
+              <ComboboxInput
+                id="distributorId"
+                placeholder="Search distributor"
+                onBlur={field.handleBlur}
+              />
+              <ComboboxContent>
+                <ComboboxEmpty>No distributors found</ComboboxEmpty>
+                <ComboboxList>
+                  <ComboboxCollection>
+                    {(item: DistributorOption) => (
+                      <ComboboxItem key={item.value} value={item}>
+                        {item.label}
+                      </ComboboxItem>
+                    )}
+                  </ComboboxCollection>
+                </ComboboxList>
+              </ComboboxContent>
+            </Combobox>
+            <FieldError errors={toFieldErrors(field.state.meta.errors)} />
+          </Field>
+        );
+      }}
+    </form.Field>
+  );
 }
 
 type ContactFieldsProps = {
@@ -119,65 +187,50 @@ export function ContactFields({
         }}
       >
         {(field) => (
-          <div className="space-y-1">
-            <Label htmlFor="fullName">Full Name</Label>
+          <Field>
+            <FieldLabel htmlFor="fullName">Full Name</FieldLabel>
             <Input
               id="fullName"
               value={field.state.value}
               onChange={(e) => field.handleChange(e.target.value)}
               onBlur={field.handleBlur}
             />
-            {fieldError(field.state.meta.errors.filter(Boolean) as string[])}
-          </div>
+            <FieldError errors={toFieldErrors(field.state.meta.errors)} />
+          </Field>
         )}
       </form.Field>
 
       <form.Field
         name="phone"
         validators={{
-          onChange: ({ value }) =>
-            z.string().min(1, "Phone is required").safeParse(value).error
-              ?.issues[0]?.message,
+          onChange: ({ value }) => {
+            if (!value) {
+              return "Phone is required";
+            }
+            if (!isValidPhMobile(value)) {
+              return "Enter a valid PH mobile number (e.g. 0917 123 4567)";
+            }
+          },
         }}
       >
         {(field) => (
-          <div className="space-y-1">
-            <Label htmlFor="phone">Phone</Label>
-            <Input
+          <Field>
+            <FieldLabel htmlFor="phone">Phone</FieldLabel>
+            <PhPhoneInput
               id="phone"
               value={field.state.value}
-              onChange={(e) => field.handleChange(e.target.value)}
+              onChange={(v) => field.handleChange(v)}
               onBlur={() => {
                 field.handleBlur();
                 setLookupPhone(field.state.value);
               }}
             />
-            {fieldError(field.state.meta.errors.filter(Boolean) as string[])}
-          </div>
+            <FieldError errors={toFieldErrors(field.state.meta.errors)} />
+          </Field>
         )}
       </form.Field>
 
-      {showDistributorId && (
-        <form.Field
-          name="distributorId"
-          validators={{ onChange: ({ value }) => validateDistributorId(value) }}
-        >
-          {(field) => (
-            <div className="space-y-1">
-              <Label htmlFor="distributorId">Distributor ID</Label>
-              <Input
-                id="distributorId"
-                type="number"
-                min={1}
-                value={field.state.value}
-                onChange={(e) => field.handleChange(e.target.value)}
-                onBlur={field.handleBlur}
-              />
-              {fieldError(field.state.meta.errors.filter(Boolean) as string[])}
-            </div>
-          )}
-        </form.Field>
-      )}
+      {showDistributorId && <DistributorComboField form={form} />}
 
       {phoneLookup.data && (
         <DuplicatePhoneWarning
@@ -211,8 +264,8 @@ export function LocationFields({
         }}
       >
         {(field) => (
-          <div className="space-y-1">
-            <Label htmlFor="address">Address</Label>
+          <Field>
+            <FieldLabel htmlFor="address">Address</FieldLabel>
             <Textarea
               id="address"
               rows={2}
@@ -220,18 +273,18 @@ export function LocationFields({
               onChange={(e) => field.handleChange(e.target.value)}
               onBlur={field.handleBlur}
             />
-            {fieldError(field.state.meta.errors.filter(Boolean) as string[])}
-          </div>
+            <FieldError errors={toFieldErrors(field.state.meta.errors)} />
+          </Field>
         )}
       </form.Field>
 
-      <div className="space-y-1">
-        <Label>
+      <Field>
+        <FieldLabel>
           Pin location
           {pinRequired ? (
             <span className="ml-1 text-destructive">*</span>
           ) : null}
-        </Label>
+        </FieldLabel>
         <form.Subscribe
           selector={(s) => ({
             address: s.values.address,
@@ -266,7 +319,7 @@ export function LocationFields({
             );
           }}
         </form.Subscribe>
-      </div>
+      </Field>
     </div>
   );
 }
@@ -280,8 +333,8 @@ export function RiskFields({ form }: RiskFieldsProps) {
     <div className="space-y-4">
       <form.Field name="riskStatus">
         {(field) => (
-          <div className="space-y-1">
-            <Label htmlFor="riskStatus">Risk Status</Label>
+          <Field>
+            <FieldLabel htmlFor="riskStatus">Risk Status</FieldLabel>
             <Select
               value={field.state.value}
               onValueChange={(value) => field.handleChange(value as RiskStatus)}
@@ -299,14 +352,15 @@ export function RiskFields({ form }: RiskFieldsProps) {
                 <SelectItem value="blacklisted">Blacklisted</SelectItem>
               </SelectContent>
             </Select>
-          </div>
+            <FieldError errors={toFieldErrors(field.state.meta.errors)} />
+          </Field>
         )}
       </form.Field>
 
       <form.Field name="notes">
         {(field) => (
-          <div className="space-y-1">
-            <Label htmlFor="notes">Notes</Label>
+          <Field>
+            <FieldLabel htmlFor="notes">Notes</FieldLabel>
             <Textarea
               id="notes"
               rows={2}
@@ -314,7 +368,7 @@ export function RiskFields({ form }: RiskFieldsProps) {
               onChange={(e) => field.handleChange(e.target.value)}
               onBlur={field.handleBlur}
             />
-          </div>
+          </Field>
         )}
       </form.Field>
     </div>
@@ -331,7 +385,7 @@ export function buildCustomerPayload(
     latitude: parseFloatOrNull(value.latitude),
     longitude: parseFloatOrNull(value.longitude),
     notes: value.notes || null,
-    phone: value.phone,
+    phone: normalizePhMobile(value.phone) ?? value.phone,
     riskStatus: value.riskStatus,
     ...(opts.includeDistributorId && value.distributorId
       ? { distributorId: Number.parseInt(value.distributorId, 10) }

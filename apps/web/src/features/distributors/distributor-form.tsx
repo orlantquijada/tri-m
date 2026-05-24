@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import type { DistributorStatus } from "schema";
 import { z } from "zod";
 
+import { PhPhoneInput } from "@/components/ph-phone-input";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { isValidPhMobile, normalizePhMobile } from "@/lib/phone";
 
 import { distributorQueries } from "./queries";
 
@@ -56,7 +58,7 @@ export function DistributorForm({
       const payload = {
         assignedArea: value.assignedArea || null,
         name: value.name,
-        phone: value.phone,
+        phone: normalizePhMobile(value.phone) ?? value.phone,
         status: value.status,
       };
       await (isEditing
@@ -103,18 +105,23 @@ export function DistributorForm({
       <form.Field
         name="phone"
         validators={{
-          onChange: ({ value }) =>
-            z.string().min(1, "Phone is required").safeParse(value).error
-              ?.issues[0]?.message,
+          onChange: ({ value }) => {
+            if (!value) {
+              return "Phone is required";
+            }
+            if (!isValidPhMobile(value)) {
+              return "Enter a valid PH mobile number (e.g. 0917 123 4567)";
+            }
+          },
         }}
       >
         {(field) => (
           <div className="space-y-1">
             <Label htmlFor="phone">Phone</Label>
-            <Input
+            <PhPhoneInput
               id="phone"
               value={field.state.value}
-              onChange={(e) => field.handleChange(e.target.value)}
+              onChange={(v) => field.handleChange(v)}
               onBlur={field.handleBlur}
             />
             {fieldError(field.state.meta.errors.filter(Boolean) as string[])}
