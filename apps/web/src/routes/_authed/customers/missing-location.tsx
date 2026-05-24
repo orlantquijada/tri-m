@@ -13,16 +13,16 @@ function MissingLocationPage() {
 
   const groups = useMemo(() => {
     const list = customersQuery.data ?? [];
-    const byDistributor = new Map<number, CustomerListItem[]>();
+    const byDistributor = new Map<string, CustomerListItem[]>();
     for (const c of list) {
       const arr = byDistributor.get(c.distributorId) ?? [];
       arr.push(c);
       byDistributor.set(c.distributorId, arr);
     }
-    return [...byDistributor.entries()].toSorted((a, b) => a[0] - b[0]);
+    return [...byDistributor.entries()].toSorted((a, b) => a[0].localeCompare(b[0]));
   }, [customersQuery.data]);
 
-  const distributorName = (id: number) =>
+  const distributorName = (id: string) =>
     distributorsQuery.data?.find((d) => d.id === id)?.name ??
     `Distributor #${id}`;
 
@@ -81,7 +81,7 @@ function MissingLocationPage() {
                         <td className="px-3 py-2 font-medium">
                           <Link
                             className="underline-offset-4 hover:underline"
-                            params={{ id: String(c.id) }}
+                            params={{ id: c.id }}
                             to="/customers/$id"
                           >
                             {c.fullName}
@@ -97,7 +97,7 @@ function MissingLocationPage() {
                               size: "sm",
                               variant: "outline",
                             })}
-                            params={{ id: String(c.id) }}
+                            params={{ id: c.id }}
                             to="/customers/$id/edit"
                           >
                             Edit on map

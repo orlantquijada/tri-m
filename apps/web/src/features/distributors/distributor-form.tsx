@@ -27,7 +27,7 @@ type FormValues = {
 
 type DistributorFormProps = {
   defaultValues?: Partial<FormValues>;
-  distributorId?: number;
+  distributorId?: string;
 };
 
 function fieldError(errors: string[]) {

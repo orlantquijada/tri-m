@@ -14,29 +14,29 @@ export type TimelineEventType =
   | "blacklist.rejected";
 
 export type ReceivableCreatedData = {
-  receivableId: number;
+  receivableId: string;
   productDescription: string;
   originalBalanceCents: number;
   saleDate: string;
 };
 
 export type PaymentRecordedData = {
-  paymentId: number;
+  paymentId: string;
   amountCents: number;
   paymentMethod: string;
-  receivableId: number;
+  receivableId: string;
   referenceNumber: string | null;
 };
 
 export type PaymentVoidedData = {
-  paymentId: number;
+  paymentId: string;
   amountCents: number;
   reason: string | null;
-  receivableId: number;
+  receivableId: string;
 };
 
 export type VisitRecordedData = {
-  visitId: number;
+  visitId: string;
   visitType: VisitType;
   outcome: VisitOutcome;
   notes: string | null;
@@ -45,7 +45,7 @@ export type VisitRecordedData = {
 };
 
 export type PromiseResolvedData = {
-  visitId: number;
+  visitId: string;
   promisedAmountCents: number;
   promisedDate: string;
 };
@@ -72,12 +72,12 @@ export type LocationChangedData = {
 };
 
 export type BlacklistRequestedData = {
-  requestId: number;
+  requestId: string;
   reason: string;
 };
 
 export type BlacklistReviewedData = {
-  requestId: number;
+  requestId: string;
   reason: string;
   reviewNote: string | null;
 };

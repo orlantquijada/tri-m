@@ -73,7 +73,7 @@ export function createPayment(user: User, data: PaymentInsert) {
 
     if (unpaidRows.length > 0) {
       type ScheduleUpdate = {
-        id: number;
+        id: string;
         paidAmountCents: number;
         status: "paid" | "partial";
       };
@@ -136,7 +136,7 @@ export function createPayment(user: User, data: PaymentInsert) {
   });
 }
 
-export function voidPayment(user: User, paymentId: number, data: VoidPayment) {
+export function voidPayment(user: User, paymentId: string, data: VoidPayment) {
   return db.transaction(async (tx) => {
     const [payment] = await tx
       .select()
@@ -190,7 +190,7 @@ export function voidPayment(user: User, paymentId: number, data: VoidPayment) {
       .orderBy(asc(paymentsTable.createdAt));
 
     type RowState = {
-      id: number;
+      id: string;
       dueAmountCents: number;
       paidAmountCents: number;
       status: "pending" | "partial" | "paid" | "overdue";

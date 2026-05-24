@@ -20,7 +20,7 @@ function addMonths(dateStr: string, months: number): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
-export async function getReceivable(user: User, id: number) {
+export async function getReceivable(user: User, id: string) {
   const [[receivable], payments, schedule] = await Promise.all([
     db.select().from(receivablesTable).where(eq(receivablesTable.id, id)),
     db

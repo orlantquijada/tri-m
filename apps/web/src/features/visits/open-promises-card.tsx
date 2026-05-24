@@ -90,7 +90,7 @@ function OpenPromiseRow({ promise }: { promise: OpenPromiseItem }) {
       <div className="min-w-0 flex-1 space-y-1">
         <Link
           className="font-medium underline-offset-4 hover:underline"
-          params={{ id: String(promise.customer.id) }}
+          params={{ id: promise.customer.id }}
           to="/customers/$id"
         >
           {promise.customer.fullName}

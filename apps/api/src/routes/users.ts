@@ -14,14 +14,14 @@ import {
 } from "../services/users";
 
 const createDistributorUserSchema = z.object({
-  distributorId: z.number().int().positive(),
+  distributorId: z.cuid2(),
   email: z.email(),
   name: z.string().min(1),
   password: z.string().min(8),
 });
 
 const updateDistributorUserSchema = z.object({
-  distributorId: z.number().int().positive().optional(),
+  distributorId: z.cuid2().optional(),
   role: userRoleEnum.optional(),
 });
 

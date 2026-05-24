@@ -86,7 +86,7 @@ export const LOCATION_FIELD_NAMES = [
 export const RISK_FIELD_NAMES = ["riskStatus", "notes"] as const;
 
 type CustomerFormProps = {
-  customerId?: number;
+  customerId?: string;
   defaultValues?: Partial<CustomerFormValues>;
 };
 
@@ -98,8 +98,8 @@ function validateDistributorId(value: string) {
   if (!value) {
     return "Distributor is required";
   }
-  if (Number.isNaN(Number.parseInt(value, 10))) {
-    return "Must be a number";
+  if (!z.cuid2().safeParse(value).success) {
+    return "Must be a valid distributor id";
   }
 }
 
@@ -112,7 +112,7 @@ type DistributorComboFieldProps = {
 function DistributorComboField({ form }: DistributorComboFieldProps) {
   const { data: distributors = [] } = distributorQueries.useList();
   const items = useMemo<DistributorOption[]>(
-    () => distributors.map((d) => ({ label: d.name, value: String(d.id) })),
+    () => distributors.map((d) => ({ label: d.name, value: d.id })),
     [distributors]
   );
 
@@ -163,7 +163,7 @@ function DistributorComboField({ form }: DistributorComboFieldProps) {
 }
 
 type ContactFieldsProps = {
-  customerId?: number;
+  customerId?: string;
   form: CustomerFormApi;
   showDistributorId: boolean;
 };
@@ -388,7 +388,7 @@ export function buildCustomerPayload(
     phone: normalizePhMobile(value.phone) ?? value.phone,
     riskStatus: value.riskStatus,
     ...(opts.includeDistributorId && value.distributorId
-      ? { distributorId: Number.parseInt(value.distributorId, 10) }
+      ? { distributorId: value.distributorId }
       : {}),
   };
 }
@@ -412,7 +412,7 @@ export function CustomerForm({ customerId, defaultValues }: CustomerFormProps) {
       await (isEditing
         ? updateMutation.mutateAsync({
             data: payload,
-            id: customerId as number,
+            id: customerId,
           })
         : createMutation.mutateAsync(payload));
       void navigate({ to: "/customers" });

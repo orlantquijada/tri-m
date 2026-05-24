@@ -11,10 +11,10 @@ export type ScheduleStatus = z.infer<typeof scheduleStatusEnum>;
 export const scheduleSelectSchema = z.object({
   dueAmountCents: z.number(),
   dueDate: z.string(),
-  id: z.number(),
+  id: z.cuid2(),
   installmentNo: z.number(),
   paidAmountCents: z.number(),
-  receivableId: z.number(),
+  receivableId: z.cuid2(),
   status: scheduleStatusEnum,
 });
 

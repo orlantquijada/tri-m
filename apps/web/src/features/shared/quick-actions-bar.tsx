@@ -13,11 +13,11 @@ import { RecordVisitDialog } from "@/features/visits/record-visit-dialog";
 import { cn } from "@/lib/utils";
 
 type QuickActionsBarProps = {
-  customerId: number;
+  customerId: string;
   phone: string | null;
   latitude?: number | null;
   longitude?: number | null;
-  receivableId?: number;
+  receivableId?: string;
   currentBalanceCents?: number;
   layout?: "row" | "wrap";
 };

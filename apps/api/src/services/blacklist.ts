@@ -107,7 +107,7 @@ export function listBlacklistRequests(actor: User, limit = 500) {
 
 export function reviewBlacklistRequest(
   actor: User,
-  requestId: number,
+  requestId: string,
   data: BlacklistReview
 ) {
   Scope.forUser(actor).assertAdmin();

@@ -17,14 +17,14 @@ export const userFields = {
 };
 
 type CreateDistributorUserInput = {
-  distributorId: number;
+  distributorId: string;
   email: string;
   name: string;
   password: string;
 };
 
 type UpdateDistributorUserInput = {
-  distributorId?: number;
+  distributorId?: string;
   role?: "admin" | "distributor";
 };
 

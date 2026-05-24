@@ -22,8 +22,8 @@ type Payment = ReceivableWithDetail["payments"][number];
 
 type Props = {
   payments: Payment[];
-  receivableId: number;
-  customerId: number;
+  receivableId: string;
+  customerId: string;
 };
 
 export function PaymentHistory({ payments, receivableId, customerId }: Props) {

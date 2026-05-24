@@ -28,7 +28,7 @@ import { allUsersQueries, userQueries } from "./queries";
 import type { DistributorUser } from "./queries";
 
 type Props = {
-  distributorId: number;
+  distributorId: string;
 };
 
 function fieldError(errors: (string | undefined)[]) {
@@ -44,7 +44,7 @@ function ReassignRow({
   distributors,
 }: {
   u: DistributorUser;
-  distributors: { id: number; name: string }[];
+  distributors: { id: string; name: string }[];
 }) {
   const updateMutation = userQueries.useUpdate();
   const queryClient = useQueryClient();
@@ -65,7 +65,7 @@ function ReassignRow({
         </SelectTrigger>
         <SelectContent>
           {distributors.map((d) => (
-            <SelectItem key={d.id} value={String(d.id)}>
+            <SelectItem key={d.id} value={d.id}>
               {d.name}
             </SelectItem>
           ))}
@@ -81,7 +81,7 @@ function ReassignRow({
         }
         onClick={() => {
           updateMutation.mutate(
-            { data: { distributorId: Number(selected) }, id: u.id },
+            { data: { distributorId: selected }, id: u.id },
             {
               onSuccess: () => {
                 toast.success("User reassigned");
@@ -99,7 +99,7 @@ function ReassignRow({
   );
 }
 
-function CreateUserForm({ distributorId }: { distributorId: number }) {
+function CreateUserForm({ distributorId }: { distributorId: string }) {
   const createMutation = userQueries.useCreate();
 
   const form = useForm({
@@ -214,7 +214,7 @@ function UserList({
   distributors,
 }: {
   users: DistributorUser[];
-  distributors: { id: number; name: string }[];
+  distributors: { id: string; name: string }[];
 }) {
   if (users.length === 0) {
     return (

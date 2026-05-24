@@ -19,7 +19,7 @@ type Customer = Pick<
   | "riskStatus"
 >;
 
-type Props = { customers: Customer[]; focusId?: number };
+type Props = { customers: Customer[]; focusId?: string };
 
 const MAP_VIEW_ZOOM = 12;
 const FOCUS_ZOOM = 16;
@@ -33,7 +33,7 @@ function esc(s: string) {
 
 export function MapView({ customers, focusId }: Props) {
   const clusterRef = useRef<MarkerClusterGroup | null>(null);
-  const markersByIdRef = useRef<Map<number, Marker>>(new Map());
+  const markersByIdRef = useRef<Map<string, Marker>>(new Map());
 
   const { containerRef, leafletRef, mapRef, ready } = useLeafletMap({
     center: DEFAULT_MAP_CENTER,

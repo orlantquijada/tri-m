@@ -23,11 +23,11 @@ export const auditEventTypeEnum = z.enum([
 export const auditEventSelectSchema = z.object({
   actorId: z.string(),
   createdAt: z.union([z.string(), z.date()]),
-  distributorId: z.number().nullable(),
+  distributorId: z.cuid2().nullable(),
   entityId: z.string(),
   entityType: auditEntityTypeEnum,
   event: auditEventTypeEnum,
-  id: z.number(),
+  id: z.cuid2(),
   metadata: z.string().nullable(),
 });
 

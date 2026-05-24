@@ -5,7 +5,7 @@ export type UserRole = z.infer<typeof userRoleEnum>;
 
 export const userListItemSchema = z.object({
   createdAt: z.date(),
-  distributorId: z.number().nullable(),
+  distributorId: z.cuid2().nullable(),
   distributorName: z.string().nullable(),
   email: z.string(),
   id: z.string(),

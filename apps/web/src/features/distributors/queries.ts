@@ -24,14 +24,15 @@ type UpdateDistributorBody = InferRequestType<
 export const distributorQueries = createResourceQueries({
   create: (data: CreateDistributorBody) =>
     api.api.distributors.$post({ json: data }),
-  detail: (id: number) =>
-    api.api.distributors[":id"].$get({ param: { id: String(id) } }),
+  detail: (id: string) =>
+    api.api.distributors[":id"].$get({ param: { id } }),
   list: () => api.api.distributors.$get(),
+  idType: "string",
   name: "distributors",
-  update: (id: number, data: UpdateDistributorBody) =>
+  update: (id: string, data: UpdateDistributorBody) =>
     api.api.distributors[":id"].$patch({
       json: data,
-      param: { id: String(id) },
+      param: { id },
     }),
 });
 

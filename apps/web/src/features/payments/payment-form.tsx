@@ -35,8 +35,8 @@ const paymentMethodOptions: Record<PaymentMethod, string> = {
 
 type PaymentFormProps = {
   currentBalanceCents: number;
-  receivableId: number;
-  customerId: number;
+  receivableId: string;
+  customerId: string;
   trigger?: React.ReactElement;
 };
 

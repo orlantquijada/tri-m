@@ -5,7 +5,7 @@ import { ReceivableDetail } from "@/features/receivables/receivable-detail";
 
 function ReceivableDetailPage() {
   const { id } = useParams({ from: "/_authed/receivables/$id" });
-  const { data, error, isLoading } = receivableQueries.useDetail(Number(id));
+  const { data, error, isLoading } = receivableQueries.useDetail(id);
 
   if (isLoading) {
     return <p className="p-6 text-muted-foreground">Loading…</p>;

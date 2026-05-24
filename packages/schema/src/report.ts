@@ -4,7 +4,7 @@ export const distributorPerformanceRowSchema = z.object({
   collectedCents: z.number().int(),
   collectionRatePct: z.number(),
   customerCount: z.number().int(),
-  distributorId: z.number().int(),
+  distributorId: z.cuid2(),
   distributorName: z.string(),
   originalBalanceCents: z.number().int(),
   outstandingCents: z.number().int(),

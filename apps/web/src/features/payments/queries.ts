@@ -11,7 +11,7 @@ type CreatePaymentBody = InferRequestType<
   typeof api.api.payments.$post
 >["json"];
 
-type CreatePaymentVars = CreatePaymentBody & { customerId: number };
+type CreatePaymentVars = CreatePaymentBody & { customerId: string };
 
 export const paymentQueries = createResourceQueries({
   create: {
@@ -37,14 +37,14 @@ export function useVoidPayment() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (vars: {
-      paymentId: number;
+      paymentId: string;
       reason: string;
-      receivableId: number;
-      customerId: number;
+      receivableId: string;
+      customerId: string;
     }) => {
       const res = await api.api.payments[":id"].void.$post({
         json: { reason: vars.reason },
-        param: { id: String(vars.paymentId) },
+        param: { id: vars.paymentId },
       });
       if (!res.ok) {
         throw await parseApiError(

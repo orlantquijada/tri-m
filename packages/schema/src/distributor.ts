@@ -5,7 +5,7 @@ import { distributorStatusEnum } from "./enums";
 export const distributorSelectSchema = z.object({
   assignedArea: z.string().nullable(),
   createdAt: z.date(),
-  id: z.number(),
+  id: z.cuid2(),
   name: z.string(),
   phone: z.string(),
   status: distributorStatusEnum,

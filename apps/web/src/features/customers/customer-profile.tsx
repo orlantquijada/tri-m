@@ -46,7 +46,7 @@ export function CustomerProfile({
           <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
             <Link
               className={cn(buttonVariants({ variant: "outline" }))}
-              params={{ id: String(customer.id) }}
+              params={{ id: customer.id }}
               to="/customers/$id/edit"
             >
               Edit
@@ -114,7 +114,7 @@ export function CustomerProfile({
                   <TableCell className="font-medium">
                     <Link
                       className="underline-offset-4 hover:underline"
-                      params={{ id: String(r.id) }}
+                      params={{ id: r.id }}
                       to="/receivables/$id"
                     >
                       {r.productDescription}

@@ -1,7 +1,7 @@
 {
   "version": "7",
   "dialect": "sqlite",
-  "id": "583711b7-61e8-4e8e-a68b-9faaf69d3495",
+  "id": "bb8a6df6-e0cb-41ab-b1ae-5d918d1f62c3",
   "prevIds": [
     "00000000-0000-0000-0000-000000000000"
   ],
@@ -23,6 +23,14 @@
       "entityType": "tables"
     },
     {
+      "name": "audit_events",
+      "entityType": "tables"
+    },
+    {
+      "name": "blacklist_requests",
+      "entityType": "tables"
+    },
+    {
       "name": "customers",
       "entityType": "tables"
     },
@@ -31,11 +39,19 @@
       "entityType": "tables"
     },
     {
+      "name": "payment_schedules",
+      "entityType": "tables"
+    },
+    {
       "name": "payments",
       "entityType": "tables"
     },
     {
       "name": "receivables",
+      "entityType": "tables"
+    },
+    {
+      "name": "visits",
       "entityType": "tables"
     },
     {
@@ -259,7 +275,7 @@
       "table": "user"
     },
     {
-      "type": "integer",
+      "type": "text",
       "notNull": false,
       "autoincrement": false,
       "default": null,
@@ -404,6 +420,186 @@
       "autoincrement": false,
       "default": null,
       "generated": null,
+      "name": "actor_id",
+      "entityType": "columns",
+      "table": "audit_events"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": "(unixepoch('now') * 1000)",
+      "generated": null,
+      "name": "created_at",
+      "entityType": "columns",
+      "table": "audit_events"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "distributor_id",
+      "entityType": "columns",
+      "table": "audit_events"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "entity_id",
+      "entityType": "columns",
+      "table": "audit_events"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "entity_type",
+      "entityType": "columns",
+      "table": "audit_events"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "event",
+      "entityType": "columns",
+      "table": "audit_events"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "id",
+      "entityType": "columns",
+      "table": "audit_events"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "metadata",
+      "entityType": "columns",
+      "table": "audit_events"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": "(unixepoch('now') * 1000)",
+      "generated": null,
+      "name": "created_at",
+      "entityType": "columns",
+      "table": "blacklist_requests"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "customer_id",
+      "entityType": "columns",
+      "table": "blacklist_requests"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "distributor_id",
+      "entityType": "columns",
+      "table": "blacklist_requests"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "id",
+      "entityType": "columns",
+      "table": "blacklist_requests"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "reason",
+      "entityType": "columns",
+      "table": "blacklist_requests"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "requested_by_user_id",
+      "entityType": "columns",
+      "table": "blacklist_requests"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "review_note",
+      "entityType": "columns",
+      "table": "blacklist_requests"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "reviewed_at",
+      "entityType": "columns",
+      "table": "blacklist_requests"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "reviewed_by_user_id",
+      "entityType": "columns",
+      "table": "blacklist_requests"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": "'pending'",
+      "generated": null,
+      "name": "status",
+      "entityType": "columns",
+      "table": "blacklist_requests"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
       "name": "address",
       "entityType": "columns",
       "table": "customers"
@@ -429,7 +625,7 @@
       "table": "customers"
     },
     {
-      "type": "integer",
+      "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
@@ -449,9 +645,9 @@
       "table": "customers"
     },
     {
-      "type": "integer",
+      "type": "text",
       "notNull": false,
-      "autoincrement": true,
+      "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "id",
@@ -539,9 +735,9 @@
       "table": "distributors"
     },
     {
-      "type": "integer",
+      "type": "text",
       "notNull": false,
-      "autoincrement": true,
+      "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "id",
@@ -582,6 +778,96 @@
       "type": "integer",
       "notNull": true,
       "autoincrement": false,
+      "default": "(unixepoch('now') * 1000)",
+      "generated": null,
+      "name": "created_at",
+      "entityType": "columns",
+      "table": "payment_schedules"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "updated_at",
+      "entityType": "columns",
+      "table": "payment_schedules"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "due_amount_cents",
+      "entityType": "columns",
+      "table": "payment_schedules"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "due_date",
+      "entityType": "columns",
+      "table": "payment_schedules"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "id",
+      "entityType": "columns",
+      "table": "payment_schedules"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "installment_no",
+      "entityType": "columns",
+      "table": "payment_schedules"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": "0",
+      "generated": null,
+      "name": "paid_amount_cents",
+      "entityType": "columns",
+      "table": "payment_schedules"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "receivable_id",
+      "entityType": "columns",
+      "table": "payment_schedules"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": "'pending'",
+      "generated": null,
+      "name": "status",
+      "entityType": "columns",
+      "table": "payment_schedules"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "amount_cents",
@@ -609,7 +895,7 @@
       "table": "payments"
     },
     {
-      "type": "integer",
+      "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
@@ -619,9 +905,9 @@
       "table": "payments"
     },
     {
-      "type": "integer",
+      "type": "text",
       "notNull": false,
-      "autoincrement": true,
+      "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "id",
@@ -659,7 +945,7 @@
       "table": "payments"
     },
     {
-      "type": "integer",
+      "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
@@ -685,6 +971,26 @@
       "default": null,
       "generated": null,
       "name": "reference_number",
+      "entityType": "columns",
+      "table": "payments"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "void_reason",
+      "entityType": "columns",
+      "table": "payments"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "voided_at",
       "entityType": "columns",
       "table": "payments"
     },
@@ -719,7 +1025,7 @@
       "table": "receivables"
     },
     {
-      "type": "integer",
+      "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
@@ -729,7 +1035,7 @@
       "table": "receivables"
     },
     {
-      "type": "integer",
+      "type": "text",
       "notNull": true,
       "autoincrement": false,
       "default": null,
@@ -759,9 +1065,9 @@
       "table": "receivables"
     },
     {
-      "type": "integer",
+      "type": "text",
       "notNull": false,
-      "autoincrement": true,
+      "autoincrement": false,
       "default": null,
       "generated": null,
       "name": "id",
@@ -839,6 +1145,136 @@
       "table": "receivables"
     },
     {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": "(unixepoch('now') * 1000)",
+      "generated": null,
+      "name": "created_at",
+      "entityType": "columns",
+      "table": "visits"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "customer_id",
+      "entityType": "columns",
+      "table": "visits"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "distributor_id",
+      "entityType": "columns",
+      "table": "visits"
+    },
+    {
+      "type": "real",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "gps_lat",
+      "entityType": "columns",
+      "table": "visits"
+    },
+    {
+      "type": "real",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "gps_lng",
+      "entityType": "columns",
+      "table": "visits"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "id",
+      "entityType": "columns",
+      "table": "visits"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "notes",
+      "entityType": "columns",
+      "table": "visits"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "outcome",
+      "entityType": "columns",
+      "table": "visits"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "promise_resolved_at",
+      "entityType": "columns",
+      "table": "visits"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "promised_amount_cents",
+      "entityType": "columns",
+      "table": "visits"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "promised_date",
+      "entityType": "columns",
+      "table": "visits"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "recorded_by_user_id",
+      "entityType": "columns",
+      "table": "visits"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "type",
+      "entityType": "columns",
+      "table": "visits"
+    },
+    {
       "columns": [
         "user_id"
       ],
@@ -870,6 +1306,36 @@
     },
     {
       "columns": [
+        "customer_id"
+      ],
+      "tableTo": "customers",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "nameExplicit": false,
+      "name": "fk_blacklist_requests_customer_id_customers_id_fk",
+      "entityType": "fks",
+      "table": "blacklist_requests"
+    },
+    {
+      "columns": [
+        "distributor_id"
+      ],
+      "tableTo": "distributors",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "nameExplicit": false,
+      "name": "fk_blacklist_requests_distributor_id_distributors_id_fk",
+      "entityType": "fks",
+      "table": "blacklist_requests"
+    },
+    {
+      "columns": [
         "distributor_id"
       ],
       "tableTo": "distributors",
@@ -882,6 +1348,21 @@
       "name": "fk_customers_distributor_id_distributors_id_fk",
       "entityType": "fks",
       "table": "customers"
+    },
+    {
+      "columns": [
+        "receivable_id"
+      ],
+      "tableTo": "receivables",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "nameExplicit": false,
+      "name": "fk_payment_schedules_receivable_id_receivables_id_fk",
+      "entityType": "fks",
+      "table": "payment_schedules"
     },
     {
       "columns": [
@@ -945,6 +1426,36 @@
     },
     {
       "columns": [
+        "customer_id"
+      ],
+      "tableTo": "customers",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "nameExplicit": false,
+      "name": "fk_visits_customer_id_customers_id_fk",
+      "entityType": "fks",
+      "table": "visits"
+    },
+    {
+      "columns": [
+        "distributor_id"
+      ],
+      "tableTo": "distributors",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "nameExplicit": false,
+      "name": "fk_visits_distributor_id_distributors_id_fk",
+      "entityType": "fks",
+      "table": "visits"
+    },
+    {
+      "columns": [
         "id"
       ],
       "nameExplicit": false,
@@ -984,6 +1495,24 @@
         "id"
       ],
       "nameExplicit": false,
+      "name": "audit_events_pk",
+      "table": "audit_events",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "blacklist_requests_pk",
+      "table": "blacklist_requests",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
       "name": "customers_pk",
       "table": "customers",
       "entityType": "pks"
@@ -1002,6 +1531,15 @@
         "id"
       ],
       "nameExplicit": false,
+      "name": "payment_schedules_pk",
+      "table": "payment_schedules",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
       "name": "payments_pk",
       "table": "payments",
       "entityType": "pks"
@@ -1013,6 +1551,15 @@
       "nameExplicit": false,
       "name": "receivables_pk",
       "table": "receivables",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "visits_pk",
+      "table": "visits",
       "entityType": "pks"
     },
     {
@@ -1056,6 +1603,92 @@
       "name": "verification_identifier_idx",
       "entityType": "indexes",
       "table": "verification"
+    },
+    {
+      "columns": [
+        {
+          "value": "created_at",
+          "isExpression": false
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "origin": "manual",
+      "name": "audit_events_created_at_idx",
+      "entityType": "indexes",
+      "table": "audit_events"
+    },
+    {
+      "columns": [
+        {
+          "value": "entity_type",
+          "isExpression": false
+        },
+        {
+          "value": "entity_id",
+          "isExpression": false
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "origin": "manual",
+      "name": "audit_events_entity_idx",
+      "entityType": "indexes",
+      "table": "audit_events"
+    },
+    {
+      "columns": [
+        {
+          "value": "receivable_id",
+          "isExpression": false
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "origin": "manual",
+      "name": "payment_schedules_receivable_id_idx",
+      "entityType": "indexes",
+      "table": "payment_schedules"
+    },
+    {
+      "columns": [
+        {
+          "value": "customer_id",
+          "isExpression": false
+        },
+        {
+          "value": "created_at",
+          "isExpression": false
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "origin": "manual",
+      "name": "visits_customer_created_at_idx",
+      "entityType": "indexes",
+      "table": "visits"
+    },
+    {
+      "columns": [
+        {
+          "value": "distributor_id",
+          "isExpression": false
+        },
+        {
+          "value": "promise_resolved_at",
+          "isExpression": false
+        },
+        {
+          "value": "promised_date",
+          "isExpression": false
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "origin": "manual",
+      "name": "visits_open_promise_idx",
+      "entityType": "indexes",
+      "table": "visits"
     },
     {
       "columns": [

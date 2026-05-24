@@ -5,7 +5,7 @@ import { customerQueries } from "@/features/customers/queries";
 
 function EditCustomerPage() {
   const { id } = useParams({ from: "/_authed/customers/$id_/edit" });
-  const customerId = Number.parseInt(id, 10);
+  const customerId = id;
   const { data, error, isLoading } = customerQueries.useDetail(customerId);
 
   if (isLoading) {

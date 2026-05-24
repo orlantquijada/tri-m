@@ -86,7 +86,7 @@ function MetricCard({
 }
 
 type TodayListRowProps = {
-  customerId: number;
+  customerId: string;
   customerName: string;
   subtitle: ReactNode;
   action: ReactNode;
@@ -103,7 +103,7 @@ function TodayListRow({
       <div className="min-w-0 flex-1">
         <Link
           className="font-medium underline-offset-4 hover:underline"
-          params={{ id: String(customerId) }}
+          params={{ id: customerId }}
           to="/customers/$id"
         >
           {customerName}

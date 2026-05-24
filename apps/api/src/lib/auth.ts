@@ -18,7 +18,7 @@ export const auth = betterAuth({
     additionalFields: {
       distributorId: {
         required: false,
-        type: "number",
+        type: "string",
       },
       role: {
         defaultValue: "admin",

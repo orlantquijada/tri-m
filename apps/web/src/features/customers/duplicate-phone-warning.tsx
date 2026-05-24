@@ -1,10 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { AlertTriangle } from "lucide-react";
 
-type Match = { distributorId: number; fullName: string; id: number };
+type Match = { distributorId: string; fullName: string; id: string };
 
 type Props = {
-  currentCustomerId?: number;
+  currentCustomerId?: string;
   matches: Match[];
 };
 
@@ -23,7 +23,7 @@ export function DuplicatePhoneWarning({ matches, currentCustomerId }: Props) {
             <li key={m.id}>
               <Link
                 to="/customers/$id"
-                params={{ id: String(m.id) }}
+                params={{ id: m.id }}
                 className="underline hover:no-underline"
               >
                 {m.fullName}

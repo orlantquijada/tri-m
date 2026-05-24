@@ -27,8 +27,9 @@ export const receivableQueries = createResourceQueries({
       });
     },
   },
-  detail: (id: number) =>
-    api.api.receivables[":id"].$get({ param: { id: String(id) } }),
+  detail: (id: string) =>
+    api.api.receivables[":id"].$get({ param: { id } }),
+  idType: "string",
   name: "receivables",
 });
 

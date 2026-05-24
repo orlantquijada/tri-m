@@ -19,16 +19,16 @@ type CreateVisitBody = InferRequestType<typeof api.api.visits.$post>["json"];
 
 export const visitKeys = {
   all: ["visits"] as const,
-  list: (customerId?: number) =>
+  list: (customerId?: string) =>
     ["visits", "list", { customerId: customerId ?? null }] as const,
   openPromises: () => ["visits", "open-promises"] as const,
 };
 
-export function useVisitsQuery({ customerId }: { customerId?: number } = {}) {
+export function useVisitsQuery({ customerId }: { customerId?: string } = {}) {
   return useQuery({
     queryFn: async () => {
       const res = await api.api.visits.$get({
-        query: customerId ? { customerId: String(customerId) } : {},
+        query: customerId ? { customerId } : {},
       });
       if (!res.ok) {
         throw await parseApiError(
@@ -83,9 +83,9 @@ export function useRecordVisitMutation() {
 export function useResolvePromiseMutation() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (vars: { visitId: number; customerId: number }) => {
+    mutationFn: async (vars: { visitId: string; customerId: string }) => {
       const res = await api.api.visits[":id"]["resolve-promise"].$patch({
-        param: { id: String(vars.visitId) },
+        param: { id: vars.visitId },
       });
       if (!res.ok) {
         throw await parseApiError(

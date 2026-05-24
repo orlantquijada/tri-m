@@ -46,7 +46,7 @@ export async function listDistributors() {
   return distributorListItemSchema.array().parse(rows);
 }
 
-export async function getDistributor(id: number) {
+export async function getDistributor(id: string) {
   const [row] = await db
     .select()
     .from(distributorsTable)
@@ -71,7 +71,7 @@ export async function createDistributor(data: DistributorInsert) {
   return distributorSelectSchema.parse(row);
 }
 
-export async function updateDistributor(id: number, data: DistributorUpdate) {
+export async function updateDistributor(id: string, data: DistributorUpdate) {
   const [existing] = await db
     .select()
     .from(distributorsTable)

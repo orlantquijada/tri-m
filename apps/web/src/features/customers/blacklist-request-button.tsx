@@ -18,7 +18,7 @@ import { api, parseApiError } from "@/lib/api";
 import { customerQueries } from "./queries";
 
 type Props = {
-  customerId: number;
+  customerId: string;
   riskStatus: string;
 };
 

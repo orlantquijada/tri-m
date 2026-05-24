@@ -5,10 +5,10 @@ import { customerQueries } from "@/features/customers/queries";
 import { ReceivableForm } from "@/features/receivables/receivable-form";
 
 const searchSchema = z.object({
-  customerId: z.coerce.number().int().positive().optional(),
+  customerId: z.string().optional(),
 });
 
-function NewReceivableContent({ customerId }: { customerId: number }) {
+function NewReceivableContent({ customerId }: { customerId: string }) {
   const { data, error, isLoading } = customerQueries.useDetail(customerId);
 
   if (isLoading) {

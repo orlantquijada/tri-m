@@ -6,7 +6,7 @@ import { AssignDistributorDialog } from "@/features/users/assign-distributor-dia
 import { userQueries } from "@/features/users/queries";
 import { ResetPasswordDialog } from "@/features/users/reset-password-dialog";
 
-function AssignedUsersSection({ distributorId }: { distributorId: number }) {
+function AssignedUsersSection({ distributorId }: { distributorId: string }) {
   const { data: users = [], isLoading } = userQueries.useList();
   const assigned = users.filter((u) => u.distributorId === distributorId);
 
@@ -40,7 +40,7 @@ function AssignedUsersSection({ distributorId }: { distributorId: number }) {
 
 function EditDistributorPage() {
   const { id } = useParams({ from: "/_authed/distributors/$id/edit" });
-  const distributorId = Number.parseInt(id, 10);
+  const distributorId = id;
   const { data, error, isLoading } =
     distributorQueries.useDetail(distributorId);
 

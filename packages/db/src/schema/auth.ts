@@ -5,7 +5,7 @@ export const user = sqliteTable("user", {
   createdAt: integer("created_at", { mode: "timestamp_ms" })
     .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
     .notNull(),
-  distributorId: integer("distributor_id"),
+  distributorId: text("distributor_id"),
   email: text("email").notNull().unique(),
   emailVerified: integer("email_verified", { mode: "boolean" })
     .default(false)

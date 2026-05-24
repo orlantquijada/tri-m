@@ -315,7 +315,7 @@ function eventKey(event: CustomerTimelineEvent): string {
   }
 }
 
-export function CustomerTimeline({ customerId }: { customerId: number }) {
+export function CustomerTimeline({ customerId }: { customerId: string }) {
   const { data, isLoading, error } = useCustomerTimelineQuery(customerId);
 
   if (isLoading) {

@@ -69,7 +69,7 @@ export function ReceivableForm({ customer }: ReceivableFormProps) {
       });
 
       void navigate({
-        params: { id: String(result.customerId) },
+        params: { id: result.customerId },
         to: "/customers/$id",
       });
     },
@@ -306,7 +306,7 @@ export function ReceivableForm({ customer }: ReceivableFormProps) {
               variant="outline"
               onClick={() =>
                 void navigate({
-                  params: { id: String(customer.id) },
+                  params: { id: customer.id },
                   to: "/customers/$id",
                 })
               }

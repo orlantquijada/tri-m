@@ -19,7 +19,7 @@ export function ReceivableDetail({
         <div className="space-y-2">
           <Link
             className="text-sm text-muted-foreground hover:underline"
-            params={{ id: String(receivable.customerId) }}
+            params={{ id: receivable.customerId }}
             to="/customers/$id"
           >
             ← {receivable.customer.fullName}
@@ -70,7 +70,7 @@ export function ReceivableDetail({
             <p className="text-xs text-muted-foreground">Customer</p>
             <Link
               className="text-sm font-medium underline-offset-4 hover:underline"
-              params={{ id: String(receivable.customerId) }}
+              params={{ id: receivable.customerId }}
               to="/customers/$id"
             >
               {receivable.customer.fullName}

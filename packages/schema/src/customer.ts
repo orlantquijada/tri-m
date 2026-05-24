@@ -5,9 +5,9 @@ import { receivableSummarySchema } from "./receivable";
 
 export const customerSelectSchema = z.object({
   address: z.string(),
-  distributorId: z.number(),
+  distributorId: z.cuid2(),
   fullName: z.string(),
-  id: z.number(),
+  id: z.cuid2(),
   latitude: z.number().nullable(),
   longitude: z.number().nullable(),
   notes: z.string().nullable(),
@@ -33,7 +33,7 @@ export const customerSummarySchema = customerSelectSchema.pick({
 
 export const customerInsertSchema = z.object({
   address: z.string().min(1, "Address is required"),
-  distributorId: z.number().int().positive().optional(),
+  distributorId: z.cuid2().optional(),
   fullName: z.string().min(1, "Name is required"),
   latitude: z.number().min(-90).max(90).nullable().optional(),
   longitude: z.number().min(-180).max(180).nullable().optional(),

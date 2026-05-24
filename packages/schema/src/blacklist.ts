@@ -3,7 +3,7 @@ import { z } from "zod";
 const blacklistStatusEnum = z.enum(["pending", "approved", "rejected"]);
 
 export const blacklistRequestInsertSchema = z.object({
-  customerId: z.number().int().positive(),
+  customerId: z.cuid2(),
   reason: z.string().min(1, "Reason is required"),
 });
 
@@ -14,9 +14,9 @@ export const blacklistReviewSchema = z.object({
 
 export const blacklistRequestSelectSchema = z.object({
   createdAt: z.union([z.string(), z.date()]),
-  customerId: z.number(),
-  distributorId: z.number(),
-  id: z.number(),
+  customerId: z.cuid2(),
+  distributorId: z.cuid2(),
+  id: z.cuid2(),
   reason: z.string(),
   requestedByUserId: z.string(),
   reviewNote: z.string().nullable(),

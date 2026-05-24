@@ -80,7 +80,7 @@ function VisitsPage() {
                 <TableCell>
                   <Link
                     className="underline-offset-4 hover:underline"
-                    params={{ id: String(visit.customerId) }}
+                    params={{ id: visit.customerId }}
                     to="/customers/$id"
                   >
                     #{visit.customerId}

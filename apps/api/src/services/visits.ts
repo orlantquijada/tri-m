@@ -66,7 +66,7 @@ export async function createVisit(user: User, data: VisitInsert) {
   return visitSelectSchema.parse(visit);
 }
 
-export async function resolvePromise(user: User, visitId: number) {
+export async function resolvePromise(user: User, visitId: string) {
   const [visit] = await db
     .select()
     .from(visitsTable)

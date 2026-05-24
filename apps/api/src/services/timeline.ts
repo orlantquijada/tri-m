@@ -242,7 +242,7 @@ function blacklistEvents(row: BlacklistRow): TimelineEvent[] {
 
 export async function buildTimeline(
   user: User,
-  customerId: number,
+  customerId: string,
   options: BuildTimelineOptions = {}
 ): Promise<TimelineResponse> {
   const page = options.page ?? 1;

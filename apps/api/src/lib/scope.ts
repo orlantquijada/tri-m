@@ -13,7 +13,7 @@ export const Scope = {
           throw forbidden();
         }
       },
-      assertCanRead(distributorId: number) {
+      assertCanRead(distributorId: string) {
         if (
           user.role === "distributor" &&
           user.distributorId !== distributorId
@@ -21,7 +21,7 @@ export const Scope = {
           throw forbidden();
         }
       },
-      assertCanWrite(distributorId: number) {
+      assertCanWrite(distributorId: string) {
         if (
           user.role === "distributor" &&
           user.distributorId !== distributorId
@@ -30,8 +30,7 @@ export const Scope = {
         }
       },
       filterQuery(column: SQLiteColumn): SQL | undefined {
-        return user.role === "distributor" &&
-          typeof user.distributorId === "number"
+        return user.role === "distributor" && user.distributorId
           ? eq(column, user.distributorId)
           : undefined;
       },

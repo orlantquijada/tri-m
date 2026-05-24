@@ -114,7 +114,7 @@ const columns: ColumnDef<CustomerListItem>[] = [
     cell: ({ row }) => (
       <Link
         className="font-medium underline-offset-4 hover:underline"
-        params={{ id: String(row.original.id) }}
+        params={{ id: row.original.id }}
         to="/customers/$id"
       >
         {row.original.fullName}
@@ -218,7 +218,7 @@ export function CustomersDataTable() {
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    getRowId: (row) => String(row.id),
+    getRowId: (row) => row.id,
     getSortedRowModel: getSortedRowModel(),
     initialState: { pagination: { pageSize: 20 } },
     onColumnVisibilityChange: setColumnVisibility,
@@ -371,7 +371,7 @@ function MobileCardList({ rows }: { rows: CustomerListItem[] }) {
             <div className="flex items-start justify-between gap-2">
               <Link
                 className="font-medium underline-offset-4 hover:underline"
-                params={{ id: String(c.id) }}
+                params={{ id: c.id }}
                 to="/customers/$id"
               >
                 {c.fullName}

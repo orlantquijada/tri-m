@@ -13,7 +13,7 @@ type DbOrTx = Tx | typeof db;
 
 export type LogEventInput = {
   actorId: string;
-  distributorId?: number | null;
+  distributorId?: string | null;
   entityId: string;
   entityType: AuditEntityType;
   event: AuditEventType;

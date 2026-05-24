@@ -51,7 +51,7 @@ export function UserList() {
               {u.distributorId ? (
                 <Link
                   to="/distributors/$id/edit"
-                  params={{ id: String(u.distributorId) }}
+                  params={{ id: u.distributorId }}
                   className="underline underline-offset-2 hover:text-primary"
                 >
                   {u.distributorName ?? `Distributor #${u.distributorId}`}

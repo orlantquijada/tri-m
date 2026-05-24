@@ -15,11 +15,11 @@ export type VisitOutcome = z.infer<typeof visitOutcomeEnum>;
 
 export const visitSelectSchema = z.object({
   createdAt: z.coerce.date(),
-  customerId: z.number(),
-  distributorId: z.number(),
+  customerId: z.cuid2(),
+  distributorId: z.cuid2(),
   gpsLat: z.number().nullable(),
   gpsLng: z.number().nullable(),
-  id: z.number(),
+  id: z.cuid2(),
   notes: z.string().nullable(),
   outcome: visitOutcomeEnum,
   promiseResolvedAt: z.coerce.date().nullable(),
@@ -35,7 +35,7 @@ const promiseDateSchema = z
 
 export const visitInsertSchema = z
   .object({
-    customerId: z.number().int().positive(),
+    customerId: z.cuid2(),
     gpsLat: z.number().min(-90).max(90).nullable().optional(),
     gpsLng: z.number().min(-180).max(180).nullable().optional(),
     notes: z.string().nullable().optional(),
@@ -57,7 +57,7 @@ export const visitInsertSchema = z
   );
 
 export const visitListQuerySchema = z.object({
-  customerId: z.coerce.number().int().positive().optional(),
+  customerId: z.cuid2().optional(),
   limit: z.coerce.number().int().min(1).max(200).default(50),
   page: z.coerce.number().int().min(1).default(1),
 });

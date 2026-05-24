@@ -14,7 +14,7 @@ import { MapFilters } from "@/features/map/map-filters";
 import { MapView } from "@/features/map/map-view";
 
 const searchSchema = z.object({
-  focus: z.coerce.number().int().positive().optional(),
+  focus: z.string().optional(),
   hasOverdue: z
     .union([z.boolean(), z.enum(["true", "false"])])
     .optional()

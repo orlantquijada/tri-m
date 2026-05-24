@@ -48,7 +48,7 @@ function formatTimestamp(date: Date | string) {
   return d.toLocaleString();
 }
 
-export function VisitList({ customerId }: { customerId: number }) {
+export function VisitList({ customerId }: { customerId: string }) {
   const { data, isLoading, error } = useVisitsQuery({ customerId });
 
   if (isLoading) {
@@ -75,7 +75,7 @@ function VisitRow({
   customerId,
 }: {
   visit: VisitListItem;
-  customerId: number;
+  customerId: string;
 }) {
   const resolveMutation = useResolvePromiseMutation();
   const hasGps = visit.gpsLat !== null && visit.gpsLng !== null;

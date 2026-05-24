@@ -4,11 +4,11 @@ import { receivableStatusEnum } from "./enums";
 
 export const receivableSelectSchema = z.object({
   currentBalanceCents: z.number(),
-  customerId: z.number(),
-  distributorId: z.number(),
+  customerId: z.cuid2(),
+  distributorId: z.cuid2(),
   downPaymentCents: z.number(),
   firstDueDate: z.string(),
-  id: z.number(),
+  id: z.cuid2(),
   monthlyDueAmountCents: z.number().nullable(),
   originalBalanceCents: z.number(),
   paymentTermMonths: z.number().nullable(),
@@ -31,7 +31,7 @@ export const receivableSummarySchema = receivableSelectSchema.pick({
 export const receivableInsertSchema = z
   .object({
     adminOverride: z.boolean().optional(),
-    customerId: z.number().int().positive("Customer is required"),
+    customerId: z.cuid2("Customer is required"),
     downPaymentCents: z.number().int().min(0).default(0),
     firstDueDate: z.string().min(1, "First due date is required"),
     monthlyDueAmountCents: z.number().int().min(0).optional(),

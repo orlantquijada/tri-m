@@ -25,20 +25,21 @@ type UpdateCustomerBody = InferRequestType<
 
 export const customerQueries = createResourceQueries({
   create: (data: CreateCustomerBody) => api.api.customers.$post({ json: data }),
-  detail: (id: number) =>
-    api.api.customers[":id"].$get({ param: { id: String(id) } }),
+  detail: (id: string) =>
+    api.api.customers[":id"].$get({ param: { id } }),
   list: () => api.api.customers.$get({ query: {} }),
+  idType: "string",
   name: "customers",
-  update: (id: number, data: UpdateCustomerBody) =>
+  update: (id: string, data: UpdateCustomerBody) =>
     api.api.customers[":id"].$patch({
       json: data,
-      param: { id: String(id) },
+      param: { id },
     }),
 });
 
 export const customerKeys = {
   ...customerQueries.keys,
-  timeline: (id: number) =>
+  timeline: (id: string) =>
     [...customerQueries.keys.detail(id), "timeline"] as const,
 };
 
@@ -49,11 +50,11 @@ export type CustomerTimeline = InferResponseType<
 
 export type CustomerTimelineEvent = CustomerTimeline["events"][number];
 
-export function useCustomerTimelineQuery(customerId: number) {
+export function useCustomerTimelineQuery(customerId: string) {
   return useQuery({
     queryFn: async () => {
       const res = await api.api.customers[":id"].timeline.$get({
-        param: { id: String(customerId) },
+        param: { id: customerId },
         query: {},
       });
       if (!res.ok) {

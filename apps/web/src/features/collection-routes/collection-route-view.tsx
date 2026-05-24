@@ -15,8 +15,8 @@ type OverdueRow = NonNullable<
 >["rows"][number];
 
 type Stop = {
-  rowId: number;
-  customerId: number;
+  rowId: string;
+  customerId: string;
   customerName: string;
   phone: string;
   address: string;
@@ -165,11 +165,11 @@ export function CollectionRouteView() {
     ]);
   };
 
-  const removeStop = (rowId: number) => {
+  const removeStop = (rowId: string) => {
     setStops((prev) => prev.filter((s) => s.rowId !== rowId));
   };
 
-  const moveStop = (rowId: number, dir: -1 | 1) => {
+  const moveStop = (rowId: string, dir: -1 | 1) => {
     setStops((prev) => {
       const idx = prev.findIndex((s) => s.rowId === rowId);
       const next = idx + dir;

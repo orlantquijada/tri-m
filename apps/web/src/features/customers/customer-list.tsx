@@ -15,7 +15,7 @@ const columns: ResponsiveColumn<CustomerListItem>[] = [
     cell: (c) => (
       <Link
         className="underline-offset-4 hover:underline"
-        params={{ id: String(c.id) }}
+        params={{ id: c.id }}
         to="/customers/$id"
       >
         {c.fullName}

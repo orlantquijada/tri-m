@@ -26,10 +26,10 @@ import { api, parseApiError } from "@/lib/api";
 import { authClient } from "@/lib/auth-client";
 
 type BlacklistRequest = {
-  id: number;
-  customerId: number;
+  id: string;
+  customerId: string;
   customerFullName: string;
-  distributorId: number;
+  distributorId: string;
   distributorName: string;
   reason: string;
   status: "pending" | "approved" | "rejected";
@@ -83,7 +83,7 @@ function BlacklistRequestsPage() {
       action,
       note,
     }: {
-      id: number;
+      id: string;
       action: "approve" | "reject";
       note: string;
     }) => {

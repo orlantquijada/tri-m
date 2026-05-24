@@ -17,7 +17,7 @@ const columns: ResponsiveColumn<OverdueRow>[] = [
     cell: (row) => (
       <Link
         className="underline-offset-4 hover:underline"
-        params={{ id: String(row.customerId) }}
+        params={{ id: row.customerId }}
         to="/customers/$id"
       >
         {row.customerName}

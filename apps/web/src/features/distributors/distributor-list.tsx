@@ -58,7 +58,7 @@ export function DistributorList() {
             <TableCell>
               <Link
                 to="/distributors/$id/edit"
-                params={{ id: String(d.id) }}
+                params={{ id: d.id }}
                 className={buttonVariants({ size: "sm", variant: "ghost" })}
               >
                 Edit

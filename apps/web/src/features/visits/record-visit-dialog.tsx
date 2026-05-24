@@ -20,7 +20,7 @@ import { parsePeso } from "@/lib/format";
 import { useRecordVisitMutation } from "./queries";
 
 type RecordVisitDialogProps = {
-  customerId: number;
+  customerId: string;
   trigger?: React.ReactElement;
 };
 

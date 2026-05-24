@@ -16,9 +16,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { useVoidPayment } from "./queries";
 
 type VoidPaymentDialogProps = {
-  paymentId: number;
-  receivableId: number;
-  customerId: number;
+  paymentId: string;
+  receivableId: string;
+  customerId: string;
 };
 
 export function VoidPaymentDialog({

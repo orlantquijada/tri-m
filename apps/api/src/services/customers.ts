@@ -105,7 +105,7 @@ export async function listCustomers(
   return customerListItemSchema.array().parse(rows);
 }
 
-export async function getCustomer(user: User, id: number) {
+export async function getCustomer(user: User, id: string) {
   const [[customer], receivables] = await Promise.all([
     db.select().from(customersTable).where(eq(customersTable.id, id)),
     db
@@ -167,7 +167,7 @@ export function lookupCustomersByPhone(user: User, phone: string) {
 }
 
 export function createCustomer(user: User, data: CustomerInsert) {
-  let distributorId: number;
+  let distributorId: string;
   const latitude = data.latitude ?? null;
   const longitude = data.longitude ?? null;
   if (user.role === "distributor") {
@@ -213,7 +213,7 @@ export function createCustomer(user: User, data: CustomerInsert) {
   });
 }
 
-export function updateCustomer(user: User, id: number, data: CustomerUpdate) {
+export function updateCustomer(user: User, id: string, data: CustomerUpdate) {
   return db.transaction(async (tx) => {
     const [existing] = await tx
       .select()

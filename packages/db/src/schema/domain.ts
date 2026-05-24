@@ -1,3 +1,4 @@
+import { createId } from "@paralleldrive/cuid2";
 import { sql } from "drizzle-orm";
 import { index, int, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
@@ -15,7 +16,7 @@ const timestampFields = {
 export const distributors = sqliteTable("distributors", {
   assignedArea: text(),
   ...timestampFields,
-  id: int().primaryKey({ autoIncrement: true }),
+  id: text().primaryKey().$defaultFn(() => createId()),
   name: text().notNull(),
   phone: text().notNull(),
   status: text({ enum: ["active", "inactive"] })
@@ -26,11 +27,11 @@ export const distributors = sqliteTable("distributors", {
 export const customers = sqliteTable("customers", {
   address: text().notNull(),
   ...timestampFields,
-  distributorId: int()
+  distributorId: text()
     .references(() => distributors.id)
     .notNull(),
   fullName: text().notNull(),
-  id: int().primaryKey({ autoIncrement: true }),
+  id: text().primaryKey().$defaultFn(() => createId()),
   latitude: real(),
   longitude: real(),
   notes: text(),
@@ -43,15 +44,15 @@ export const customers = sqliteTable("customers", {
 export const receivables = sqliteTable("receivables", {
   ...timestampFields,
   currentBalanceCents: int().notNull(),
-  customerId: int()
+  customerId: text()
     .references(() => customers.id)
     .notNull(),
-  distributorId: int()
+  distributorId: text()
     .references(() => distributors.id)
     .notNull(),
   downPaymentCents: int().notNull().default(0),
   firstDueDate: text().notNull(),
-  id: int().primaryKey({ autoIncrement: true }),
+  id: text().primaryKey().$defaultFn(() => createId()),
   monthlyDueAmountCents: int(),
   originalBalanceCents: int().notNull(),
   paymentTermMonths: int(),
@@ -69,10 +70,10 @@ export const paymentSchedules = sqliteTable(
     ...timestampFields,
     dueAmountCents: int().notNull(),
     dueDate: text().notNull(),
-    id: int().primaryKey({ autoIncrement: true }),
+    id: text().primaryKey().$defaultFn(() => createId()),
     installmentNo: int().notNull(),
     paidAmountCents: int().notNull().default(0),
-    receivableId: int()
+    receivableId: text()
       .references(() => receivables.id)
       .notNull(),
     status: text({ enum: ["pending", "partial", "paid", "overdue"] })
@@ -89,13 +90,13 @@ export const blacklistRequests = sqliteTable("blacklist_requests", {
     .notNull()
     .default(sql`(unixepoch('now') * 1000)`)
     .$defaultFn(() => new Date()),
-  customerId: int()
+  customerId: text()
     .references(() => customers.id)
     .notNull(),
-  distributorId: int()
+  distributorId: text()
     .references(() => distributors.id)
     .notNull(),
-  id: int().primaryKey({ autoIncrement: true }),
+  id: text().primaryKey().$defaultFn(() => createId()),
   reason: text().notNull(),
   requestedByUserId: text().notNull(),
   reviewNote: text(),
@@ -114,13 +115,13 @@ export const auditEvents = sqliteTable(
       .notNull()
       .default(sql`(unixepoch('now') * 1000)`)
       .$defaultFn(() => new Date()),
-    distributorId: int(),
+    distributorId: text(),
     entityId: text().notNull(),
     entityType: text({
       enum: ["payment", "customer", "blacklist_request", "user"],
     }).notNull(),
     event: text().notNull(),
-    id: int().primaryKey({ autoIncrement: true }),
+    id: text().primaryKey().$defaultFn(() => createId()),
     metadata: text(),
   },
   (table) => [
@@ -136,15 +137,15 @@ export const visits = sqliteTable(
       .notNull()
       .default(sql`(unixepoch('now') * 1000)`)
       .$defaultFn(() => new Date()),
-    customerId: int()
+    customerId: text()
       .references(() => customers.id)
       .notNull(),
-    distributorId: int()
+    distributorId: text()
       .references(() => distributors.id)
       .notNull(),
     gpsLat: real(),
     gpsLng: real(),
-    id: int().primaryKey({ autoIncrement: true }),
+    id: text().primaryKey().$defaultFn(() => createId()),
     notes: text(),
     outcome: text({
       enum: [
@@ -178,16 +179,16 @@ export const visits = sqliteTable(
 export const payments = sqliteTable("payments", {
   amountCents: int().notNull(),
   ...timestampFields,
-  customerId: int()
+  customerId: text()
     .references(() => customers.id)
     .notNull(),
-  id: int().primaryKey({ autoIncrement: true }),
+  id: text().primaryKey().$defaultFn(() => createId()),
   notes: text(),
   paymentDate: text().notNull(),
   paymentMethod: text({
     enum: ["cash", "gcash", "bank_transfer", "other"],
   }).notNull(),
-  receivableId: int()
+  receivableId: text()
     .references(() => receivables.id)
     .notNull(),
   recordedBy: text(),
