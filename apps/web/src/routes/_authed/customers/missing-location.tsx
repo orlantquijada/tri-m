@@ -19,7 +19,9 @@ function MissingLocationPage() {
       arr.push(c);
       byDistributor.set(c.distributorId, arr);
     }
-    return [...byDistributor.entries()].toSorted((a, b) => a[0].localeCompare(b[0]));
+    return [...byDistributor.entries()].toSorted((a, b) =>
+      a[0].localeCompare(b[0])
+    );
   }, [customersQuery.data]);
 
   const distributorName = (id: string) =>
@@ -56,7 +58,7 @@ function MissingLocationPage() {
         <div className="space-y-8">
           {groups.map(([distributorId, customers]) => (
             <section key={distributorId} className="space-y-2">
-              <h2 className="font-semibold text-lg">
+              <h2 className="text-lg font-semibold">
                 {distributorName(distributorId)}
                 <span className="ml-2 text-sm text-muted-foreground">
                   ({customers.length})

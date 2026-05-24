@@ -350,7 +350,7 @@ export function CustomerTimeline({ customerId }: { customerId: string }) {
               </span>
             </div>
             {rendered.detail && (
-              <p className="mt-1 break-words text-sm text-muted-foreground">
+              <p className="mt-1 text-sm break-words text-muted-foreground">
                 {rendered.detail}
               </p>
             )}

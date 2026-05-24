@@ -82,13 +82,13 @@ export function MapView({ customers, focusId }: Props) {
       const target = markersByIdRef.current.get(focusId);
       if (target) {
         const latLng = target.getLatLng();
-        map.flyTo(latLng, FOCUS_ZOOM);
         cluster.zoomToShowLayer(target, () => {
+          map.setView(latLng, FOCUS_ZOOM, { animate: true });
           target.openPopup();
         });
       }
     }
-  }, [customers, focusId, ready, leafletRef, mapRef]);
+  }, [customers, focusId, ready]);
 
   return <div className="h-full w-full" ref={containerRef} />;
 }

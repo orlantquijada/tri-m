@@ -37,7 +37,9 @@ type PaymentFormProps = {
   currentBalanceCents: number;
   receivableId: string;
   customerId: string;
-  trigger?: React.ReactElement;
+  trigger?: React.ReactElement | null;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 };
 
 function fieldError(errors: (string | undefined)[]) {
@@ -53,8 +55,12 @@ export function PaymentForm({
   receivableId,
   customerId,
   trigger,
+  open: controlledOpen,
+  onOpenChange,
 }: PaymentFormProps) {
-  const [open, setOpen] = useState(false);
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const open = controlledOpen ?? uncontrolledOpen;
+  const setOpen = onOpenChange ?? setUncontrolledOpen;
   const createMutation = paymentQueries.useCreate();
   const maxPeso = (currentBalanceCents / 100).toFixed(2);
   const today = format(new Date(), "yyyy-MM-dd");
@@ -86,13 +92,17 @@ export function PaymentForm({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger
-        render={
-          trigger ?? (
-            <Button disabled={currentBalanceCents === 0}>Record Payment</Button>
-          )
-        }
-      />
+      {trigger !== null && (
+        <DialogTrigger
+          render={
+            trigger ?? (
+              <Button disabled={currentBalanceCents === 0}>
+                Record Payment
+              </Button>
+            )
+          }
+        />
+      )}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Record Payment</DialogTitle>

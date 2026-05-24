@@ -4,13 +4,20 @@ import {
   ClipboardCheckIcon,
   MapPinIcon,
   MessageSquareIcon,
+  MoreVerticalIcon,
   PhoneIcon,
 } from "lucide-react";
+import * as React from "react";
 
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { PaymentForm } from "@/features/payments/payment-form";
 import { RecordVisitDialog } from "@/features/visits/record-visit-dialog";
-import { cn } from "@/lib/utils";
 
 type QuickActionsBarProps = {
   customerId: string;
@@ -19,7 +26,6 @@ type QuickActionsBarProps = {
   longitude?: number | null;
   receivableId?: string;
   currentBalanceCents?: number;
-  layout?: "row" | "wrap";
 };
 
 function stopRowNavigation(e: React.SyntheticEvent) {
@@ -33,82 +39,74 @@ export function QuickActionsBar({
   longitude,
   receivableId,
   currentBalanceCents,
-  layout = "wrap",
 }: QuickActionsBarProps) {
   const balance = currentBalanceCents ?? 0;
   const hasCoords = latitude != null && longitude != null;
-
-  const containerCls =
-    layout === "row"
-      ? "flex flex-row flex-nowrap items-center gap-2 overflow-x-auto"
-      : "flex flex-wrap items-center justify-end gap-2";
-
-  const iconBtnCls = cn(
-    buttonVariants({ size: "icon", variant: "outline" }),
-    "min-h-11 min-w-11 shrink-0"
-  );
+  const [visitOpen, setVisitOpen] = React.useState(false);
+  const [paymentOpen, setPaymentOpen] = React.useState(false);
 
   return (
-    <div className={containerCls} onClick={stopRowNavigation}>
-      {phone ? (
-        <a
-          aria-label="Call customer"
-          className={iconBtnCls}
-          href={`tel:${phone}`}
-        >
-          <PhoneIcon className="size-4" />
-        </a>
-      ) : null}
-      {phone ? (
-        <a
-          aria-label="SMS customer"
-          className={iconBtnCls}
-          href={`sms:${phone}`}
-        >
-          <MessageSquareIcon className="size-4" />
-        </a>
-      ) : null}
-      {hasCoords ? (
-        <Link
-          aria-label="View on map"
-          className={iconBtnCls}
-          search={{ focus: customerId }}
-          to="/map"
-        >
-          <MapPinIcon className="size-4" />
-        </Link>
-      ) : null}
-      <RecordVisitDialog
-        customerId={customerId}
-        trigger={
-          <Button
-            aria-label="Record visit"
-            className="min-h-11 min-w-11 shrink-0"
-            size="icon"
-            variant="outline"
-          >
-            <ClipboardCheckIcon className="size-4" />
-          </Button>
-        }
-      />
-      {receivableId !== undefined ? (
-        <PaymentForm
-          currentBalanceCents={balance}
-          customerId={customerId}
-          receivableId={receivableId}
-          trigger={
-            <Button
-              aria-label="Record payment"
-              className="min-h-11 min-w-11 shrink-0"
-              disabled={balance === 0}
-              size="icon"
-              variant="outline"
-            >
-              <BanknoteIcon className="size-4" />
+    <div onClick={stopRowNavigation}>
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          render={
+            <Button aria-label="Customer actions" size="icon" variant="outline">
+              <MoreVerticalIcon className="size-4" />
             </Button>
           }
         />
-      ) : null}
+        <DropdownMenuContent align="end" className="w-48">
+          {phone ? (
+            <DropdownMenuItem render={<a href={`tel:${phone}`} />}>
+              <PhoneIcon className="size-4" />
+              Call customer
+            </DropdownMenuItem>
+          ) : null}
+          {phone ? (
+            <DropdownMenuItem render={<a href={`sms:${phone}`} />}>
+              <MessageSquareIcon className="size-4" />
+              SMS customer
+            </DropdownMenuItem>
+          ) : null}
+          {hasCoords ? (
+            <DropdownMenuItem
+              render={<Link search={{ focus: customerId }} to="/map" />}
+            >
+              <MapPinIcon className="size-4" />
+              View on map
+            </DropdownMenuItem>
+          ) : null}
+          <DropdownMenuItem onClick={() => setVisitOpen(true)}>
+            <ClipboardCheckIcon className="size-4" />
+            Record visit
+          </DropdownMenuItem>
+          {!!receivableId && (
+            <DropdownMenuItem
+              disabled={balance === 0}
+              onClick={() => setPaymentOpen(true)}
+            >
+              <BanknoteIcon className="size-4" />
+              Record payment
+            </DropdownMenuItem>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <RecordVisitDialog
+        customerId={customerId}
+        onOpenChange={setVisitOpen}
+        open={visitOpen}
+        trigger={null}
+      />
+      {!!receivableId && (
+        <PaymentForm
+          currentBalanceCents={balance}
+          customerId={customerId}
+          onOpenChange={setPaymentOpen}
+          open={paymentOpen}
+          receivableId={receivableId}
+          trigger={null}
+        />
+      )}
     </div>
   );
 }

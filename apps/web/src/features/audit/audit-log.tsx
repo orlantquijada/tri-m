@@ -147,7 +147,7 @@ export function AuditLog() {
             <TableBody>
               {events.map((ev) => (
                 <TableRow key={ev.id}>
-                  <TableCell className="whitespace-nowrap font-mono text-xs">
+                  <TableCell className="font-mono text-xs whitespace-nowrap">
                     {formatTimestamp(ev.createdAt)}
                   </TableCell>
                   <TableCell className="font-medium">{ev.event}</TableCell>

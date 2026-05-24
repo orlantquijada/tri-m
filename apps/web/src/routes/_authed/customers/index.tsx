@@ -11,10 +11,10 @@ function CustomersPage() {
   const isAdmin = sessionUser?.role === "admin";
 
   return (
-    <main className="container mx-auto p-6">
-      <div className="mb-6 flex items-center justify-between">
+    <main className="container mx-auto w-full max-w-full px-0 py-4 sm:p-6">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold">Customers</h1>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {isAdmin && (
             <Link
               className={buttonVariants({ variant: "outline" })}

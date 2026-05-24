@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-table";
 import type {
   ColumnDef,
+  PaginationState,
   SortingState,
   Table as TanstackTable,
   VisibilityState,
@@ -75,7 +76,7 @@ function filterByTab(rows: CustomerListItem[], tab: TabKey) {
       );
     }
     case "missing-location": {
-      return rows.filter((r) => r.latitude == null || r.longitude == null);
+      return rows.filter((r) => r.latitude === null || r.longitude === null);
     }
     case "outstanding": {
       return rows.filter((r) => r.outstandingBalanceCents > 0);
@@ -160,7 +161,6 @@ const columns: ColumnDef<CustomerListItem>[] = [
         <QuickActionsBar
           customerId={row.original.id}
           latitude={row.original.latitude}
-          layout="wrap"
           longitude={row.original.longitude}
           phone={row.original.phone}
         />
@@ -182,35 +182,45 @@ export function CustomersDataTable() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const [pagination, setPagination] = React.useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 20,
+  });
   const [search, setSearch] = React.useState("");
 
   const allRows = data ?? [];
+  const deferredSearch = React.useDeferredValue(search);
 
-  const tabCounts: Record<TabKey, number> = {
-    all: allRows.length,
-    "at-risk": 0,
-    "missing-location": 0,
-    outstanding: 0,
-  };
-  for (const r of allRows) {
-    if (r.riskStatus === "watchlist" || r.riskStatus === "blacklisted") {
-      tabCounts["at-risk"]++;
+  const tabCounts = React.useMemo(() => {
+    const counts: Record<TabKey, number> = {
+      all: allRows.length,
+      "at-risk": 0,
+      "missing-location": 0,
+      outstanding: 0,
+    };
+    for (const r of allRows) {
+      if (r.riskStatus === "watchlist" || r.riskStatus === "blacklisted") {
+        counts["at-risk"] += 1;
+      }
+      if (r.latitude === null || r.longitude === null) {
+        counts["missing-location"] += 1;
+      }
+      if (r.outstandingBalanceCents > 0) {
+        counts.outstanding += 1;
+      }
     }
-    if (r.latitude == null || r.longitude == null) {
-      tabCounts["missing-location"]++;
-    }
-    if (r.outstandingBalanceCents > 0) {
-      tabCounts.outstanding++;
-    }
-  }
+    return counts;
+  }, [allRows]);
 
-  const q = search.trim().toLowerCase();
-  const filtered = filterByTab(allRows, tab).filter(
-    (r) =>
-      !q ||
-      r.fullName.toLowerCase().includes(q) ||
-      (r.phone ?? "").toLowerCase().includes(q)
-  );
+  const filtered = React.useMemo(() => {
+    const q = deferredSearch.trim().toLowerCase();
+    return filterByTab(allRows, tab).filter(
+      (r) =>
+        !q ||
+        r.fullName.toLowerCase().includes(q) ||
+        (r.phone ?? "").toLowerCase().includes(q)
+    );
+  }, [allRows, deferredSearch, tab]);
 
   const table = useReactTable({
     columns,
@@ -220,12 +230,16 @@ export function CustomersDataTable() {
     getPaginationRowModel: getPaginationRowModel(),
     getRowId: (row) => row.id,
     getSortedRowModel: getSortedRowModel(),
-    initialState: { pagination: { pageSize: 20 } },
     onColumnVisibilityChange: setColumnVisibility,
+    onPaginationChange: setPagination,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
-    state: { columnVisibility, rowSelection, sorting },
+    state: { columnVisibility, pagination, rowSelection, sorting },
   });
+
+  React.useEffect(() => {
+    setPagination((current) => ({ ...current, pageIndex: 0 }));
+  }, [deferredSearch, tab]);
 
   if (isLoading) {
     return <p className="p-4 text-muted-foreground">Loading...</p>;
@@ -236,14 +250,14 @@ export function CustomersDataTable() {
 
   return (
     <Tabs
-      className="w-full flex-col gap-4"
+      className="w-full min-w-0 flex-col gap-4"
       onValueChange={(v) => setTab(v as TabKey)}
       value={tab}
     >
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <TabsList className="@4xl/main:w-auto w-full overflow-x-auto">
+      <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <TabsList className="w-fit max-w-full overflow-x-auto">
           {(Object.keys(TAB_LABELS) as TabKey[]).map((key) => (
-            <TabsTrigger className="gap-2" key={key} value={key}>
+            <TabsTrigger className="flex-none gap-2" key={key} value={key}>
               {TAB_LABELS[key]}
               <Badge className="px-1.5" variant="secondary">
                 {tabCounts[key]}
@@ -251,9 +265,9 @@ export function CustomersDataTable() {
             </TabsTrigger>
           ))}
         </TabsList>
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 items-center gap-2">
           <div className="relative w-full sm:w-64">
-            <SearchIcon className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               aria-label="Search customers"
               className="pl-8"
@@ -397,7 +411,6 @@ function MobileCardList({ rows }: { rows: CustomerListItem[] }) {
             <QuickActionsBar
               customerId={c.id}
               latitude={c.latitude}
-              layout="row"
               longitude={c.longitude}
               phone={c.phone}
             />
@@ -423,7 +436,7 @@ function TablePagination<T>({ table }: { table: TanstackTable<T> }) {
           ? `${selectedCount} of ${totalCount} selected`
           : `${totalCount} ${totalCount === 1 ? "customer" : "customers"}`}
       </div>
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
         <div className="flex items-center gap-2">
           <span className="hidden lg:inline">Rows per page</span>
           <Select
@@ -431,7 +444,9 @@ function TablePagination<T>({ table }: { table: TanstackTable<T> }) {
             value={String(pageSize)}
           >
             <SelectTrigger className="w-[80px]" size="sm">
-              <SelectValue placeholder={String(pageSize)} />
+              <SelectValue>
+                {(v) => (typeof v === "string" ? v : String(pageSize))}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               {[10, 20, 50, 100].map((s) => (

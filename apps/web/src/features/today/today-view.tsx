@@ -90,6 +90,7 @@ type TodayListRowProps = {
   customerName: string;
   subtitle: ReactNode;
   action: ReactNode;
+  actionClassName?: string;
 };
 
 function TodayListRow({
@@ -97,9 +98,10 @@ function TodayListRow({
   customerName,
   subtitle,
   action,
+  actionClassName = "shrink-0",
 }: TodayListRowProps) {
   return (
-    <li className="flex flex-wrap items-center justify-between gap-2 rounded-md border p-3">
+    <li className="flex flex-wrap items-center justify-between gap-3 rounded-md border p-3">
       <div className="min-w-0 flex-1">
         <Link
           className="font-medium underline-offset-4 hover:underline"
@@ -110,7 +112,7 @@ function TodayListRow({
         </Link>
         <p className="text-xs text-muted-foreground">{subtitle}</p>
       </div>
-      {action}
+      <div className={actionClassName}>{action}</div>
     </li>
   );
 }
@@ -136,7 +138,6 @@ function OverdueSection({
               currentBalanceCents={row.currentBalanceCents}
               customerId={row.customerId}
               latitude={row.latitude}
-              layout="row"
               longitude={row.longitude}
               phone={row.phone}
               receivableId={row.id}
@@ -185,7 +186,6 @@ function DueTodaySection({ rows }: { rows: TodayPayload["dueToday"] }) {
                 currentBalanceCents={outstanding}
                 customerId={row.customerId}
                 latitude={row.latitude}
-                layout="row"
                 longitude={row.longitude}
                 phone={row.phone}
                 receivableId={row.receivableId}

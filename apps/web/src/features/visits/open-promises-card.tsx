@@ -126,7 +126,6 @@ function OpenPromiseRow({ promise }: { promise: OpenPromiseItem }) {
         <QuickActionsBar
           customerId={promise.customer.id}
           latitude={promise.customer.latitude}
-          layout="row"
           longitude={promise.customer.longitude}
           phone={promise.customer.phone}
         />

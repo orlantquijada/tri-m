@@ -232,10 +232,10 @@ export function LocationMapPicker({
         </Button>
         <p className={coordsClass}>{coordsLabel}</p>
       </div>
-      {geoError && <p className="text-destructive text-sm">{geoError}</p>}
+      {geoError && <p className="text-sm text-destructive">{geoError}</p>}
       {showSuggestionLink && (
         <button
-          className="text-left text-primary text-xs underline-offset-2 hover:underline"
+          className="text-left text-xs text-primary underline-offset-2 hover:underline"
           onClick={handleUseSuggestion}
           type="button"
         >

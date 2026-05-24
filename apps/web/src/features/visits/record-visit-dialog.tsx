@@ -21,7 +21,9 @@ import { useRecordVisitMutation } from "./queries";
 
 type RecordVisitDialogProps = {
   customerId: string;
-  trigger?: React.ReactElement;
+  trigger?: React.ReactElement | null;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 };
 
 const TYPE_OPTIONS: { label: string; value: VisitType }[] = [
@@ -43,8 +45,12 @@ const OUTCOME_OPTIONS: { label: string; value: VisitOutcome }[] = [
 export function RecordVisitDialog({
   customerId,
   trigger,
+  open: controlledOpen,
+  onOpenChange,
 }: RecordVisitDialogProps) {
-  const [open, setOpen] = useState(false);
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const open = controlledOpen ?? uncontrolledOpen;
+  const setOpen = onOpenChange ?? setUncontrolledOpen;
   const [type, setType] = useState<VisitType>("in_person");
   const [outcome, setOutcome] = useState<VisitOutcome>("no_answer");
   const [notes, setNotes] = useState("");
@@ -121,7 +127,9 @@ export function RecordVisitDialog({
         }
       }}
     >
-      <DialogTrigger render={trigger ?? <Button>Record visit</Button>} />
+      {trigger !== null && (
+        <DialogTrigger render={trigger ?? <Button>Record visit</Button>} />
+      )}
       <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Record visit</DialogTitle>

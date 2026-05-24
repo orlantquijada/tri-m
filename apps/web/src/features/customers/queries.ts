@@ -25,10 +25,9 @@ type UpdateCustomerBody = InferRequestType<
 
 export const customerQueries = createResourceQueries({
   create: (data: CreateCustomerBody) => api.api.customers.$post({ json: data }),
-  detail: (id: string) =>
-    api.api.customers[":id"].$get({ param: { id } }),
-  list: () => api.api.customers.$get({ query: {} }),
+  detail: (id: string) => api.api.customers[":id"].$get({ param: { id } }),
   idType: "string",
+  list: () => api.api.customers.$get({ query: {} }),
   name: "customers",
   update: (id: string, data: UpdateCustomerBody) =>
     api.api.customers[":id"].$patch({

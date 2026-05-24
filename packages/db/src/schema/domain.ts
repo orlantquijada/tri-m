@@ -16,7 +16,9 @@ const timestampFields = {
 export const distributors = sqliteTable("distributors", {
   assignedArea: text(),
   ...timestampFields,
-  id: text().primaryKey().$defaultFn(() => createId()),
+  id: text()
+    .primaryKey()
+    .$defaultFn(() => createId()),
   name: text().notNull(),
   phone: text().notNull(),
   status: text({ enum: ["active", "inactive"] })
@@ -31,7 +33,9 @@ export const customers = sqliteTable("customers", {
     .references(() => distributors.id)
     .notNull(),
   fullName: text().notNull(),
-  id: text().primaryKey().$defaultFn(() => createId()),
+  id: text()
+    .primaryKey()
+    .$defaultFn(() => createId()),
   latitude: real(),
   longitude: real(),
   notes: text(),
@@ -52,7 +56,9 @@ export const receivables = sqliteTable("receivables", {
     .notNull(),
   downPaymentCents: int().notNull().default(0),
   firstDueDate: text().notNull(),
-  id: text().primaryKey().$defaultFn(() => createId()),
+  id: text()
+    .primaryKey()
+    .$defaultFn(() => createId()),
   monthlyDueAmountCents: int(),
   originalBalanceCents: int().notNull(),
   paymentTermMonths: int(),
@@ -70,7 +76,9 @@ export const paymentSchedules = sqliteTable(
     ...timestampFields,
     dueAmountCents: int().notNull(),
     dueDate: text().notNull(),
-    id: text().primaryKey().$defaultFn(() => createId()),
+    id: text()
+      .primaryKey()
+      .$defaultFn(() => createId()),
     installmentNo: int().notNull(),
     paidAmountCents: int().notNull().default(0),
     receivableId: text()
@@ -96,7 +104,9 @@ export const blacklistRequests = sqliteTable("blacklist_requests", {
   distributorId: text()
     .references(() => distributors.id)
     .notNull(),
-  id: text().primaryKey().$defaultFn(() => createId()),
+  id: text()
+    .primaryKey()
+    .$defaultFn(() => createId()),
   reason: text().notNull(),
   requestedByUserId: text().notNull(),
   reviewNote: text(),
@@ -121,7 +131,9 @@ export const auditEvents = sqliteTable(
       enum: ["payment", "customer", "blacklist_request", "user"],
     }).notNull(),
     event: text().notNull(),
-    id: text().primaryKey().$defaultFn(() => createId()),
+    id: text()
+      .primaryKey()
+      .$defaultFn(() => createId()),
     metadata: text(),
   },
   (table) => [
@@ -145,7 +157,9 @@ export const visits = sqliteTable(
       .notNull(),
     gpsLat: real(),
     gpsLng: real(),
-    id: text().primaryKey().$defaultFn(() => createId()),
+    id: text()
+      .primaryKey()
+      .$defaultFn(() => createId()),
     notes: text(),
     outcome: text({
       enum: [
@@ -182,7 +196,9 @@ export const payments = sqliteTable("payments", {
   customerId: text()
     .references(() => customers.id)
     .notNull(),
-  id: text().primaryKey().$defaultFn(() => createId()),
+  id: text()
+    .primaryKey()
+    .$defaultFn(() => createId()),
   notes: text(),
   paymentDate: text().notNull(),
   paymentMethod: text({

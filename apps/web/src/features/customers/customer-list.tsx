@@ -60,7 +60,6 @@ const columns: ResponsiveColumn<CustomerListItem>[] = [
       <QuickActionsBar
         customerId={c.id}
         latitude={c.latitude}
-        layout="wrap"
         longitude={c.longitude}
         phone={c.phone}
       />
@@ -91,7 +90,6 @@ export function CustomerList() {
         <QuickActionsBar
           customerId={c.id}
           latitude={c.latitude}
-          layout="row"
           longitude={c.longitude}
           phone={c.phone}
         />

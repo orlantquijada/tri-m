@@ -133,7 +133,7 @@ function CollectionMap({ stops }: { stops: Stop[] }) {
     }
   }, [stops, ready, leafletRef, mapRef]);
 
-  return <div className="h-full w-full" ref={containerRef} />;
+  return <div className="isolate h-full w-full" ref={containerRef} />;
 }
 
 export function CollectionRouteView() {

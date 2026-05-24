@@ -102,7 +102,7 @@ export function ResponsiveTable<T>({
                       <dt className="text-muted-foreground">
                         {col.mobileLabel ?? mobileLabelFromHeader(col.header)}
                       </dt>
-                      <dd className="min-w-0 wrap-break-word text-right">
+                      <dd className="min-w-0 text-right wrap-break-word">
                         {col.cell(row)}
                       </dd>
                     </div>

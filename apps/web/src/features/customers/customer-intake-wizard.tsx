@@ -234,8 +234,8 @@ export function CustomerIntakeWizard() {
       <StepIndicator current={stepIdx} />
 
       <header className="space-y-1">
-        <h2 className="font-semibold text-lg">{step.title}</h2>
-        <p className="text-muted-foreground text-sm">{step.description}</p>
+        <h2 className="text-lg font-semibold">{step.title}</h2>
+        <p className="text-sm text-muted-foreground">{step.description}</p>
       </header>
 
       {step.key === "contact" && (
@@ -252,7 +252,7 @@ export function CustomerIntakeWizard() {
         <div className="space-y-4">
           <RiskFields form={form} />
           <div className="space-y-2">
-            <h3 className="font-medium text-sm">Review</h3>
+            <h3 className="text-sm font-medium">Review</h3>
             <ReviewSummary form={form} />
           </div>
         </div>

@@ -92,7 +92,6 @@ const columns: ResponsiveColumn<OverdueRow>[] = [
         currentBalanceCents={row.currentBalanceCents}
         customerId={row.customerId}
         latitude={row.latitude}
-        layout="wrap"
         longitude={row.longitude}
         phone={row.phone}
         receivableId={row.id}
@@ -116,7 +115,6 @@ export function OverdueTable({ rows }: { rows: OverdueRow[] }) {
           currentBalanceCents={row.currentBalanceCents}
           customerId={row.customerId}
           latitude={row.latitude}
-          layout="row"
           longitude={row.longitude}
           phone={row.phone}
           receivableId={row.id}
