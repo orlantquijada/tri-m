@@ -34,7 +34,9 @@ function LoginPage() {
     async function run() {
       try {
         const { data } = await authClient.getSession();
-        if (cancelled || !data?.session) {return;}
+        if (cancelled || !data?.session) {
+          return;
+        }
         const role = (data.user as { role?: string } | undefined)?.role;
         void navigate({ replace: true, to: defaultRouteForRole(role) });
       } catch {

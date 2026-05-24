@@ -1,8 +1,9 @@
+import { Link } from "@tanstack/react-router";
 import type { VisitOutcome, VisitType } from "schema";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { formatPeso, mapsUrl } from "@/lib/format";
+import { formatPeso } from "@/lib/format";
 
 import { useResolvePromiseMutation, useVisitsQuery } from "./queries";
 import type { VisitListItem } from "./queries";
@@ -77,14 +78,7 @@ function VisitRow({
   customerId: number;
 }) {
   const resolveMutation = useResolvePromiseMutation();
-  const gpsHref =
-    visit.gpsLat !== null && visit.gpsLng !== null
-      ? mapsUrl(visit.gpsLat, visit.gpsLng)
-      : null;
-  const geoHref =
-    visit.gpsLat !== null && visit.gpsLng !== null
-      ? `geo:${visit.gpsLat},${visit.gpsLng}?q=${visit.gpsLat},${visit.gpsLng}`
-      : null;
+  const hasGps = visit.gpsLat !== null && visit.gpsLng !== null;
   const isOpenPromise =
     visit.outcome === "promised" && visit.promiseResolvedAt === null;
 
@@ -128,26 +122,15 @@ function VisitRow({
       {visit.notes && (
         <p className="mt-2 text-sm text-muted-foreground">{visit.notes}</p>
       )}
-      {(gpsHref || geoHref) && (
+      {hasGps && (
         <div className="mt-2 flex gap-3 text-xs">
-          {geoHref && (
-            <a
-              className="text-blue-600 underline-offset-4 hover:underline"
-              href={geoHref}
-            >
-              Open in maps app
-            </a>
-          )}
-          {gpsHref && (
-            <a
-              className="text-blue-600 underline-offset-4 hover:underline"
-              href={gpsHref}
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              Google Maps
-            </a>
-          )}
+          <Link
+            className="text-blue-600 underline-offset-4 hover:underline"
+            search={{ focus: customerId }}
+            to="/map"
+          >
+            View on map
+          </Link>
         </div>
       )}
       {isOpenPromise && resolveMutation.error && (

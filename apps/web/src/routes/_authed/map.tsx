@@ -14,6 +14,7 @@ import { MapFilters } from "@/features/map/map-filters";
 import { MapView } from "@/features/map/map-view";
 
 const searchSchema = z.object({
+  focus: z.coerce.number().int().positive().optional(),
   hasOverdue: z
     .union([z.boolean(), z.enum(["true", "false"])])
     .optional()
@@ -36,12 +37,15 @@ const searchSchema = z.object({
 function MapPage() {
   const search = useSearch({ from: "/_authed/map" });
   const navigate = useNavigate();
-  const filters: CustomersMapFilters = {
+  const uiFilters: CustomersMapFilters = {
     hasOverdue: search.hasOverdue ?? false,
     riskStatus: search.riskStatus ?? [],
   };
+  const queryFilters: CustomersMapFilters = search.focus
+    ? { hasOverdue: false, riskStatus: [] }
+    : uiFilters;
 
-  const { data, error, isLoading } = useCustomersMapQuery(filters);
+  const { data, error, isLoading } = useCustomersMapQuery(queryFilters);
 
   const customersWithCoords = useMemo(
     () =>
@@ -71,11 +75,12 @@ function MapPage() {
   return (
     <div className="isolate -m-4 flex h-[calc(100svh-3.5rem)] flex-col">
       <MapFilters
-        value={filters}
+        value={uiFilters}
         onChange={(next) => {
           void navigate({
             replace: true,
             search: {
+              focus: undefined,
               hasOverdue: next.hasOverdue ? true : undefined,
               riskStatus:
                 next.riskStatus.length > 0 ? next.riskStatus : undefined,
@@ -85,7 +90,7 @@ function MapPage() {
         }}
       />
       <div className="min-h-0 flex-1">
-        <MapView customers={customersWithCoords} />
+        <MapView customers={customersWithCoords} focusId={search.focus} />
       </div>
     </div>
   );

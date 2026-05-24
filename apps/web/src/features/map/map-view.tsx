@@ -19,9 +19,10 @@ type Customer = Pick<
   | "riskStatus"
 >;
 
-type Props = { customers: Customer[] };
+type Props = { customers: Customer[]; focusId?: number };
 
 const MAP_VIEW_ZOOM = 12;
+const FOCUS_ZOOM = 16;
 
 function esc(s: string) {
   return s
@@ -30,10 +31,11 @@ function esc(s: string) {
     .replaceAll(">", "&gt;");
 }
 
-export function MapView({ customers }: Props) {
+export function MapView({ customers, focusId }: Props) {
   const clusterRef = useRef<MarkerClusterGroup | null>(null);
+  const markersByIdRef = useRef<Map<number, Marker>>(new Map());
 
-  const { containerRef, leafletRef, ready } = useLeafletMap({
+  const { containerRef, leafletRef, mapRef, ready } = useLeafletMap({
     center: DEFAULT_MAP_CENTER,
     onReady: async (map, L) => {
       await import("leaflet.markercluster");
@@ -50,30 +52,43 @@ export function MapView({ customers }: Props) {
     }
     const L = leafletRef.current;
     const cluster = clusterRef.current;
-    if (!(L && cluster)) {
+    const map = mapRef.current;
+    if (!(L && cluster && map)) {
       return;
     }
     cluster.clearLayers();
+    markersByIdRef.current.clear();
     const markers: Marker[] = [];
     for (const c of customers) {
       if (c.latitude === null || c.longitude === null) {
         continue;
       }
-      markers.push(
-        L.marker([c.latitude, c.longitude]).bindPopup(
-          `<div style="min-width:160px">
-                <p style="font-weight:600;margin:0 0 4px">${esc(c.fullName)}</p>
-                <p style="margin:0 0 2px">${esc(c.phone)}</p>
-                <p style="margin:0 0 2px">Risk: ${esc(c.riskStatus)}</p>
-                <p style="margin:0 0 6px">Balance: ${esc(formatPeso(c.outstandingBalanceCents))}</p>
-                <a href="/customers/${c.id}" style="margin-right:8px">Profile</a>
-                <a href="${mapsUrl(c.latitude, c.longitude)}" target="_blank" rel="noopener noreferrer">Google Maps</a>
-              </div>`
-        )
+      const marker = L.marker([c.latitude, c.longitude]).bindPopup(
+        `<div style="min-width:160px">
+              <p style="font-weight:600;margin:0 0 4px">${esc(c.fullName)}</p>
+              <p style="margin:0 0 2px">${esc(c.phone)}</p>
+              <p style="margin:0 0 2px">Risk: ${esc(c.riskStatus)}</p>
+              <p style="margin:0 0 6px">Balance: ${esc(formatPeso(c.outstandingBalanceCents))}</p>
+              <a href="/customers/${c.id}" style="margin-right:8px">Profile</a>
+              <a href="${mapsUrl(c.latitude, c.longitude)}" target="_blank" rel="noopener noreferrer">Directions</a>
+            </div>`
       );
+      markers.push(marker);
+      markersByIdRef.current.set(c.id, marker);
     }
     cluster.addLayers(markers);
-  }, [customers, ready, leafletRef]);
+
+    if (focusId !== undefined) {
+      const target = markersByIdRef.current.get(focusId);
+      if (target) {
+        const latLng = target.getLatLng();
+        map.flyTo(latLng, FOCUS_ZOOM);
+        cluster.zoomToShowLayer(target, () => {
+          target.openPopup();
+        });
+      }
+    }
+  }, [customers, focusId, ready, leafletRef, mapRef]);
 
   return <div className="h-full w-full" ref={containerRef} />;
 }

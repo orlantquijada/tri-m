@@ -1,7 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 
 import { buttonVariants } from "@/components/ui/button";
-import { CustomerList } from "@/features/customers/customer-list";
+import { CustomersDataTable } from "@/features/customers/customers-data-table";
 import { CustomersExportButton } from "@/features/exports/export-buttons";
 import { authClient } from "@/lib/auth-client";
 
@@ -29,7 +29,7 @@ function CustomersPage() {
           </Link>
         </div>
       </div>
-      <CustomerList />
+      <CustomersDataTable />
     </main>
   );
 }

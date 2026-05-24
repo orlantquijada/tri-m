@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { ChartAreaInteractive } from "@/features/dashboard/chart-area-interactive";
 import { DashboardCards } from "@/features/dashboard/dashboard-cards";
 import {
   useAgingBucketsQuery,
@@ -11,11 +12,11 @@ function DashboardPage() {
   const { data: aging } = useAgingBucketsQuery();
 
   return (
-    <div>
-      <h1 className="mb-6 text-2xl font-bold">Dashboard</h1>
+    <div className="flex flex-col gap-6">
       {isLoading && <p className="text-muted-foreground">Loading...</p>}
       {error && <p className="text-destructive">Failed to load totals.</p>}
       {data && <DashboardCards aging={aging} totals={data} />}
+      {data && <ChartAreaInteractive />}
     </div>
   );
 }

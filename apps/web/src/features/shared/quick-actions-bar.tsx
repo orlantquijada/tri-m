@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import {
   BanknoteIcon,
   ClipboardCheckIcon,
@@ -9,8 +10,6 @@ import {
 import { Button, buttonVariants } from "@/components/ui/button";
 import { PaymentForm } from "@/features/payments/payment-form";
 import { RecordVisitDialog } from "@/features/visits/record-visit-dialog";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { mapHref } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 type QuickActionsBarProps = {
@@ -36,12 +35,8 @@ export function QuickActionsBar({
   currentBalanceCents,
   layout = "wrap",
 }: QuickActionsBarProps) {
-  const isMobile = useIsMobile();
   const balance = currentBalanceCents ?? 0;
-  const mapUrl =
-    latitude != null && longitude != null
-      ? mapHref(latitude, longitude, isMobile)
-      : null;
+  const hasCoords = latitude != null && longitude != null;
 
   const containerCls =
     layout === "row"
@@ -73,16 +68,15 @@ export function QuickActionsBar({
           <MessageSquareIcon className="size-4" />
         </a>
       ) : null}
-      {mapUrl ? (
-        <a
-          aria-label="Open map"
+      {hasCoords ? (
+        <Link
+          aria-label="View on map"
           className={iconBtnCls}
-          href={mapUrl}
-          rel="noreferrer"
-          target={isMobile ? undefined : "_blank"}
+          search={{ focus: customerId }}
+          to="/map"
         >
           <MapPinIcon className="size-4" />
-        </a>
+        </Link>
       ) : null}
       <RecordVisitDialog
         customerId={customerId}

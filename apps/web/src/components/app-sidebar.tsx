@@ -15,6 +15,7 @@ import {
 import * as React from "react";
 
 import { NavMain } from "@/components/nav-main";
+import type { NavGroup } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
@@ -28,19 +29,38 @@ import {
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
 
-const baseNavItems = [
-  { icon: <SunIcon />, title: "Today", url: "/today" },
-  { icon: <LayoutDashboardIcon />, title: "Dashboard", url: "/dashboard" },
-  { icon: <UsersIcon />, title: "Customers", url: "/customers" },
-  { icon: <MapIcon />, title: "Map", url: "/map" },
-  { icon: <AlertCircleIcon />, title: "Overdue", url: "/overdue" },
-  {
-    icon: <RouteIcon />,
-    title: "Collection Route",
-    url: "/collection-routes",
-  },
-  { icon: <ClipboardListIcon />, title: "Visits", url: "/visits" },
-];
+const workspaceGroup: NavGroup = {
+  items: [
+    { icon: <SunIcon />, title: "Today", url: "/today" },
+    { icon: <LayoutDashboardIcon />, title: "Dashboard", url: "/dashboard" },
+    { icon: <UsersIcon />, title: "Customers", url: "/customers" },
+    { icon: <MapIcon />, title: "Map", url: "/map" },
+  ],
+  label: "Workspace",
+};
+
+const collectionsGroup: NavGroup = {
+  items: [
+    { icon: <AlertCircleIcon />, title: "Overdue", url: "/overdue" },
+    {
+      icon: <RouteIcon />,
+      title: "Collection Route",
+      url: "/collection-routes",
+    },
+    { icon: <ClipboardListIcon />, title: "Visits", url: "/visits" },
+  ],
+  label: "Collections",
+};
+
+const adminGroup: NavGroup = {
+  items: [
+    { icon: <BuildingIcon />, title: "Distributors", url: "/distributors" },
+    { icon: <UserCogIcon />, title: "Users", url: "/users" },
+    { icon: <HistoryIcon />, title: "Audit Log", url: "/audit" },
+    { icon: <BarChart2Icon />, title: "Reports", url: "/reports" },
+  ],
+  label: "Admin",
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session } = authClient.useSession();
@@ -48,31 +68,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const isAdmin =
     (session?.user as Record<string, unknown> | undefined)?.role === "admin";
 
-  const navItems = isAdmin
-    ? [
-        ...baseNavItems,
-        {
-          icon: <BuildingIcon />,
-          title: "Distributors",
-          url: "/distributors",
-        },
-        {
-          icon: <UserCogIcon />,
-          title: "Users",
-          url: "/users",
-        },
-        {
-          icon: <HistoryIcon />,
-          title: "Audit Log",
-          url: "/audit",
-        },
-        {
-          icon: <BarChart2Icon />,
-          title: "Reports",
-          url: "/reports",
-        },
-      ]
-    : baseNavItems;
+  const groups: NavGroup[] = isAdmin
+    ? [workspaceGroup, collectionsGroup, adminGroup]
+    : [workspaceGroup, collectionsGroup];
 
   const user = {
     avatar: session?.user.image ?? "",
@@ -103,7 +101,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={navItems} />
+        <NavMain groups={groups} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />

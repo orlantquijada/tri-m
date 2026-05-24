@@ -9,36 +9,43 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-export function NavMain({
-  items,
-}: {
-  items: {
-    title: string;
-    url: string;
-    icon?: React.ReactNode;
-  }[];
-}) {
+export type NavItem = {
+  title: string;
+  url: string;
+  icon?: React.ReactNode;
+};
+
+export type NavGroup = {
+  label: string;
+  items: NavItem[];
+};
+
+export function NavMain({ groups }: { groups: NavGroup[] }) {
   const { pathname } = useLocation();
 
   return (
-    <SidebarGroup>
-      <SidebarGroupLabel>Navigation</SidebarGroupLabel>
-      <SidebarMenu>
-        {items.map((item) => (
-          <SidebarMenuItem key={item.title}>
-            <SidebarMenuButton
-              render={<Link to={item.url} />}
-              tooltip={item.title}
-              isActive={
-                pathname === item.url || pathname.startsWith(`${item.url}/`)
-              }
-            >
-              {item.icon}
-              <span>{item.title}</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        ))}
-      </SidebarMenu>
-    </SidebarGroup>
+    <>
+      {groups.map((group) => (
+        <SidebarGroup key={group.label}>
+          <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
+          <SidebarMenu>
+            {group.items.map((item) => (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton
+                  render={<Link to={item.url} />}
+                  tooltip={item.title}
+                  isActive={
+                    pathname === item.url || pathname.startsWith(`${item.url}/`)
+                  }
+                >
+                  {item.icon}
+                  <span>{item.title}</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
+      ))}
+    </>
   );
 }

@@ -71,6 +71,52 @@ export async function getAgingBuckets(user: User) {
   );
 }
 
+export type TrendRange = "7d" | "30d" | "90d";
+
+const TREND_DAYS: Record<TrendRange, number> = {
+  "30d": 30,
+  "7d": 7,
+  "90d": 90,
+};
+
+export async function getCollectionTrend(user: User, range: TrendRange) {
+  const scope = Scope.forUser(user);
+  const days = TREND_DAYS[range];
+
+  const sinceClause = `-${days - 1} days`;
+  const rows = await db
+    .select({
+      collectedCents: sql<number>`coalesce(sum(${paymentsTable.amountCents}), 0)`,
+      date: sql<string>`date(${paymentsTable.paymentDate})`,
+    })
+    .from(paymentsTable)
+    .innerJoin(
+      receivablesTable,
+      eq(paymentsTable.receivableId, receivablesTable.id)
+    )
+    .where(
+      and(
+        isNull(paymentsTable.voidedAt),
+        sql`date(${paymentsTable.paymentDate}) >= date('now', ${sinceClause})`,
+        scope.filterQuery(receivablesTable.distributorId)
+      )
+    )
+    .groupBy(sql`date(${paymentsTable.paymentDate})`)
+    .orderBy(sql`date(${paymentsTable.paymentDate})`);
+
+  const byDate = new Map(rows.map((r) => [r.date, r.collectedCents]));
+  const [today] = new Date().toISOString().split("T");
+  const base = new Date(today);
+  const out: { date: string; collectedCents: number }[] = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(base);
+    d.setUTCDate(d.getUTCDate() - i);
+    const [iso] = d.toISOString().split("T");
+    out.push({ collectedCents: byDate.get(iso) ?? 0, date: iso });
+  }
+  return out;
+}
+
 const TODAY_RECENT_VISITS_LIMIT = 8;
 const TODAY_DUE_TODAY_LIMIT = 200;
 const TODAY_TOP_OVERDUE_LIMIT = 5;
