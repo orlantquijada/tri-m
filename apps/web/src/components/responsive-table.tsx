@@ -31,6 +31,10 @@ type Props<T> = {
   mobileFooter?: (row: T) => ReactNode;
 };
 
+function mobileLabelFromHeader(header: ReactNode) {
+  return typeof header === "string" ? header : "";
+}
+
 export function ResponsiveTable<T>({
   columns,
   data,
@@ -98,7 +102,7 @@ export function ResponsiveTable<T>({
                       <dt className="text-muted-foreground">
                         {col.mobileLabel ?? mobileLabelFromHeader(col.header)}
                       </dt>
-                      <dd className="min-w-0 break-words text-right">
+                      <dd className="min-w-0 wrap-break-word text-right">
                         {col.cell(row)}
                       </dd>
                     </div>
@@ -112,8 +116,4 @@ export function ResponsiveTable<T>({
       </div>
     </>
   );
-}
-
-function mobileLabelFromHeader(header: ReactNode): string {
-  return typeof header === "string" ? header : "";
 }

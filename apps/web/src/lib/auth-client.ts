@@ -14,6 +14,12 @@ type SessionData = NonNullable<
   Awaited<ReturnType<typeof authClient.getSession>>["data"]
 >;
 
+export function defaultRouteForRole(
+  role: string | undefined
+): "/today" | "/dashboard" {
+  return role === "distributor" ? "/today" : "/dashboard";
+}
+
 export async function requireSession(): Promise<SessionData> {
   let data: Awaited<ReturnType<typeof authClient.getSession>>["data"];
   try {
