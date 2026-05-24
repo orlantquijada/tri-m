@@ -23,3 +23,12 @@ export type PaymentMethod = z.infer<typeof paymentMethodEnum>;
 
 export const productStatusEnum = z.enum(["active", "archived"]);
 export type ProductStatus = z.infer<typeof productStatusEnum>;
+
+export const stockMovementTypeEnum = z.enum([
+  "receive",
+  "sale",
+  "adjustment",
+  "transfer_in",
+  "transfer_out",
+]);
+export type StockMovementType = z.infer<typeof stockMovementTypeEnum>;

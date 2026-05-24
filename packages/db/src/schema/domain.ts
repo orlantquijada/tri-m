@@ -234,6 +234,46 @@ export const products = sqliteTable(
   ]
 );
 
+export const stockMovements = sqliteTable(
+  "stock_movements",
+  {
+    createdAt: int({ mode: "timestamp_ms" })
+      .notNull()
+      .default(sql`(unixepoch('now') * 1000)`)
+      .$defaultFn(() => new Date()),
+    distributorId: text()
+      .references(() => distributors.id)
+      .notNull(),
+    id: text()
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    productId: text()
+      .references(() => products.id)
+      .notNull(),
+    qty: int().notNull(),
+    reasonNote: text(),
+    recordedByUserId: text().notNull(),
+    referenceId: text(),
+    referenceType: text(),
+    type: text({
+      enum: ["receive", "sale", "adjustment", "transfer_in", "transfer_out"],
+    }).notNull(),
+    voidReason: text(),
+    voidedAt: int({ mode: "timestamp_ms" }),
+  },
+  (table) => [
+    index("stock_movements_distributor_product_created_idx").on(
+      table.distributorId,
+      table.productId,
+      table.createdAt
+    ),
+    index("stock_movements_product_voided_idx").on(
+      table.productId,
+      table.voidedAt
+    ),
+  ]
+);
+
 export const payments = sqliteTable("payments", {
   amountCents: int().notNull(),
   ...timestampFields,
