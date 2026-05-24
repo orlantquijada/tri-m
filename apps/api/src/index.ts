@@ -16,6 +16,7 @@ import { payments } from "./routes/payments";
 import { products } from "./routes/products";
 import { receivables } from "./routes/receivables";
 import { reports } from "./routes/reports";
+import { stockMovements } from "./routes/stockMovements";
 import { users } from "./routes/users";
 import { visits } from "./routes/visits";
 
@@ -37,6 +38,7 @@ const app = new Hono()
   .route("/receivables", receivables)
   .route("/payments", payments)
   .route("/products", products)
+  .route("/stock-movements", stockMovements)
   .route("/overdue", overdue)
   .route("/dashboard", dashboard)
   .route("/users", users)
