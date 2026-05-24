@@ -1,28 +1,30 @@
 # Phase 5 Build Progress
 
-Full task details in `docs/phase5-plan.md`. Phase 4 context in `docs/phase4-plan.md` + `docs/phase4-progress.md`.
+Full task details in `docs/phase5-plan.md`. Phase 4 context in `docs/phase4-plan.md` + `docs/phase4-progress.md`. Parked Phase 6 (Reports & Commissions) lives at `docs/phase6-plan.md` + `docs/phase6-progress.md`.
 
 **Status legend**: `[ ]` todo · `[~]` in progress · `[x]` done · `[!]` blocked
 
 ---
 
-## Phase M — Reporting foundations
+## Phase P — Catalog foundations
 
-- [ ] **M1** — Aging report (buckets + table + bar chart + CSV). Depends on: Phase 4 complete.
-- [ ] **M2** — Collection trend (date-range + line chart + KPI strip). Depends on: M1.
-- [ ] **M3** — Payment-method breakdown + date range on Distributor Performance. Depends on: M2.
+- [x] **P1** — Products schema + zod (`products` table, audit `entityType` enum extended, `productSchema` / `createProductSchema` / `updateProductSchema`). Depends on: Phase 4 complete.
+- [ ] **P2** — Products API (scope-aware CRUD + archive, audit each mutation, mount in `index.ts`). Depends on: P1.
+- [ ] **P3** — Products UI (list, create, edit, archive; sidebar + mobile nav entries; works on 375px). Depends on: P2.
 
-## Phase N — Commission tracking
+## Phase Q — Stock movements ledger
 
-- [ ] **N1** — Commission rates schema + admin rate management (effective-dated rows). Depends on: Phase 4 complete.
-- [ ] **N2** — Commission ledger (computed view + distributor self-service + CSV). Depends on: N1.
-- [ ] **N3** — Commission payouts (snapshots + history + reversal handling). Depends on: N2.
+- [ ] **Q1** — Stock movements schema + ledger service (`stock_movements` table, `services/stock.ts` with `getStockLevel`, `recordMovement`, `voidMovement`). Depends on: P1.
+- [ ] **Q2** — Stock movements API (list / record / void, sign validation per type). Depends on: Q1.
+- [ ] **Q3** — Stock levels endpoint + products list integration (real qty + low-stock badge). Depends on: Q2.
+- [ ] **Q4** — Movement entry UI (sheet/dialog from product detail; receive / sell / adjust / transfer). Depends on: Q3.
+- [ ] **Q5** — Product detail with movement history (per-distributor stock for admin, history table, void). Depends on: Q4.
 
-## Phase O — Exports & printable reports
+## Phase R — Polish & integration
 
-- [ ] **O1** — Expand CSV exports (payments / receivables / visits). Depends on: Phase 4 complete.
-- [ ] **O2** — Printable report layout (print stylesheet + landing route). Depends on: M3.
-- [ ] **O3** — Payment receipt voucher (per-payment printable). Depends on: O2.
+- [ ] **R1** — Inventory dashboard widget + `/inventory` alias route. Depends on: Q5.
+- [ ] **R2** — CSV exports for inventory (`/products.csv`, `/stock-movements.csv`). Depends on: R1.
+- [ ] **R3** — Seed updates (8–12 products, ~30 movements including 1 voided). Depends on: Q5.
 
 ---
 
@@ -30,4 +32,6 @@ Full task details in `docs/phase5-plan.md`. Phase 4 context in `docs/phase4-plan
 
 (Add entries here when blocking or deviating from the plan. Format: `YYYY-MM-DD — task — note`.)
 
-- 2026-05-23 — plan — Phase 5 plan written. 9 tasks across 3 mini-phases (M–O). Theme: Reports + commissions. Locked: aging buckets are fixed (0–30, 31–60, 61–90, 90+), date-range filters use `paymentDate` (not receivable creation), commission model is percent-of-collected, rates are effective-dated in basis points (no retroactive recalc), default rate is 0, payouts are immutable snapshots (reversals via next payout), chart lib is recharts (already in deps), PDF = print stylesheet (no PDF lib), reports default to admin-only with distributor-scoped views for own collection trend + own commission ledger. New audit events: `commission_rate.updated`, `commission_payout.issued`. New tables in N1 (commission_rates) and N3 (commission_payouts + commission_payout_lines). M-tasks add no tables. Existing reporting infra (`/reports/distributor-performance`, `/exports/overdue.csv`, `/exports/customers.csv`) is extended, not replaced.
+- 2026-05-24 — pivot — Phase 5 changed from Reports & Commissions to Inventory. Original Phase 5 plan parked as Phase 6 (`docs/phase6-plan.md`, `docs/phase6-progress.md`). Inventory ships as a standalone module — receivables stay text-only; receivable ↔ product wiring is deferred.
+- 2026-05-24 — plan — 9 tasks across P (catalog) / Q (stock ledger) / R (polish). Locked: distributor-scoped products, per-distributor unique SKU, integer-unit qty, ledger-style movements (sign per type, void replaces edit, negative stock allowed), audit events `product.*` + `stock.*`, low-stock threshold fixed at 5, no receivable wiring.
+- 2026-05-24 — P1 — `products` table added with `(distributorId, sku)` UNIQUE + `(distributorId, status)` indexes. `auditEvents.entityType` enum extended with `product` + `stock_movement` (added now so Q1 needs no second migration). Audit event-type enum gained `product.*` + `stock.*` events. Zod schemas in `packages/schema/src/product.ts`. `db:push` + `typecheck` green.
