@@ -13,6 +13,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { authClient } from "@/lib/auth-client";
+import { features } from "@/lib/features";
 import { formatPeso } from "@/lib/format";
 
 import type { ReceivableWithDetail } from "../receivables/queries";
@@ -30,6 +31,7 @@ export function PaymentHistory({ payments, receivableId, customerId }: Props) {
   const { data: session } = authClient.useSession();
   const isAdmin =
     (session?.user as { role?: string } | undefined)?.role === "admin";
+  const showVoid = isAdmin && features.voidPayment;
 
   if (payments.length === 0) {
     return <p className="text-muted-foreground">No payments recorded yet.</p>;
@@ -44,7 +46,7 @@ export function PaymentHistory({ payments, receivableId, customerId }: Props) {
           <TableHead className="text-right">Amount</TableHead>
           <TableHead>Reference</TableHead>
           <TableHead>Notes</TableHead>
-          {isAdmin && <TableHead />}
+          {showVoid && <TableHead />}
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -79,7 +81,7 @@ export function PaymentHistory({ payments, receivableId, customerId }: Props) {
               </TableCell>
               <TableCell>{p.referenceNumber ?? "—"}</TableCell>
               <TableCell>{p.notes ?? "—"}</TableCell>
-              {isAdmin && (
+              {showVoid && (
                 <TableCell className="text-right">
                   {!isVoided && (
                     <VoidPaymentDialog

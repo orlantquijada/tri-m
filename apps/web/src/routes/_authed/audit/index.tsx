@@ -1,6 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 import { AuditLog } from "@/features/audit/audit-log";
+import { features } from "@/lib/features";
 
 function AuditPage() {
   return (
@@ -17,5 +18,10 @@ function AuditPage() {
 }
 
 export const Route = createFileRoute("/_authed/audit/")({
+  beforeLoad: () => {
+    if (!features.audit) {
+      throw redirect({ to: "/dashboard" });
+    }
+  },
   component: AuditPage,
 });

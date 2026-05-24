@@ -28,10 +28,13 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
+import { features } from "@/lib/features";
 
 const workspaceGroup: NavGroup = {
   items: [
-    { icon: <SunIcon />, title: "Today", url: "/today" },
+    ...(features.today
+      ? [{ icon: <SunIcon />, title: "Today", url: "/today" as const }]
+      : []),
     { icon: <LayoutDashboardIcon />, title: "Dashboard", url: "/dashboard" },
     { icon: <UsersIcon />, title: "Customers", url: "/customers" },
     { icon: <MapIcon />, title: "Map", url: "/map" },
@@ -42,12 +45,24 @@ const workspaceGroup: NavGroup = {
 const collectionsGroup: NavGroup = {
   items: [
     { icon: <AlertCircleIcon />, title: "Overdue", url: "/overdue" },
-    {
-      icon: <RouteIcon />,
-      title: "Collection Route",
-      url: "/collection-routes",
-    },
-    { icon: <ClipboardListIcon />, title: "Visits", url: "/visits" },
+    ...(features.collectionRoutes
+      ? [
+          {
+            icon: <RouteIcon />,
+            title: "Collection Route",
+            url: "/collection-routes" as const,
+          },
+        ]
+      : []),
+    ...(features.visits
+      ? [
+          {
+            icon: <ClipboardListIcon />,
+            title: "Visits",
+            url: "/visits" as const,
+          },
+        ]
+      : []),
   ],
   label: "Collections",
 };
@@ -56,8 +71,24 @@ const adminGroup: NavGroup = {
   items: [
     { icon: <BuildingIcon />, title: "Distributors", url: "/distributors" },
     { icon: <UserCogIcon />, title: "Users", url: "/users" },
-    { icon: <HistoryIcon />, title: "Audit Log", url: "/audit" },
-    { icon: <BarChart2Icon />, title: "Reports", url: "/reports" },
+    ...(features.audit
+      ? [
+          {
+            icon: <HistoryIcon />,
+            title: "Audit Log",
+            url: "/audit" as const,
+          },
+        ]
+      : []),
+    ...(features.reports
+      ? [
+          {
+            icon: <BarChart2Icon />,
+            title: "Reports",
+            url: "/reports" as const,
+          },
+        ]
+      : []),
   ],
   label: "Admin",
 };

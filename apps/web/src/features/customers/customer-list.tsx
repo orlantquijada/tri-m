@@ -4,13 +4,14 @@ import { ResponsiveTable } from "@/components/responsive-table";
 import type { ResponsiveColumn } from "@/components/responsive-table";
 import { Badge } from "@/components/ui/badge";
 import { QuickActionsBar } from "@/features/shared/quick-actions-bar";
+import { features } from "@/lib/features";
 import { formatPeso } from "@/lib/format";
 
 import { customerQueries } from "./queries";
 import type { CustomerListItem } from "./queries";
 import { riskVariant } from "./risk-badge";
 
-const columns: ResponsiveColumn<CustomerListItem>[] = [
+const baseColumns: ResponsiveColumn<CustomerListItem>[] = [
   {
     cell: (c) => (
       <Link
@@ -55,20 +56,25 @@ const columns: ResponsiveColumn<CustomerListItem>[] = [
     key: "outstanding",
     mobileLabel: "Outstanding",
   },
-  {
-    cell: (c) => (
-      <QuickActionsBar
-        customerId={c.id}
-        latitude={c.latitude}
-        longitude={c.longitude}
-        phone={c.phone}
-      />
-    ),
-    header: "",
-    key: "actions",
-    mobileHidden: true,
-  },
 ];
+
+const quickActionsColumn: ResponsiveColumn<CustomerListItem> = {
+  cell: (c) => (
+    <QuickActionsBar
+      customerId={c.id}
+      latitude={c.latitude}
+      longitude={c.longitude}
+      phone={c.phone}
+    />
+  ),
+  header: "",
+  key: "actions",
+  mobileHidden: true,
+};
+
+const columns: ResponsiveColumn<CustomerListItem>[] = features.quickActions
+  ? [...baseColumns, quickActionsColumn]
+  : baseColumns;
 
 export function CustomerList() {
   const { data, error, isLoading } = customerQueries.useList();
@@ -86,14 +92,18 @@ export function CustomerList() {
       data={data ?? []}
       emptyMessage="No customers found."
       keyExtractor={(c) => c.id}
-      mobileFooter={(c) => (
-        <QuickActionsBar
-          customerId={c.id}
-          latitude={c.latitude}
-          longitude={c.longitude}
-          phone={c.phone}
-        />
-      )}
+      mobileFooter={
+        features.quickActions
+          ? (c) => (
+              <QuickActionsBar
+                customerId={c.id}
+                latitude={c.latitude}
+                longitude={c.longitude}
+                phone={c.phone}
+              />
+            )
+          : undefined
+      }
     />
   );
 }

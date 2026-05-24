@@ -1,6 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 import { CollectionRouteView } from "@/features/collection-routes/collection-route-view";
+import { features } from "@/lib/features";
 
 function CollectionRoutesPage() {
   return (
@@ -20,5 +21,10 @@ function CollectionRoutesPage() {
 }
 
 export const Route = createFileRoute("/_authed/collection-routes/")({
+  beforeLoad: () => {
+    if (!features.collectionRoutes) {
+      throw redirect({ to: "/dashboard" });
+    }
+  },
   component: CollectionRoutesPage,
 });

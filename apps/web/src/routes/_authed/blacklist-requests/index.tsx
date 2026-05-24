@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -24,6 +24,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { api, parseApiError } from "@/lib/api";
 import { authClient } from "@/lib/auth-client";
+import { features } from "@/lib/features";
 
 type BlacklistRequest = {
   id: string;
@@ -265,5 +266,10 @@ function BlacklistRequestsPage() {
 }
 
 export const Route = createFileRoute("/_authed/blacklist-requests/")({
+  beforeLoad: () => {
+    if (!features.blacklist) {
+      throw redirect({ to: "/dashboard" });
+    }
+  },
   component: BlacklistRequestsPage,
 });

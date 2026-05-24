@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { PaymentForm } from "@/features/payments/payment-form";
 import { RecordVisitDialog } from "@/features/visits/record-visit-dialog";
+import { features } from "@/lib/features";
 
 type QuickActionsBarProps = {
   customerId: string;
@@ -44,6 +45,10 @@ export function QuickActionsBar({
   const hasCoords = latitude != null && longitude != null;
   const [visitOpen, setVisitOpen] = React.useState(false);
   const [paymentOpen, setPaymentOpen] = React.useState(false);
+
+  if (!features.quickActions) {
+    return null;
+  }
 
   return (
     <div onClick={stopRowNavigation}>
@@ -76,10 +81,12 @@ export function QuickActionsBar({
               View on map
             </DropdownMenuItem>
           ) : null}
-          <DropdownMenuItem onClick={() => setVisitOpen(true)}>
-            <ClipboardCheckIcon className="size-4" />
-            Record visit
-          </DropdownMenuItem>
+          {features.visits && (
+            <DropdownMenuItem onClick={() => setVisitOpen(true)}>
+              <ClipboardCheckIcon className="size-4" />
+              Record visit
+            </DropdownMenuItem>
+          )}
           {!!receivableId && (
             <DropdownMenuItem
               disabled={balance === 0}
@@ -91,12 +98,14 @@ export function QuickActionsBar({
           )}
         </DropdownMenuContent>
       </DropdownMenu>
-      <RecordVisitDialog
-        customerId={customerId}
-        onOpenChange={setVisitOpen}
-        open={visitOpen}
-        trigger={null}
-      />
+      {features.visits && (
+        <RecordVisitDialog
+          customerId={customerId}
+          onOpenChange={setVisitOpen}
+          open={visitOpen}
+          trigger={null}
+        />
+      )}
       {!!receivableId && (
         <PaymentForm
           currentBalanceCents={balance}

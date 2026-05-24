@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { features } from "@/lib/features";
 
 import { useUsersQuery } from "./queries";
 import { ResetPasswordDialog } from "./reset-password-dialog";
@@ -34,7 +35,9 @@ export function UserList() {
           <TableHead>Email</TableHead>
           <TableHead>Role</TableHead>
           <TableHead>Distributor</TableHead>
-          <TableHead className="text-right">Actions</TableHead>
+          {features.passwordReset && (
+            <TableHead className="text-right">Actions</TableHead>
+          )}
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -60,14 +63,16 @@ export function UserList() {
                 "—"
               )}
             </TableCell>
-            <TableCell className="flex justify-end gap-2">
-              {u.role === "distributor" && (
-                <ResetPasswordDialog
-                  targetUserId={u.id}
-                  targetUserName={u.name}
-                />
-              )}
-            </TableCell>
+            {features.passwordReset && (
+              <TableCell className="flex justify-end gap-2">
+                {u.role === "distributor" && (
+                  <ResetPasswordDialog
+                    targetUserId={u.id}
+                    targetUserName={u.name}
+                  />
+                )}
+              </TableCell>
+            )}
           </TableRow>
         ))}
       </TableBody>

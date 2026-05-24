@@ -3,6 +3,7 @@ import { ClipboardListIcon, MenuIcon, SunIcon, UsersIcon } from "lucide-react";
 import type { ComponentType } from "react";
 
 import { useSidebar } from "@/components/ui/sidebar";
+import { features } from "@/lib/features";
 import { cn } from "@/lib/utils";
 
 type NavLink = {
@@ -12,7 +13,7 @@ type NavLink = {
   matchPrefix: string;
 };
 
-const LINKS: NavLink[] = [
+const ALL_LINKS: NavLink[] = [
   { icon: SunIcon, label: "Today", matchPrefix: "/today", to: "/today" },
   {
     icon: UsersIcon,
@@ -28,9 +29,23 @@ const LINKS: NavLink[] = [
   },
 ];
 
+const LINKS = ALL_LINKS.filter((link) => {
+  if (link.to === "/today") {
+    return features.today;
+  }
+  if (link.to === "/visits") {
+    return features.visits;
+  }
+  return true;
+});
+
 export function MobileBottomNav() {
   const { pathname } = useLocation();
   const { setOpenMobile } = useSidebar();
+
+  if (!features.mobileBottomNav) {
+    return null;
+  }
 
   return (
     <nav

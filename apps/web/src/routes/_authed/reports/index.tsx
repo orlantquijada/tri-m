@@ -1,6 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 import { DistributorPerformance } from "@/features/reports/distributor-performance";
+import { features } from "@/lib/features";
 
 function ReportsPage() {
   return (
@@ -18,5 +19,10 @@ function ReportsPage() {
 }
 
 export const Route = createFileRoute("/_authed/reports/")({
+  beforeLoad: () => {
+    if (!features.reports) {
+      throw redirect({ to: "/dashboard" });
+    }
+  },
   component: ReportsPage,
 });

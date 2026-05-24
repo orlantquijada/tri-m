@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { QuickActionsBar } from "@/features/shared/quick-actions-bar";
+import { features } from "@/lib/features";
 import { formatPeso } from "@/lib/format";
 
 import { useOpenPromisesQuery, useResolvePromiseMutation } from "./queries";
@@ -48,6 +49,10 @@ const TONE_CLASSES = {
 
 export function OpenPromisesCard() {
   const { data, isLoading, error } = useOpenPromisesQuery();
+
+  if (!features.visits) {
+    return null;
+  }
 
   return (
     <Card>

@@ -1,4 +1,4 @@
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute, redirect } from "@tanstack/react-router";
 import type { VisitOutcome, VisitType } from "schema";
 
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useVisitsQuery } from "@/features/visits/queries";
+import { features } from "@/lib/features";
 import { formatPeso } from "@/lib/format";
 
 const TYPE_LABELS: Record<VisitType, string> = {
@@ -112,5 +113,10 @@ function VisitsPage() {
 }
 
 export const Route = createFileRoute("/_authed/visits/")({
+  beforeLoad: () => {
+    if (!features.visits) {
+      throw redirect({ to: "/dashboard" });
+    }
+  },
   component: VisitsPage,
 });

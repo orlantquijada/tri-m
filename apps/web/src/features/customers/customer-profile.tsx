@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { features } from "@/lib/features";
 import { formatPeso } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -37,10 +38,12 @@ export function CustomerProfile({
             </h1>
             <div className="flex flex-wrap items-center gap-2">
               <RiskBadge riskStatus={customer.riskStatus} />
-              <BlacklistRequestButton
-                customerId={customer.id}
-                riskStatus={customer.riskStatus}
-              />
+              {features.blacklist && (
+                <BlacklistRequestButton
+                  customerId={customer.id}
+                  riskStatus={customer.riskStatus}
+                />
+              )}
             </div>
           </div>
           <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
@@ -51,7 +54,7 @@ export function CustomerProfile({
             >
               Edit
             </Link>
-            <RecordVisitDialog customerId={customer.id} />
+            {features.visits && <RecordVisitDialog customerId={customer.id} />}
             <a
               className={cn(buttonVariants())}
               href={`/receivables/new?customerId=${customer.id}`}
@@ -137,15 +140,19 @@ export function CustomerProfile({
         )}
       </div>
 
-      <div>
-        <h2 className="mb-3 text-lg font-semibold">Visits</h2>
-        <VisitList customerId={customer.id} />
-      </div>
+      {features.visits && (
+        <div>
+          <h2 className="mb-3 text-lg font-semibold">Visits</h2>
+          <VisitList customerId={customer.id} />
+        </div>
+      )}
 
-      <div>
-        <h2 className="mb-3 text-lg font-semibold">Activity</h2>
-        <CustomerTimeline customerId={customer.id} />
-      </div>
+      {features.timeline && (
+        <div>
+          <h2 className="mb-3 text-lg font-semibold">Activity</h2>
+          <CustomerTimeline customerId={customer.id} />
+        </div>
+      )}
     </div>
   );
 }

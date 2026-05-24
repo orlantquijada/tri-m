@@ -57,6 +57,7 @@ import type { CustomerListItem } from "@/features/customers/queries";
 import { riskVariant } from "@/features/customers/risk-badge";
 import { QuickActionsBar } from "@/features/shared/quick-actions-bar";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { features } from "@/lib/features";
 import { formatPeso } from "@/lib/format";
 
 type TabKey = "all" | "at-risk" | "outstanding" | "missing-location";
@@ -87,7 +88,7 @@ function filterByTab(rows: CustomerListItem[], tab: TabKey) {
   }
 }
 
-const columns: ColumnDef<CustomerListItem>[] = [
+const baseColumns: ColumnDef<CustomerListItem>[] = [
   {
     cell: ({ row }) => (
       <Checkbox
@@ -155,23 +156,28 @@ const columns: ColumnDef<CustomerListItem>[] = [
     ),
     header: () => <div className="text-right">Outstanding</div>,
   },
-  {
-    cell: ({ row }) => (
-      <div className="flex justify-end">
-        <QuickActionsBar
-          customerId={row.original.id}
-          latitude={row.original.latitude}
-          longitude={row.original.longitude}
-          phone={row.original.phone}
-        />
-      </div>
-    ),
-    enableHiding: false,
-    enableSorting: false,
-    header: "",
-    id: "actions",
-  },
 ];
+
+const actionsColumn: ColumnDef<CustomerListItem> = {
+  cell: ({ row }) => (
+    <div className="flex justify-end">
+      <QuickActionsBar
+        customerId={row.original.id}
+        latitude={row.original.latitude}
+        longitude={row.original.longitude}
+        phone={row.original.phone}
+      />
+    </div>
+  ),
+  enableHiding: false,
+  enableSorting: false,
+  header: "",
+  id: "actions",
+};
+
+const columns: ColumnDef<CustomerListItem>[] = features.quickActions
+  ? [...baseColumns, actionsColumn]
+  : baseColumns;
 
 export function CustomersDataTable() {
   const { data, error, isLoading } = customerQueries.useList();
@@ -408,12 +414,14 @@ function MobileCardList({ rows }: { rows: CustomerListItem[] }) {
                 <dd className="truncate">{c.address}</dd>
               </div>
             </dl>
-            <QuickActionsBar
-              customerId={c.id}
-              latitude={c.latitude}
-              longitude={c.longitude}
-              phone={c.phone}
-            />
+            {features.quickActions && (
+              <QuickActionsBar
+                customerId={c.id}
+                latitude={c.latitude}
+                longitude={c.longitude}
+                phone={c.phone}
+              />
+            )}
           </CardContent>
         </Card>
       ))}
