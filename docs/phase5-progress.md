@@ -9,7 +9,7 @@ Full task details in `docs/phase5-plan.md`. Phase 4 context in `docs/phase4-plan
 ## Phase P — Catalog foundations
 
 - [x] **P1** — Products schema + zod (`products` table, audit `entityType` enum extended, `productSchema` / `createProductSchema` / `updateProductSchema`). Depends on: Phase 4 complete.
-- [ ] **P2** — Products API (scope-aware CRUD + archive, audit each mutation, mount in `index.ts`). Depends on: P1.
+- [x] **P2** — Products API (scope-aware CRUD + archive, audit each mutation, mount in `index.ts`). Depends on: P1.
 - [ ] **P3** — Products UI (list, create, edit, archive; sidebar + mobile nav entries; works on 375px). Depends on: P2.
 
 ## Phase Q — Stock movements ledger
@@ -34,4 +34,5 @@ Full task details in `docs/phase5-plan.md`. Phase 4 context in `docs/phase4-plan
 
 - 2026-05-24 — pivot — Phase 5 changed from Reports & Commissions to Inventory. Original Phase 5 plan parked as Phase 6 (`docs/phase6-plan.md`, `docs/phase6-progress.md`). Inventory ships as a standalone module — receivables stay text-only; receivable ↔ product wiring is deferred.
 - 2026-05-24 — plan — 9 tasks across P (catalog) / Q (stock ledger) / R (polish). Locked: distributor-scoped products, per-distributor unique SKU, integer-unit qty, ledger-style movements (sign per type, void replaces edit, negative stock allowed), audit events `product.*` + `stock.*`, low-stock threshold fixed at 5, no receivable wiring.
+- 2026-05-24 — P2 — Products API mounted at `/api/products`. SKU conflict handled via pre-insert SELECT inside the tx → `HTTPException(409)` (no DB-error parsing). Distributor users get `distributorId` auto-resolved from session; admin must pass it. Update path omits SKU per plan. Archive is idempotent (returns row unchanged if already archived, no double audit). List endpoint returns rows shaped to `productListItemSchema` with `currentQty: 0` placeholder — Q3 wires the real number via separate stock-levels endpoint.
 - 2026-05-24 — P1 — `products` table added with `(distributorId, sku)` UNIQUE + `(distributorId, status)` indexes. `auditEvents.entityType` enum extended with `product` + `stock_movement` (added now so Q1 needs no second migration). Audit event-type enum gained `product.*` + `stock.*` events. Zod schemas in `packages/schema/src/product.ts`. `db:push` + `typecheck` green.

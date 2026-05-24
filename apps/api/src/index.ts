@@ -13,6 +13,7 @@ import { csvExports } from "./routes/exports";
 import { geocode } from "./routes/geocode";
 import { overdue } from "./routes/overdue";
 import { payments } from "./routes/payments";
+import { products } from "./routes/products";
 import { receivables } from "./routes/receivables";
 import { reports } from "./routes/reports";
 import { users } from "./routes/users";
@@ -35,6 +36,7 @@ const app = new Hono()
   .route("/distributors", distributors)
   .route("/receivables", receivables)
   .route("/payments", payments)
+  .route("/products", products)
   .route("/overdue", overdue)
   .route("/dashboard", dashboard)
   .route("/users", users)
