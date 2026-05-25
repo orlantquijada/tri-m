@@ -18,6 +18,16 @@ import {
   verification,
 } from "./schema";
 
+if (
+  process.env.NODE_ENV === "production" &&
+  process.env.ALLOW_PROD_SEED !== "true"
+) {
+  console.error(
+    "Refusing to seed: NODE_ENV=production. Set ALLOW_PROD_SEED=true to override."
+  );
+  process.exit(1);
+}
+
 // Delete in reverse FK order (idempotent)
 await db.delete(stockMovements);
 await db.delete(products);

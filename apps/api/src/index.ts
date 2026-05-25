@@ -51,6 +51,8 @@ const app = new Hono()
 
 export type AppType = typeof app;
 
+export { app };
+
 export default {
   fetch: app.fetch,
   port: env.PORT,

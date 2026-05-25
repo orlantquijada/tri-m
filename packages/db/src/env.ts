@@ -6,5 +6,6 @@ export const env = createEnv({
   runtimeEnv: process.env,
   server: {
     DB_FILE_NAME: z.string().min(1),
+    TURSO_AUTH_TOKEN: z.string().min(1).optional(),
   },
 });

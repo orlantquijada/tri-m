@@ -15,6 +15,7 @@
     "db:seed": "bun --env-file ../../.env src/seed.ts"
   },
   "dependencies": {
+    "@libsql/client": "latest",
     "@paralleldrive/cuid2": "latest",
     "@t3-oss/env-core": "catalog:",
     "@tursodatabase/database": "latest",

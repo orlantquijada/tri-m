@@ -45,11 +45,22 @@ Both apps read from the repo-root `.env` (loaded via `bun --env-file ../../.env`
 Minimum required keys:
 
 ```
-DATABASE_URL=file:./local.db
+# DB (libsql/Turso — supports local file or libsql:// remote)
+DB_FILE_NAME=../../local.db
+# TURSO_AUTH_TOKEN=<required only for libsql:// remote URLs>
+
+# API
 BETTER_AUTH_SECRET=<random 32+ char string>
-WEB_ORIGIN=http://localhost:3000
+BETTER_AUTH_URL=http://localhost:4000
+WEB_URL=http://localhost:3000
+PORT=4000
+
+# Web
 VITE_API_URL=http://localhost:4000
 ```
+
+See `.env.example` at the repo root and `apps/web/.env.example` for the full
+list (including optional feature flags).
 
 ## Develop
 

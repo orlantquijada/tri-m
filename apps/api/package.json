@@ -5,6 +5,7 @@
     "check": "ultracite check",
     "fix": "ultracite fix",
     "dev": "bun run --env-file ../../.env --hot src/index.ts",
+    "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
