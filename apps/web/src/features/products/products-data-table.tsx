@@ -108,7 +108,7 @@ function RowActions({ product }: { product: ProductListItem }) {
         <DropdownMenuContent align="end" className="w-40">
           <DropdownMenuItem
             render={
-              <Link params={{ id: product.id }} to="/products/$id_/edit" />
+              <Link params={{ id: product.id }} to="/products/$id/edit" />
             }
           >
             <PencilIcon className="size-4" />

@@ -20,6 +20,7 @@ import { Route as AuthedUsersIndexRouteImport } from './routes/_authed/users/ind
 import { Route as AuthedTodayIndexRouteImport } from './routes/_authed/today/index'
 import { Route as AuthedReportsIndexRouteImport } from './routes/_authed/reports/index'
 import { Route as AuthedProductsIndexRouteImport } from './routes/_authed/products/index'
+import { Route as AuthedInventoryIndexRouteImport } from './routes/_authed/inventory/index'
 import { Route as AuthedDistributorsIndexRouteImport } from './routes/_authed/distributors/index'
 import { Route as AuthedCustomersIndexRouteImport } from './routes/_authed/customers/index'
 import { Route as AuthedCollectionRoutesIndexRouteImport } from './routes/_authed/collection-routes/index'
@@ -89,6 +90,11 @@ const AuthedReportsIndexRoute = AuthedReportsIndexRouteImport.update({
 const AuthedProductsIndexRoute = AuthedProductsIndexRouteImport.update({
   id: '/products/',
   path: '/products/',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedInventoryIndexRoute = AuthedInventoryIndexRouteImport.update({
+  id: '/inventory/',
+  path: '/inventory/',
   getParentRoute: () => AuthedRoute,
 } as any)
 const AuthedDistributorsIndexRoute = AuthedDistributorsIndexRouteImport.update({
@@ -195,6 +201,7 @@ export interface FileRoutesByFullPath {
   '/collection-routes/': typeof AuthedCollectionRoutesIndexRoute
   '/customers/': typeof AuthedCustomersIndexRoute
   '/distributors/': typeof AuthedDistributorsIndexRoute
+  '/inventory/': typeof AuthedInventoryIndexRoute
   '/products/': typeof AuthedProductsIndexRoute
   '/reports/': typeof AuthedReportsIndexRoute
   '/today/': typeof AuthedTodayIndexRoute
@@ -223,6 +230,7 @@ export interface FileRoutesByTo {
   '/collection-routes': typeof AuthedCollectionRoutesIndexRoute
   '/customers': typeof AuthedCustomersIndexRoute
   '/distributors': typeof AuthedDistributorsIndexRoute
+  '/inventory': typeof AuthedInventoryIndexRoute
   '/products': typeof AuthedProductsIndexRoute
   '/reports': typeof AuthedReportsIndexRoute
   '/today': typeof AuthedTodayIndexRoute
@@ -253,6 +261,7 @@ export interface FileRoutesById {
   '/_authed/collection-routes/': typeof AuthedCollectionRoutesIndexRoute
   '/_authed/customers/': typeof AuthedCustomersIndexRoute
   '/_authed/distributors/': typeof AuthedDistributorsIndexRoute
+  '/_authed/inventory/': typeof AuthedInventoryIndexRoute
   '/_authed/products/': typeof AuthedProductsIndexRoute
   '/_authed/reports/': typeof AuthedReportsIndexRoute
   '/_authed/today/': typeof AuthedTodayIndexRoute
@@ -283,6 +292,7 @@ export interface FileRouteTypes {
     | '/collection-routes/'
     | '/customers/'
     | '/distributors/'
+    | '/inventory/'
     | '/products/'
     | '/reports/'
     | '/today/'
@@ -311,6 +321,7 @@ export interface FileRouteTypes {
     | '/collection-routes'
     | '/customers'
     | '/distributors'
+    | '/inventory'
     | '/products'
     | '/reports'
     | '/today'
@@ -340,6 +351,7 @@ export interface FileRouteTypes {
     | '/_authed/collection-routes/'
     | '/_authed/customers/'
     | '/_authed/distributors/'
+    | '/_authed/inventory/'
     | '/_authed/products/'
     | '/_authed/reports/'
     | '/_authed/today/'
@@ -433,6 +445,13 @@ declare module '@tanstack/react-router' {
       path: '/products'
       fullPath: '/products/'
       preLoaderRoute: typeof AuthedProductsIndexRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/inventory/': {
+      id: '/_authed/inventory/'
+      path: '/inventory'
+      fullPath: '/inventory/'
+      preLoaderRoute: typeof AuthedInventoryIndexRouteImport
       parentRoute: typeof AuthedRoute
     }
     '/_authed/distributors/': {
@@ -567,6 +586,7 @@ interface AuthedRouteChildren {
   AuthedCollectionRoutesIndexRoute: typeof AuthedCollectionRoutesIndexRoute
   AuthedCustomersIndexRoute: typeof AuthedCustomersIndexRoute
   AuthedDistributorsIndexRoute: typeof AuthedDistributorsIndexRoute
+  AuthedInventoryIndexRoute: typeof AuthedInventoryIndexRoute
   AuthedProductsIndexRoute: typeof AuthedProductsIndexRoute
   AuthedReportsIndexRoute: typeof AuthedReportsIndexRoute
   AuthedTodayIndexRoute: typeof AuthedTodayIndexRoute
@@ -594,6 +614,7 @@ const AuthedRouteChildren: AuthedRouteChildren = {
   AuthedCollectionRoutesIndexRoute: AuthedCollectionRoutesIndexRoute,
   AuthedCustomersIndexRoute: AuthedCustomersIndexRoute,
   AuthedDistributorsIndexRoute: AuthedDistributorsIndexRoute,
+  AuthedInventoryIndexRoute: AuthedInventoryIndexRoute,
   AuthedProductsIndexRoute: AuthedProductsIndexRoute,
   AuthedReportsIndexRoute: AuthedReportsIndexRoute,
   AuthedTodayIndexRoute: AuthedTodayIndexRoute,
@@ -615,3 +636,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}

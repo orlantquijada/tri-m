@@ -56,6 +56,7 @@ export const stockLevelsKey = ["products", "stock-levels"] as const;
 export const movementKeys = {
   all: ["movements"] as const,
   list: (productId: string) => ["movements", productId] as const,
+  recent: (limit: number) => ["movements", "recent", limit] as const,
 };
 
 export function useStockLevels() {
@@ -114,6 +115,24 @@ export function useMovements(
   });
 }
 
+export function useRecentMovements(limit = 5) {
+  return useQuery({
+    queryFn: async () => {
+      const res = await api.api["stock-movements"].$get({
+        query: { limit: String(limit) },
+      });
+      if (!res.ok) {
+        throw await parseApiError(
+          res as unknown as Response,
+          "Failed to fetch recent movements"
+        );
+      }
+      return res.json();
+    },
+    queryKey: movementKeys.recent(limit),
+  });
+}
+
 export function useRecordMovement() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -127,12 +146,10 @@ export function useRecordMovement() {
       }
       return res.json();
     },
-    onSuccess: (_data, vars) => {
+    onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: productKeys.lists() });
       void queryClient.invalidateQueries({ queryKey: stockLevelsKey });
-      void queryClient.invalidateQueries({
-        queryKey: movementKeys.list(vars.productId),
-      });
+      void queryClient.invalidateQueries({ queryKey: movementKeys.all });
     },
   });
 }

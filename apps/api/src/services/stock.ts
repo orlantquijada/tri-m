@@ -153,7 +153,8 @@ export async function listMovements(user: User, filters: StockMovementQuery) {
     )
     .leftJoin(userTable, eq(stockMovementsTable.recordedByUserId, userTable.id))
     .where(conditions.length > 0 ? and(...conditions) : undefined)
-    .orderBy(desc(stockMovementsTable.createdAt));
+    .orderBy(desc(stockMovementsTable.createdAt))
+    .limit(filters.limit);
 
   return stockMovementListItemSchema.array().parse(rows);
 }

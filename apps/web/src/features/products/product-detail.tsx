@@ -28,8 +28,9 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { authClient } from "@/lib/auth-client";
-import { formatPesoOrDash } from "@/lib/format";
+import { formatDateTime, formatPesoOrDash } from "@/lib/format";
 
+import { MovementTypeBadge, QtyCell } from "./movement-display";
 import {
   productQueries,
   useArchiveProduct,
@@ -40,41 +41,6 @@ import {
 import type { StockMovementItem } from "./queries";
 import { StockBadge } from "./stock-badge";
 import { StockMovementForm } from "./stock-movement-form";
-
-const TYPE_LABEL: Record<StockMovementType, string> = {
-  adjustment: "Adjustment",
-  receive: "Receive",
-  sale: "Sale",
-  transfer_in: "Transfer in",
-  transfer_out: "Transfer out",
-};
-
-function formatDateTime(value: string | Date): string {
-  const d = typeof value === "string" ? new Date(value) : value;
-  return d.toLocaleString();
-}
-
-function QtyCell({ qty }: { qty: number }) {
-  if (qty > 0) {
-    return (
-      <span className="font-mono font-medium tabular-nums text-emerald-600">
-        +{qty}
-      </span>
-    );
-  }
-  if (qty < 0) {
-    return (
-      <span className="font-mono font-medium tabular-nums text-destructive">
-        {qty}
-      </span>
-    );
-  }
-  return <span className="font-mono tabular-nums">0</span>;
-}
-
-function TypeBadge({ type }: { type: StockMovementType }) {
-  return <Badge variant="outline">{TYPE_LABEL[type]}</Badge>;
-}
 
 type VoidState = { id: string; reason: string } | null;
 
@@ -138,7 +104,7 @@ function ProductDetailContent({ productId }: { productId: string }) {
           <Link
             className={buttonVariants({ variant: "outline" })}
             params={{ id: data.id }}
-            to="/products/$id_/edit"
+            to="/products/$id/edit"
           >
             Edit
           </Link>
@@ -361,7 +327,7 @@ function MovementTable({
                 {formatDateTime(m.createdAt)}
               </TableCell>
               <TableCell>
-                <TypeBadge type={m.type} />
+                <MovementTypeBadge type={m.type} />
               </TableCell>
               <TableCell className="text-right">
                 <QtyCell qty={m.qty} />
@@ -411,7 +377,7 @@ function MovementCardList({
           <CardContent className="space-y-2 p-4 text-sm">
             <div className="flex items-start justify-between gap-2">
               <div className="space-y-1">
-                <TypeBadge type={m.type} />
+                <MovementTypeBadge type={m.type} />
                 <p className="text-xs text-muted-foreground">
                   {formatDateTime(m.createdAt)}
                 </p>

@@ -70,6 +70,7 @@ export const stockMovementQuerySchema = z.object({
   distributorId: z.cuid2().optional(),
   from: z.string().optional(),
   includeVoided: z.coerce.boolean().optional(),
+  limit: z.coerce.number().int().positive().max(500).default(500),
   productId: z.cuid2().optional(),
   to: z.string().optional(),
 });

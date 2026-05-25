@@ -32,6 +32,11 @@ export function centsToPesoInput(cents: number | null): string {
   return cents === null ? "" : (cents / 100).toFixed(2);
 }
 
+export function formatDateTime(value: string | Date): string {
+  const d = typeof value === "string" ? new Date(value) : value;
+  return d.toLocaleString();
+}
+
 export function mapsUrl(lat: number, lng: number): string {
   return `https://www.google.com/maps?q=${lat},${lng}`;
 }

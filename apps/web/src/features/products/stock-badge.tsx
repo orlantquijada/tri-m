@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 
-const LOW_STOCK_THRESHOLD = 5;
+export const LOW_STOCK_THRESHOLD = 5;
 
 export function StockBadge({ qty }: { qty: number }) {
   const variant =

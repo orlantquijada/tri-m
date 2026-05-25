@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { ChartAreaInteractive } from "@/features/dashboard/chart-area-interactive";
 import { DashboardCards } from "@/features/dashboard/dashboard-cards";
+import { InventorySummary } from "@/features/dashboard/inventory-summary";
 import {
   useAgingBucketsQuery,
   useDashboardTotalsQuery,
@@ -16,6 +17,7 @@ function DashboardPage() {
       {isLoading && <p className="text-muted-foreground">Loading...</p>}
       {error && <p className="text-destructive">Failed to load totals.</p>}
       {data && <DashboardCards aging={aging} totals={data} />}
+      <InventorySummary />
       {data && <ChartAreaInteractive />}
     </div>
   );
