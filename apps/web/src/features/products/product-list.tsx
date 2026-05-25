@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 
 import { buttonVariants } from "@/components/ui/button";
+import { ProductsExportButton } from "@/features/exports/export-buttons";
 
 import { ProductsDataTable } from "./products-data-table";
 
@@ -10,6 +11,7 @@ export function ProductList() {
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold">Products</h1>
         <div className="flex flex-wrap gap-2">
+          <ProductsExportButton />
           <Link className={buttonVariants()} to="/products/new">
             Add Product
           </Link>

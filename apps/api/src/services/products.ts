@@ -126,6 +126,56 @@ export async function listStockLevels(
     .groupBy(productsTable.id, productsTable.distributorId);
 }
 
+export function listProductsForExport(
+  user: User,
+  opts: { distributorId?: string } = {},
+  limit = 10_000
+) {
+  const scope = Scope.forUser(user);
+  const conditions: SQL[] = [];
+  const scopeFilter = scope.filterQuery(productsTable.distributorId);
+  if (scopeFilter) {
+    conditions.push(scopeFilter);
+  }
+  if (user.role === "admin" && opts.distributorId) {
+    conditions.push(eq(productsTable.distributorId, opts.distributorId));
+  }
+
+  return db
+    .select({
+      createdAt: productsTable.createdAt,
+      currentQty:
+        sql<number>`coalesce(sum(${stockMovementsTable.qty}), 0)`.mapWith(
+          Number
+        ),
+      description: productsTable.description,
+      distributorId: productsTable.distributorId,
+      distributorName: distributorsTable.name,
+      id: productsTable.id,
+      name: productsTable.name,
+      sku: productsTable.sku,
+      status: productsTable.status,
+      unitPriceCents: productsTable.unitPriceCents,
+    })
+    .from(productsTable)
+    .innerJoin(
+      distributorsTable,
+      eq(productsTable.distributorId, distributorsTable.id)
+    )
+    .leftJoin(
+      stockMovementsTable,
+      and(
+        eq(stockMovementsTable.productId, productsTable.id),
+        eq(stockMovementsTable.distributorId, productsTable.distributorId),
+        isNull(stockMovementsTable.voidedAt)
+      )
+    )
+    .where(conditions.length > 0 ? and(...conditions) : undefined)
+    .groupBy(productsTable.id, distributorsTable.name)
+    .orderBy(desc(productsTable.id))
+    .limit(limit);
+}
+
 export async function getProduct(user: User, id: string) {
   const [product] = await db
     .select()

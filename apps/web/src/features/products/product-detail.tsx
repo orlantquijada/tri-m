@@ -26,6 +26,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
+import { ProductMovementsExportButton } from "@/features/exports/export-buttons";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { authClient } from "@/lib/auth-client";
 import { formatDateTime, formatPesoOrDash } from "@/lib/format";
@@ -101,6 +102,7 @@ function ProductDetailContent({ productId }: { productId: string }) {
           >
             Adjust stock
           </Button>
+          <ProductMovementsExportButton productId={data.id} />
           <Link
             className={buttonVariants({ variant: "outline" })}
             params={{ id: data.id }}

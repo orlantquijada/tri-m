@@ -3,26 +3,54 @@ import { env } from "@/lib/env";
 
 const apiBase = `${env.VITE_API_URL}/api/exports`;
 
-export function OverdueExportButton() {
+function ExportButton({
+  filename,
+  href,
+  label = "Export CSV",
+}: {
+  filename: string;
+  href: string;
+  label?: string;
+}) {
   return (
     <a
-      href={`${apiBase}/overdue.csv`}
-      download="overdue.csv"
       className={buttonVariants({ variant: "outline" })}
+      download={filename}
+      href={href}
     >
-      Export CSV
+      {label}
     </a>
+  );
+}
+
+export function OverdueExportButton() {
+  return (
+    <ExportButton filename="overdue.csv" href={`${apiBase}/overdue.csv`} />
   );
 }
 
 export function CustomersExportButton() {
   return (
-    <a
-      href={`${apiBase}/customers.csv`}
-      download="customers.csv"
-      className={buttonVariants({ variant: "outline" })}
-    >
-      Export CSV
-    </a>
+    <ExportButton filename="customers.csv" href={`${apiBase}/customers.csv`} />
+  );
+}
+
+export function ProductsExportButton() {
+  return (
+    <ExportButton filename="products.csv" href={`${apiBase}/products.csv`} />
+  );
+}
+
+export function ProductMovementsExportButton({
+  productId,
+}: {
+  productId: string;
+}) {
+  return (
+    <ExportButton
+      filename={`stock-movements-${productId}.csv`}
+      href={`${apiBase}/stock-movements.csv?productId=${productId}`}
+      label="Export movements"
+    />
   );
 }

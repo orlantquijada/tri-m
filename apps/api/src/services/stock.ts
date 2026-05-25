@@ -159,6 +159,71 @@ export async function listMovements(user: User, filters: StockMovementQuery) {
   return stockMovementListItemSchema.array().parse(rows);
 }
 
+export function listMovementsForExport(
+  user: User,
+  filters: {
+    distributorId?: string;
+    from?: string;
+    productId?: string;
+    to?: string;
+  } = {},
+  limit = 10_000
+) {
+  const scope = Scope.forUser(user);
+  const conditions: SQL[] = [];
+
+  const scopeFilter = scope.filterQuery(stockMovementsTable.distributorId);
+  if (scopeFilter) {
+    conditions.push(scopeFilter);
+  }
+  if (user.role === "admin" && filters.distributorId) {
+    conditions.push(
+      eq(stockMovementsTable.distributorId, filters.distributorId)
+    );
+  }
+  if (filters.productId) {
+    conditions.push(eq(stockMovementsTable.productId, filters.productId));
+  }
+  if (filters.from) {
+    conditions.push(gte(stockMovementsTable.createdAt, new Date(filters.from)));
+  }
+  if (filters.to) {
+    conditions.push(lte(stockMovementsTable.createdAt, new Date(filters.to)));
+  }
+
+  return db
+    .select({
+      createdAt: stockMovementsTable.createdAt,
+      distributorId: stockMovementsTable.distributorId,
+      distributorName: distributorsTable.name,
+      id: stockMovementsTable.id,
+      productId: stockMovementsTable.productId,
+      productName: productsTable.name,
+      qty: stockMovementsTable.qty,
+      reasonNote: stockMovementsTable.reasonNote,
+      recordedByName: userTable.name,
+      referenceId: stockMovementsTable.referenceId,
+      referenceType: stockMovementsTable.referenceType,
+      sku: productsTable.sku,
+      type: stockMovementsTable.type,
+      voidReason: stockMovementsTable.voidReason,
+      voidedAt: stockMovementsTable.voidedAt,
+    })
+    .from(stockMovementsTable)
+    .leftJoin(
+      productsTable,
+      eq(stockMovementsTable.productId, productsTable.id)
+    )
+    .leftJoin(
+      distributorsTable,
+      eq(stockMovementsTable.distributorId, distributorsTable.id)
+    )
+    .leftJoin(userTable, eq(stockMovementsTable.recordedByUserId, userTable.id))
+    .where(conditions.length > 0 ? and(...conditions) : undefined)
+    .orderBy(desc(stockMovementsTable.id))
+    .limit(limit);
+}
+
 export function recordMovement(user: User, data: RecordMovementInput) {
   return db.transaction(async (tx) => {
     const [product] = await tx
