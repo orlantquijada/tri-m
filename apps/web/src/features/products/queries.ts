@@ -19,6 +19,11 @@ export type StockLevelItem = InferResponseType<
   200
 >[number];
 
+export type StockMovementItem = InferResponseType<
+  (typeof api.api)["stock-movements"]["$get"],
+  200
+>[number];
+
 type CreateProductBody = InferRequestType<
   typeof api.api.products.$post
 >["json"];
@@ -48,6 +53,11 @@ export const productKeys = productQueries.keys;
 
 export const stockLevelsKey = ["products", "stock-levels"] as const;
 
+export const movementKeys = {
+  all: ["movements"] as const,
+  list: (productId: string) => ["movements", productId] as const,
+};
+
 export function useStockLevels() {
   return useQuery({
     queryFn: async () => {
@@ -64,10 +74,45 @@ export function useStockLevels() {
   });
 }
 
-export const movementKeys = {
-  all: ["movements"] as const,
-  list: (productId: string) => ["movements", productId] as const,
-};
+export function useProductStockLevels(productId: string) {
+  return useQuery({
+    queryFn: async () => {
+      const res = await api.api.products["stock-levels"].$get({
+        query: { productId },
+      });
+      if (!res.ok) {
+        throw await parseApiError(
+          res as unknown as Response,
+          "Failed to fetch stock levels"
+        );
+      }
+      return res.json();
+    },
+    queryKey: [...stockLevelsKey, productId] as const,
+  });
+}
+
+export function useMovements(
+  productId: string,
+  options: { includeVoided?: boolean } = {}
+) {
+  const includeVoided = options.includeVoided ?? true;
+  return useQuery({
+    queryFn: async () => {
+      const res = await api.api["stock-movements"].$get({
+        query: { includeVoided: String(includeVoided), productId },
+      });
+      if (!res.ok) {
+        throw await parseApiError(
+          res as unknown as Response,
+          "Failed to fetch movements"
+        );
+      }
+      return res.json();
+    },
+    queryKey: [...movementKeys.list(productId), { includeVoided }] as const,
+  });
+}
 
 export function useRecordMovement() {
   const queryClient = useQueryClient();
