@@ -16,7 +16,7 @@ import { payments } from "./routes/payments";
 import { products } from "./routes/products";
 import { receivables } from "./routes/receivables";
 import { reports } from "./routes/reports";
-import { stockMovements } from "./routes/stockMovements";
+import { stockMovements } from "./routes/stock-movements";
 import { users } from "./routes/users";
 import { visits } from "./routes/visits";
 

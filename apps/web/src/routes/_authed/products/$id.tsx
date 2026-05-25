@@ -1,13 +1,24 @@
 import { Link, createFileRoute, useParams } from "@tanstack/react-router";
+import { useState } from "react";
+import type { StockMovementType } from "schema";
 
 import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { productQueries } from "@/features/products/queries";
+import { StockMovementForm } from "@/features/products/stock-movement-form";
 import { formatPesoOrDash } from "@/lib/format";
 
 function ProductDetailPage() {
   const { id } = useParams({ from: "/_authed/products/$id" });
   const { data, error, isLoading } = productQueries.useDetail(id);
+  const [movementOpen, setMovementOpen] = useState(false);
+  const [movementType, setMovementType] =
+    useState<StockMovementType>("receive");
+
+  function openMovement(type: StockMovementType) {
+    setMovementType(type);
+    setMovementOpen(true);
+  }
 
   if (isLoading) {
     return <p className="p-6 text-muted-foreground">Loading...</p>;
@@ -15,6 +26,8 @@ function ProductDetailPage() {
   if (error || !data) {
     return <p className="p-6 text-destructive">Failed to load product.</p>;
   }
+
+  const isArchived = data.status === "archived";
 
   return (
     <main className="container mx-auto w-full max-w-3xl px-4 py-4 sm:p-6">
@@ -24,6 +37,21 @@ function ProductDetailPage() {
           <p className="font-mono text-xs text-muted-foreground">{data.sku}</p>
         </div>
         <div className="flex flex-wrap gap-2">
+          <Button
+            disabled={isArchived}
+            onClick={() => openMovement("receive")}
+            type="button"
+          >
+            Receive stock
+          </Button>
+          <Button
+            disabled={isArchived}
+            onClick={() => openMovement("adjustment")}
+            type="button"
+            variant="outline"
+          >
+            Adjust stock
+          </Button>
           <Link
             className={buttonVariants({ variant: "outline" })}
             params={{ id: data.id }}
@@ -58,6 +86,13 @@ function ProductDetailPage() {
           </div>
         )}
       </dl>
+
+      <StockMovementForm
+        defaultType={movementType}
+        onOpenChange={setMovementOpen}
+        open={movementOpen}
+        productId={data.id}
+      />
     </main>
   );
 }

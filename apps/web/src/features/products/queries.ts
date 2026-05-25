@@ -27,6 +27,10 @@ type UpdateProductBody = InferRequestType<
   (typeof api.api.products)[":id"]["$patch"]
 >["json"];
 
+type RecordMovementBody = InferRequestType<
+  (typeof api.api)["stock-movements"]["$post"]
+>["json"];
+
 export const productQueries = createResourceQueries({
   create: (data: CreateProductBody) => api.api.products.$post({ json: data }),
   detail: (id: string) => api.api.products[":id"].$get({ param: { id } }),
@@ -57,6 +61,58 @@ export function useStockLevels() {
       return res.json();
     },
     queryKey: stockLevelsKey,
+  });
+}
+
+export const movementKeys = {
+  all: ["movements"] as const,
+  list: (productId: string) => ["movements", productId] as const,
+};
+
+export function useRecordMovement() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: RecordMovementBody) => {
+      const res = await api.api["stock-movements"].$post({ json: data });
+      if (!res.ok) {
+        throw await parseApiError(
+          res as unknown as Response,
+          "Failed to record movement"
+        );
+      }
+      return res.json();
+    },
+    onSuccess: (_data, vars) => {
+      void queryClient.invalidateQueries({ queryKey: productKeys.lists() });
+      void queryClient.invalidateQueries({ queryKey: stockLevelsKey });
+      void queryClient.invalidateQueries({
+        queryKey: movementKeys.list(vars.productId),
+      });
+    },
+  });
+}
+
+export function useVoidMovement() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
+      const res = await api.api["stock-movements"][":id"].void.$post({
+        json: { reason },
+        param: { id },
+      });
+      if (!res.ok) {
+        throw await parseApiError(
+          res as unknown as Response,
+          "Failed to void movement"
+        );
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: productKeys.lists() });
+      void queryClient.invalidateQueries({ queryKey: stockLevelsKey });
+      void queryClient.invalidateQueries({ queryKey: movementKeys.all });
+    },
   });
 }
 
