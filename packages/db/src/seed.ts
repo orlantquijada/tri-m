@@ -10,13 +10,17 @@ import {
   distributors,
   paymentSchedules,
   payments,
+  products,
   receivables,
   session,
+  stockMovements,
   user,
   verification,
 } from "./schema";
 
 // Delete in reverse FK order (idempotent)
+await db.delete(stockMovements);
+await db.delete(products);
 await db.delete(payments);
 await db.delete(paymentSchedules);
 await db.delete(receivables);
@@ -520,5 +524,366 @@ await db
   .update(user)
   .set({ distributorId: distributorIds.metro, role: "distributor" })
   .where(eq(user.email, "dist@demo.local"));
+
+const [adminRow] = await db
+  .select({ id: user.id })
+  .from(user)
+  .where(eq(user.email, "admin@demo.local"));
+const [distRow] = await db
+  .select({ id: user.id })
+  .from(user)
+  .where(eq(user.email, "dist@demo.local"));
+if (!adminRow || !distRow) {
+  throw new Error("Seeded users not found");
+}
+const adminUserId = adminRow.id;
+const distUserId = distRow.id;
+
+const productIds = {
+  barStool: createId(),
+  bedQueen: createId(),
+  bunkBed: createId(),
+  coffeeTable: createId(),
+  diningTable: createId(),
+  dresser: createId(),
+  officeChair: createId(),
+  recliner: createId(),
+  sideTable: createId(),
+  sofa: createId(),
+  wardrobe: createId(),
+} as const;
+
+await db.insert(products).values([
+  {
+    description: "Solid wood queen-size bed frame",
+    distributorId: distributorIds.metro,
+    id: productIds.bedQueen,
+    name: "Bed frame queen",
+    sku: "BED-Q-01",
+    unitPriceCents: 850_000,
+  },
+  {
+    description: "6-seater hardwood dining table",
+    distributorId: distributorIds.metro,
+    id: productIds.diningTable,
+    name: "Dining table 6-seater",
+    sku: "DIN-6-01",
+    unitPriceCents: 1_200_000,
+  },
+  {
+    description: "Ergonomic mesh office chair",
+    distributorId: distributorIds.metro,
+    id: productIds.officeChair,
+    name: "Office chair ergonomic",
+    sku: "OFC-ERG-01",
+    unitPriceCents: 450_000,
+  },
+  {
+    description: "Modern 3-seater fabric sofa",
+    distributorId: distributorIds.metro,
+    id: productIds.sofa,
+    name: "Sofa 3-seater",
+    sku: "SOF-3-01",
+    unitPriceCents: 1_500_000,
+  },
+  {
+    description: "Walnut accent side table",
+    distributorId: distributorIds.metro,
+    id: productIds.sideTable,
+    name: "Side table walnut",
+    sku: "SID-WAL-01",
+    unitPriceCents: null,
+  },
+  {
+    description: "Wooden bunk bed (archived; discontinued line)",
+    distributorId: distributorIds.metro,
+    id: productIds.bunkBed,
+    name: "Bunk bed wooden",
+    sku: "BUN-WD-01",
+    status: "archived",
+    unitPriceCents: 700_000,
+  },
+  {
+    description: "4-drawer wooden dresser",
+    distributorId: distributorIds.qc,
+    id: productIds.dresser,
+    name: "Dresser 4-drawer",
+    sku: "DRS-4-01",
+    unitPriceCents: 600_000,
+  },
+  {
+    description: "Tempered glass top coffee table",
+    distributorId: distributorIds.qc,
+    id: productIds.coffeeTable,
+    name: "Coffee table glass",
+    sku: "COF-GL-01",
+    unitPriceCents: 350_000,
+  },
+  {
+    description: "Sliding-door 2-section wardrobe",
+    distributorId: distributorIds.qc,
+    id: productIds.wardrobe,
+    name: "Wardrobe sliding",
+    sku: "WAR-SL-01",
+    unitPriceCents: 1_800_000,
+  },
+  {
+    description: "Reclining single-seat armchair",
+    distributorId: distributorIds.qc,
+    id: productIds.recliner,
+    name: "Recliner armchair",
+    sku: "REC-ARM-01",
+    unitPriceCents: 950_000,
+  },
+  {
+    description: "Oak bar stool, counter height",
+    distributorId: distributorIds.qc,
+    id: productIds.barStool,
+    name: "Bar stool oak",
+    sku: "BAR-OK-01",
+    unitPriceCents: null,
+  },
+]);
+
+function daysAgo(n: number): Date {
+  return new Date(Date.now() - n * 24 * 60 * 60 * 1000);
+}
+
+await db.insert(stockMovements).values([
+  // p1 Bed frame queen — final qty 6
+  {
+    createdAt: daysAgo(55),
+    distributorId: distributorIds.metro,
+    productId: productIds.bedQueen,
+    qty: 10,
+    recordedByUserId: distUserId,
+    type: "receive",
+  },
+  {
+    createdAt: daysAgo(40),
+    distributorId: distributorIds.metro,
+    productId: productIds.bedQueen,
+    qty: -2,
+    recordedByUserId: distUserId,
+    type: "sale",
+  },
+  {
+    createdAt: daysAgo(25),
+    distributorId: distributorIds.metro,
+    productId: productIds.bedQueen,
+    qty: -1,
+    recordedByUserId: distUserId,
+    type: "sale",
+  },
+  {
+    createdAt: daysAgo(18),
+    distributorId: distributorIds.metro,
+    productId: productIds.bedQueen,
+    qty: -1,
+    reasonNote: "One unit missing after inventory check",
+    recordedByUserId: distUserId,
+    type: "adjustment",
+  },
+  // p2 Dining table — final qty -1 (out-of-stock demo)
+  {
+    createdAt: daysAgo(55),
+    distributorId: distributorIds.metro,
+    productId: productIds.diningTable,
+    qty: 6,
+    recordedByUserId: distUserId,
+    type: "receive",
+  },
+  {
+    createdAt: daysAgo(12),
+    distributorId: distributorIds.metro,
+    productId: productIds.diningTable,
+    qty: -7,
+    recordedByUserId: distUserId,
+    type: "sale",
+  },
+  // p3 Office chair — final qty 10
+  {
+    createdAt: daysAgo(56),
+    distributorId: distributorIds.metro,
+    productId: productIds.officeChair,
+    qty: 20,
+    recordedByUserId: distUserId,
+    type: "receive",
+  },
+  {
+    createdAt: daysAgo(20),
+    distributorId: distributorIds.metro,
+    productId: productIds.officeChair,
+    qty: -8,
+    recordedByUserId: distUserId,
+    type: "sale",
+  },
+  {
+    createdAt: daysAgo(15),
+    distributorId: distributorIds.metro,
+    productId: productIds.officeChair,
+    qty: -2,
+    reasonNote: "Two chairs damaged in transit",
+    recordedByUserId: distUserId,
+    type: "adjustment",
+  },
+  // p4 Sofa — final qty 9
+  {
+    createdAt: daysAgo(54),
+    distributorId: distributorIds.metro,
+    productId: productIds.sofa,
+    qty: 8,
+    recordedByUserId: distUserId,
+    type: "receive",
+  },
+  {
+    createdAt: daysAgo(38),
+    distributorId: distributorIds.metro,
+    productId: productIds.sofa,
+    qty: -2,
+    recordedByUserId: distUserId,
+    type: "sale",
+  },
+  {
+    createdAt: daysAgo(22),
+    distributorId: distributorIds.metro,
+    productId: productIds.sofa,
+    qty: 3,
+    reasonNote: "Received from central warehouse",
+    recordedByUserId: distUserId,
+    type: "transfer_in",
+  },
+  // p5 Side table — final qty 13
+  {
+    createdAt: daysAgo(53),
+    distributorId: distributorIds.metro,
+    productId: productIds.sideTable,
+    qty: 15,
+    recordedByUserId: distUserId,
+    type: "receive",
+  },
+  {
+    createdAt: daysAgo(32),
+    distributorId: distributorIds.metro,
+    productId: productIds.sideTable,
+    qty: -4,
+    recordedByUserId: distUserId,
+    type: "sale",
+  },
+  {
+    createdAt: daysAgo(14),
+    distributorId: distributorIds.metro,
+    productId: productIds.sideTable,
+    qty: 2,
+    reasonNote: "Recount found 2 extra units",
+    recordedByUserId: distUserId,
+    type: "adjustment",
+  },
+  // p7 Dresser (qc) — final qty 10 (one voided sale below)
+  {
+    createdAt: daysAgo(50),
+    distributorId: distributorIds.qc,
+    productId: productIds.dresser,
+    qty: 12,
+    recordedByUserId: adminUserId,
+    type: "receive",
+  },
+  {
+    createdAt: daysAgo(28),
+    distributorId: distributorIds.qc,
+    productId: productIds.dresser,
+    qty: -3,
+    reasonNote: "Customer cancelled — record voided",
+    recordedByUserId: adminUserId,
+    type: "sale",
+    voidReason: "Recorded against wrong product",
+    voidedAt: daysAgo(27),
+  },
+  {
+    createdAt: daysAgo(16),
+    distributorId: distributorIds.qc,
+    productId: productIds.dresser,
+    qty: -2,
+    recordedByUserId: adminUserId,
+    type: "sale",
+  },
+  // p8 Coffee table (qc) — final qty 7
+  {
+    createdAt: daysAgo(52),
+    distributorId: distributorIds.qc,
+    productId: productIds.coffeeTable,
+    qty: 18,
+    recordedByUserId: adminUserId,
+    type: "receive",
+  },
+  {
+    createdAt: daysAgo(21),
+    distributorId: distributorIds.qc,
+    productId: productIds.coffeeTable,
+    qty: -9,
+    recordedByUserId: adminUserId,
+    type: "sale",
+  },
+  {
+    createdAt: daysAgo(10),
+    distributorId: distributorIds.qc,
+    productId: productIds.coffeeTable,
+    qty: -2,
+    reasonNote: "Sent to satellite showroom",
+    recordedByUserId: adminUserId,
+    type: "transfer_out",
+  },
+  // p9 Wardrobe (qc) — final qty 4 (low-stock demo)
+  {
+    createdAt: daysAgo(48),
+    distributorId: distributorIds.qc,
+    productId: productIds.wardrobe,
+    qty: 5,
+    recordedByUserId: adminUserId,
+    type: "receive",
+  },
+  {
+    createdAt: daysAgo(26),
+    distributorId: distributorIds.qc,
+    productId: productIds.wardrobe,
+    qty: -1,
+    recordedByUserId: adminUserId,
+    type: "sale",
+  },
+  // p10 Recliner (qc) — final qty 7
+  {
+    createdAt: daysAgo(47),
+    distributorId: distributorIds.qc,
+    productId: productIds.recliner,
+    qty: 9,
+    recordedByUserId: adminUserId,
+    type: "receive",
+  },
+  {
+    createdAt: daysAgo(24),
+    distributorId: distributorIds.qc,
+    productId: productIds.recliner,
+    qty: -2,
+    recordedByUserId: adminUserId,
+    type: "sale",
+  },
+  // p11 Bar stool (qc) — final qty 12
+  {
+    createdAt: daysAgo(46),
+    distributorId: distributorIds.qc,
+    productId: productIds.barStool,
+    qty: 25,
+    recordedByUserId: adminUserId,
+    type: "receive",
+  },
+  {
+    createdAt: daysAgo(19),
+    distributorId: distributorIds.qc,
+    productId: productIds.barStool,
+    qty: -13,
+    recordedByUserId: adminUserId,
+    type: "sale",
+  },
+]);
 
 console.log("Seed complete.");
