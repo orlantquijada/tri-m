@@ -2,12 +2,19 @@ import {
   db,
   distributors as distributorsTable,
   products as productsTable,
+  stockMovements as stockMovementsTable,
 } from "db";
-import { and, desc, eq, like, or } from "drizzle-orm";
+import { and, desc, eq, isNull, like, or, sql } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { productListItemSchema, productSelectSchema } from "schema";
-import type { ProductInsert, ProductQuery, ProductUpdate } from "schema";
+import type {
+  ProductInsert,
+  ProductQuery,
+  ProductUpdate,
+  StockLevel,
+  StockLevelsQuery,
+} from "schema";
 
 import { badRequest, forbidden, notFound } from "../lib/http";
 import { Scope } from "../lib/scope";
@@ -78,6 +85,45 @@ export async function listProducts(user: User, filters: ProductQuery = {}) {
   return productListItemSchema
     .array()
     .parse(rows.map((r) => ({ ...r, currentQty: 0 })));
+}
+
+export async function listStockLevels(
+  user: User,
+  filters: StockLevelsQuery = {}
+): Promise<StockLevel[]> {
+  const scope = Scope.forUser(user);
+  const conditions: SQL[] = [];
+  const scopeFilter = scope.filterQuery(productsTable.distributorId);
+  if (scopeFilter) {
+    conditions.push(scopeFilter);
+  }
+  if (user.role === "admin" && filters.distributorId) {
+    conditions.push(eq(productsTable.distributorId, filters.distributorId));
+  }
+  if (filters.productId) {
+    conditions.push(eq(productsTable.id, filters.productId));
+  }
+
+  return db
+    .select({
+      currentQty:
+        sql<number>`coalesce(sum(${stockMovementsTable.qty}), 0)`.mapWith(
+          Number
+        ),
+      distributorId: productsTable.distributorId,
+      productId: productsTable.id,
+    })
+    .from(productsTable)
+    .leftJoin(
+      stockMovementsTable,
+      and(
+        eq(stockMovementsTable.productId, productsTable.id),
+        eq(stockMovementsTable.distributorId, productsTable.distributorId),
+        isNull(stockMovementsTable.voidedAt)
+      )
+    )
+    .where(conditions.length > 0 ? and(...conditions) : undefined)
+    .groupBy(productsTable.id, productsTable.distributorId);
 }
 
 export async function getProduct(user: User, id: string) {

@@ -3,6 +3,7 @@ import {
   productInsertSchema,
   productQuerySchema,
   productUpdateSchema,
+  stockLevelsQuerySchema,
 } from "schema";
 
 import { createRouter } from "../lib/factory";
@@ -13,6 +14,7 @@ import {
   createProduct,
   getProduct,
   listProducts,
+  listStockLevels,
   updateProduct,
 } from "../services/products";
 
@@ -29,6 +31,13 @@ export const products = createRouter()
     zValidator("json", productInsertSchema),
     async (c) =>
       c.json(await createProduct(c.get("user"), c.req.valid("json")), 201)
+  )
+  .get(
+    "/stock-levels",
+    requireSession,
+    zValidator("query", stockLevelsQuerySchema),
+    async (c) =>
+      c.json(await listStockLevels(c.get("user"), c.req.valid("query")))
   )
   .get("/:id", requireSession, async (c) =>
     c.json(await getProduct(c.get("user"), idParam(c)))

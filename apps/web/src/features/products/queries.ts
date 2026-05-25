@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { InferRequestType, InferResponseType } from "hono/client";
 
 import { api, parseApiError } from "@/lib/api";
@@ -13,6 +13,11 @@ export type Product = InferResponseType<
   (typeof api.api.products)[":id"]["$get"],
   200
 >;
+
+export type StockLevelItem = InferResponseType<
+  (typeof api.api.products)["stock-levels"]["$get"],
+  200
+>[number];
 
 type CreateProductBody = InferRequestType<
   typeof api.api.products.$post
@@ -36,6 +41,24 @@ export const productQueries = createResourceQueries({
 });
 
 export const productKeys = productQueries.keys;
+
+export const stockLevelsKey = ["products", "stock-levels"] as const;
+
+export function useStockLevels() {
+  return useQuery({
+    queryFn: async () => {
+      const res = await api.api.products["stock-levels"].$get({ query: {} });
+      if (!res.ok) {
+        throw await parseApiError(
+          res as unknown as Response,
+          "Failed to fetch stock levels"
+        );
+      }
+      return res.json();
+    },
+    queryKey: stockLevelsKey,
+  });
+}
 
 export function useArchiveProduct() {
   const queryClient = useQueryClient();

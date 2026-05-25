@@ -69,8 +69,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { formatPesoOrDash } from "@/lib/format";
 
-import { productQueries, useArchiveProduct } from "./queries";
+import { productQueries, useArchiveProduct, useStockLevels } from "./queries";
 import type { ProductListItem } from "./queries";
+import { StockCell } from "./stock-badge";
+
+type TableMeta = { stockByProduct: Map<string, number> };
 
 const TAB_LABELS: Record<ProductStatus, string> = {
   active: "Active",
@@ -180,7 +183,10 @@ const columns: ColumnDef<ProductListItem>[] = [
     header: () => <div className="text-right">Unit price</div>,
   },
   {
-    cell: () => <span className="text-muted-foreground">—</span>,
+    cell: ({ row, table }) => {
+      const meta = table.options.meta as TableMeta | undefined;
+      return <StockCell qty={meta?.stockByProduct.get(row.original.id)} />;
+    },
     header: "Stock",
     id: "stock",
   },
@@ -204,7 +210,15 @@ const columns: ColumnDef<ProductListItem>[] = [
 
 export function ProductsDataTable() {
   const { data, error, isLoading } = productQueries.useList();
+  const { data: stockLevels } = useStockLevels();
   const isMobile = useIsMobile();
+
+  const stockByProduct = new Map<string, number>();
+  if (stockLevels) {
+    for (const l of stockLevels) {
+      stockByProduct.set(l.productId, l.currentQty);
+    }
+  }
 
   const [tab, setTab] = React.useState<ProductStatus>("active");
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -245,6 +259,7 @@ export function ProductsDataTable() {
     getPaginationRowModel: getPaginationRowModel(),
     getRowId: (row) => row.id,
     getSortedRowModel: getSortedRowModel(),
+    meta: { stockByProduct } satisfies TableMeta,
     onColumnVisibilityChange: setColumnVisibility,
     onPaginationChange: setPagination,
     onSortingChange: setSorting,
@@ -323,7 +338,12 @@ export function ProductsDataTable() {
         {(() => {
           const { rows } = table.getRowModel();
           if (isMobile) {
-            return <MobileCardList rows={rows.map((r) => r.original)} />;
+            return (
+              <MobileCardList
+                rows={rows.map((r) => r.original)}
+                stockByProduct={stockByProduct}
+              />
+            );
           }
           return (
             <div className="overflow-hidden rounded-lg border">
@@ -380,7 +400,13 @@ export function ProductsDataTable() {
   );
 }
 
-function MobileCardList({ rows }: { rows: ProductListItem[] }) {
+function MobileCardList({
+  rows,
+  stockByProduct,
+}: {
+  rows: ProductListItem[];
+  stockByProduct: Map<string, number>;
+}) {
   if (rows.length === 0) {
     return (
       <Card>
@@ -418,7 +444,9 @@ function MobileCardList({ rows }: { rows: ProductListItem[] }) {
               </div>
               <div>
                 <dt className="text-muted-foreground">Stock</dt>
-                <dd>—</dd>
+                <dd>
+                  <StockCell qty={stockByProduct.get(p.id)} />
+                </dd>
               </div>
             </dl>
             <div className="flex justify-end">
