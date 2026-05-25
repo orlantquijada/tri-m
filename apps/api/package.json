@@ -1,13 +1,11 @@
 {
   "name": "api",
   "type": "module",
-  "exports": {
-    ".": "./src/index.ts"
-  },
   "scripts": {
     "check": "ultracite check",
     "fix": "ultracite fix",
     "dev": "bun run --env-file ../../.env --hot src/index.ts",
+    "build": "mkdir -p api && bun build vercel-entry.ts --outfile=api/index.js --target=node --format=esm --external=@tursodatabase/database --external=@tursodatabase/database-common --external=@libsql/client --external=libsql --external=better-sqlite3",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
